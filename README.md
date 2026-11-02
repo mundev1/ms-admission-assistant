@@ -46,12 +46,20 @@ open frontend/index.html
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/applicants` | Save applicant profile |
+| `POST` | `/api/applicants` | Save applicant profile (idempotent upsert) |
 | `GET` | `/api/applicants/{id}` | Get applicant by ID |
-| `POST` | `/api/score/region/{region}` | Score against all programs in a region |
+| `GET` | `/api/programs` | List all university programs |
+| `POST` | `/api/score/region/{region}` | Score against all programs in a region (`ALL`, `US`, `EU`, `JP`) |
 | `POST` | `/api/score/program/{programId}` | Score against a specific program |
 
-**Regions:** `US_CANADA`, `EUROPE`, `JAPAN`
+**Regions:** `ALL`, `US_CANADA` (`US`), `EUROPE` (`EU`), `JAPAN` (`JP`)
+
+## Holistic Scoring & Feasibility Overlay
+
+In addition to academic compatibility, the engine computes a **Holistic Feasibility Index** combining:
+- **Academic Fit (50%)**: Normalized GPA, GRE percentiles, ECTS coursework, and research composite.
+- **Financial Feasibility (30%)**: Annual net cost of attendance vs declared budget, mandatory blocked accounts (e.g. Germany Sperrkonto at €11,904 / ~$13k USD), and pre-matched scholarship eligibility (MEXT, DAAD, Fulbright, TA/RA).
+- **Post-Study Visa Outlook (20%)**: Visa pathways and work authorization duration (e.g. US 36-month STEM OPT, Germany 18-month Jobseeker / EU Blue Card, Japan 24-month J-Find / Designated Activities).
 
 ## Scoring Formula
 

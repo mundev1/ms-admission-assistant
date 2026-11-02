@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎓 MS Admissions Matrix Engine</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* ── Page-specific overrides ─────────────────────────────── */
+    .page-main {
+      padding: 2rem 0 4rem;
+    }
+
+    .form-wrapper {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      color: var(--clr-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      color: var(--clr-text-muted);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: var(--clr-border);
+      border-radius: 99px;
+      margin: 1.5rem 0 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--clr-gold-dark), var(--clr-gold));
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .section-card {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      padding: 1.5rem;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      bottom: 1.5rem;
+      z-index: 50;
+    }
+
+    .form-actions .btn-primary {
+      min-width: 210px;
+    }
+
+    .gpa-display {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .gpa-conversions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 27, 42, 0.88);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .loading-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .loading-overlay h3 {
+      color: var(--clr-gold);
+      font-size: 1.25rem;
+    }
+
+    .loading-overlay p {
+      font-size: 0.9rem;
+      color: var(--clr-text-muted);
+    }
+
+    .spinner-lg {
+      width: 56px; height: 56px;
+      border: 4px solid var(--clr-border);
+      border-top-color: var(--clr-gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Section number badge */
+    .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px; height: 24px;
+      background: var(--clr-gold);
+      color: var(--clr-bg);
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="container">
+    <div class="brand">
+      <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+      <div class="brand-subtitle">Cross-Border Compatibility Calculator</div>
+    </div>
+    <div class="flex items-center gap-sm">
+      <span class="text-sm text-muted" id="formProgress">0% complete</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── Loading overlay ──────────────────────────────────────────────────── -->
+<div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-label="Loading">
+  <div class="spinner-lg"></div>
+  <h3>Calculating Compatibility…</h3>
+  <p id="loadingMsg">Saving applicant profile</p>
+</div>
+
+<!-- ── Toast container ──────────────────────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ── Main ─────────────────────────────────────────────────────────────── -->
+<main class="page-main">
+  <div class="container">
+    <div class="form-wrapper">
+
+      <!-- Hero -->
+      <div class="hero">
+        <h1>🎓 MS Admissions Matrix Engine</h1>
+        <p>Fill in your academic profile and discover which graduate programs you're compatible with across the US, Europe, and Japan.</p>
+        <div class="progress-bar-wrap">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <form id="admissionsForm" novalidate autocomplete="off">
+
+        <!-- ── 1. Personal Info ───────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">👤</div>
+            <div>
+              <div class="card-title">Personal Information</div>
+              <div class="card-subtitle">Your basic contact details</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">1</span>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="fullName">Full Name <span class="required">*</span></label>
+              <input type="text" id="fullName" name="fullName" class="form-control"
+                     placeholder="e.g. Priya Sharma" autocomplete="name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="email" class="form-control"
+                     placeholder="priya@example.com" autocomplete="email" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 2. Academic Record ─────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">📚</div>
+            <div>
+              <div class="card-title">Academic Record</div>
+              <div class="card-subtitle">Undergraduate degree details</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">2</span>
+          </div>
+
+          <div class="grid-2">
+            <!-- CGPA -->
+            <div class="form-group col-span-2">
+              <label class="form-label" for="cgpaNum">CGPA <span class="required">*</span>
+                <span class="hint">(on a 10-point scale)</span>
+              </label>
+              <div class="form-slider-wrap">
+                <input type="range" id="cgpaSlider" name="cgpaSlider"
+                       min="0" max="10" step="0.1" value="8.0" />
+                <input type="number" id="cgpaNum" name="cgpa" class="form-control"
+                       min="0" max="10" step="0.1" value="8.0" required />
+              </div>
+              <div class="gpa-display">
+                <div class="gpa-conversions" id="gpaConversions">
+                  <span class="conversion-hint">🇺🇸 <span class="val" id="us4pt">3.20</span> / 4.0</span>
+                  <span class="conversion-hint">🇯🇵 <span class="val" id="jp4pt">3.00</span> / 4.0</span>
+                  <span class="conversion-hint">🇪🇺 ECTS <span class="val" id="ectsGrade">B</span> — <span class="val" id="ectsLabel">Very Good</span></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="universityName">University Name <span class="required">*</span></label>
+              <input type="text" id="universityName" name="universityName" class="form-control"
+                     placeholder="e.g. IIT Bombay" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="degree">Degree <span class="required">*</span></label>
+              <input type="text" id="degree" name="degree" class="form-control"
+                     placeholder="e.g. B.Tech / B.E. / B.Sc" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="specialization">Specialization <span class="required">*</span></label>
+              <select id="specialization" name="specialization" class="form-control" required>
+                <option value="" disabled selected>Select specialization</option>
+                <option value="CS">Computer Science (CS)</option>
+                <option value="AI">Artificial Intelligence (AI)</option>
+                <option value="DATA_SCIENCE">Data Science</option>
+                <option value="ECE">Electronics &amp; Communication (ECE)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="graduationYear">Graduation Year <span class="required">*</span></label>
+              <input type="number" id="graduationYear" name="graduationYear" class="form-control"
+                     min="1990" max="2030" placeholder="e.g. 2024" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 3. GRE / GMAT ─────────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">📝</div>
+            <div>
+              <div class="card-title">GRE / GMAT Scores</div>
+              <div class="card-subtitle">Standardized test results</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">3</span>
+          </div>
+          <div class="grid-2">
+            <!-- GRE Verbal -->
+            <div class="form-group">
+              <label class="form-label" for="greVerbal">GRE Verbal
+                <span class="hint">(130 – 170)</span>
+              </label>
+              <input type="number" id="greVerbal" name="greVerbal" class="form-control"
+                     min="130" max="170" placeholder="e.g. 158" />
+              <span class="percentile-badge" id="greVPerc"></span>
+            </div>
+
+            <!-- GRE Quant -->
+            <div class="form-group">
+              <label class="form-label" for="greQuant">GRE Quantitative
+                <span class="hint">(130 – 170)</span>
+              </label>
+              <input type="number" id="greQuant" name="greQuant" class="form-control"
+                     min="130" max="170" placeholder="e.g. 165" />
+              <span class="percentile-badge" id="greQPerc"></span>
+            </div>
+
+            <!-- GRE AW -->
+            <div class="form-group">
+              <label class="form-label" for="greAW">GRE Analytical Writing
+                <span class="hint">(0 – 6, step 0.5)</span>
+              </label>
+              <input type="number" id="greAW" name="greAW" class="form-control"
+                     min="0" max="6" step="0.5" placeholder="e.g. 4.0" />
+              <span class="percentile-badge" id="greAWPerc"></span>
+            </div>
+
+            <!-- GMAT -->
+            <div class="form-group">
+              <label class="form-label" for="gmat">GMAT Score
+                <span class="hint">(optional, 200 – 800)</span>
+              </label>
+              <input type="number" id="gmat" name="gmat" class="form-control"
+                     min="200" max="800" placeholder="Optional" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 4. Language Proficiency ────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🌐</div>
+            <div>
+              <div class="card-title">Language Proficiency</div>
+              <div class="card-subtitle">English &amp; other language tests</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">4</span>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="toefl">TOEFL iBT Score
+                <span class="hint">(0 – 120)</span>
+              </label>
+              <input type="number" id="toefl" name="toefl" class="form-control"
+                     min="0" max="120" placeholder="e.g. 105" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ielts">IELTS Score
+                <span class="hint">(0 – 9, step 0.5)</span>
+              </label>
+              <input type="number" id="ielts" name="ielts" class="form-control"
+                     min="0" max="9" step="0.5" placeholder="e.g. 7.5" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="jlptLevel">JLPT Level
+                <span class="hint">(for Japan programs)</span>
+              </label>
+              <select id="jlptLevel" name="jlptLevel" class="form-control">
+                <option value="None" selected>No JLPT</option>
+                <option value="N5">N5 — Beginner</option>
+                <option value="N4">N4 — Basic</option>
+                <option value="N3">N3 — Intermediate</option>
+                <option value="N2">N2 — Business Proficiency</option>
+                <option value="N1">N1 — Native-level</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 5. European Profile ────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🇪🇺</div>
+            <div>
+              <div class="card-title">European Profile</div>
+              <div class="card-subtitle">ECTS credits and Bachelor's thesis (for EU programs)</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">5</span>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="ectsCreditsSlider">ECTS Credits in CS
+                <span class="hint">(0 – 300)</span>
+              </label>
+              <div class="form-slider-wrap">
+                <input type="range" id="ectsCreditsSlider" min="0" max="300" step="1" value="180" />
+                <input type="number" id="ectsCredits" name="ectsCredits" class="form-control"
+                       min="0" max="300" value="180" placeholder="e.g. 180" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Bachelor's Thesis Completed</label>
+              <div class="toggle-wrap">
+                <label class="toggle" for="bachelorThesis">
+                  <input type="checkbox" id="bachelorThesis" name="bachelorThesis" />
+                  <div class="toggle-track"></div>
+                  <div class="toggle-thumb"></div>
+                </label>
+                <label class="toggle-label" for="bachelorThesis" id="thesisLabel">Not completed</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 6. Research Profile ────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🔬</div>
+            <div>
+              <div class="card-title">Research Profile</div>
+              <div class="card-subtitle">Research experience and publications</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">6</span>
+          </div>
+          <div class="grid-2">
+            <!-- Research Score slider -->
+            <div class="form-group col-span-2">
+              <label class="form-label" for="researchScoreNum">Research Score
+                <span class="hint">(self-rated 0 – 100)</span>
+              </label>
+              <div class="form-slider-wrap">
+                <input type="range" id="researchScoreSlider" min="0" max="100" step="1" value="60" />
+                <input type="number" id="researchScoreNum" name="researchScore" class="form-control"
+                       min="0" max="100" value="60" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="internshipMonths">Internship Experience
+                <span class="hint">(total months)</span>
+              </label>
+              <input type="number" id="internshipMonths" name="internshipMonths" class="form-control"
+                     min="0" max="48" placeholder="e.g. 6" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="publications">Publications Count</label>
+              <input type="number" id="publications" name="publications" class="form-control"
+                     min="0" max="50" placeholder="e.g. 2" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 7. Financial & Visa Goals ─────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">💰</div>
+            <div>
+              <div class="card-title">Financial Profile &amp; Visa Goals</div>
+              <div class="card-subtitle">Annual budget, liquid savings/escrow, and career residency plans</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">7</span>
+          </div>
+          <div class="grid-2">
+            <!-- Annual Budget -->
+            <div class="form-group">
+              <label class="form-label" for="annualBudgetUsd">Annual Budget (Tuition + Living)
+                <span class="hint">(USD $, e.g. $35,000)</span>
+              </label>
+              <input type="number" id="annualBudgetUsd" name="annualBudgetUsd" class="form-control"
+                     min="0" max="200000" step="1000" placeholder="e.g. 35000" value="35000" />
+            </div>
+
+            <!-- Liquid Savings / Blocked Account -->
+            <div class="form-group">
+              <label class="form-label" for="liquidSavingsUsd">Liquid Savings / Visa Escrow
+                <span class="hint">(USD $, for blocked accounts / proof)</span>
+              </label>
+              <input type="number" id="liquidSavingsUsd" name="liquidSavingsUsd" class="form-control"
+                     min="0" max="300000" step="1000" placeholder="e.g. 25000" value="25000" />
+            </div>
+
+            <!-- Funding Preference -->
+            <div class="form-group">
+              <label class="form-label" for="fundingPreference">Funding Strategy</label>
+              <select id="fundingPreference" name="fundingPreference" class="form-control">
+                <option value="PARTIAL_SCHOLARSHIP" selected>Seeking Partial Scholarship / Assistantship</option>
+                <option value="FULL_RIDE">Seeking Full-Ride Fellowship (MEXT / DAAD / Fulbright)</option>
+                <option value="SELF_FUNDED">Fully Self-Funded / Family Supported</option>
+                <option value="LOAN">Planning for International Student Loan (Prodigy / MPOWER)</option>
+              </select>
+            </div>
+
+            <!-- Post-Study Work Priority -->
+            <div class="form-group">
+              <label class="form-label" for="postStudyWorkPriority">Post-Study Work Visa Priority</label>
+              <select id="postStudyWorkPriority" name="postStudyWorkPriority" class="form-control">
+                <option value="HIGH" selected>High (Want 2–3 yrs post-grad work visa &amp; PR pathway)</option>
+                <option value="MODERATE">Moderate (1–2 yrs international experience)</option>
+                <option value="NONE">None / Low (Returning to home country immediately)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 8. Target Region ───────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🌍</div>
+            <div>
+              <div class="card-title">Target Region</div>
+              <div class="card-subtitle">Choose where you want to apply</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">8</span>
+          </div>
+          <div class="radio-group">
+            <div class="radio-pill">
+              <input type="radio" id="regionUS" name="targetRegion" value="US" />
+              <label for="regionUS">🇺🇸 United States</label>
+            </div>
+            <div class="radio-pill">
+              <input type="radio" id="regionEU" name="targetRegion" value="EU" />
+              <label for="regionEU">🇪🇺 Europe</label>
+            </div>
+            <div class="radio-pill">
+              <input type="radio" id="regionJP" name="targetRegion" value="JP" />
+              <label for="regionJP">🇯🇵 Japan</label>
+            </div>
+            <div class="radio-pill">
+              <input type="radio" id="regionALL" name="targetRegion" value="ALL" checked />
+              <label for="regionALL">🌐 All Regions</label>
+            </div>
+          </div>
+          <p class="text-sm text-muted mt-md" id="regionHint">
+            Selecting "All Regions" will calculate compatibility scores for programs across the US, Europe, and Japan.
+          </p>
+        </div>
+
+        <!-- ── Form Actions ───────────────────────────────────────────── -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="clearFormBtn">
+            ✕ Clear Form
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+            <span class="btn-text">🚀 Calculate Compatibility</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import {
+    cgpaToUS4pt, cgpaToJapanese4pt, cgpaToEctsGrade,
+    greToPercentile
+  } from './js/normalizer.js';
+  import { runScoringPipeline } from './js/api.js';
+
+  // ── Helpers ──────────────────────────────────────────────────────────
+
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: 'ℹ️', error: '❌', success: '✅', warning: '⚠️' };
+    const container = $('#toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function setLoading(visible, msg = 'Processing…') {
+    const overlay = $('#loadingOverlay');
+    $('#loadingMsg').textContent = msg;
+    overlay.classList.toggle('visible', visible);
+    $('#submitBtn').classList.toggle('loading', visible);
+    $('#submitBtn').disabled = visible;
+  }
+
+  // ── Synced slider + number input ──────────────────────────────────────
+
+  function syncSlider(sliderId, numId, onChange) {
+    const slider = $(`#${sliderId}`);
+    const num    = $(`#${numId}`);
+    if (!slider || !num) return;
+
+    const update = (val) => {
+      slider.value = val;
+      num.value    = val;
+      onChange?.(val);
+    };
+
+    slider.addEventListener('input', () => update(slider.value));
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      const min = parseFloat(num.min);
+      const max = parseFloat(num.max);
+      if (!isNaN(min) && v < min) v = min;
+      if (!isNaN(max) && v > max) v = max;
+      update(v);
+    });
+
+    update(slider.value);
+  }
+
+  // ── GPA conversions ───────────────────────────────────────────────────
+
+  function updateGpaConversions(val) {
+    const cgpa = parseFloat(val) || 0;
+    const us   = cgpaToUS4pt(cgpa);
+    const jp   = cgpaToJapanese4pt(cgpa);
+    const eu   = cgpaToEctsGrade(cgpa);
+
+    $('#us4pt').textContent    = us.toFixed(2);
+    $('#jp4pt').textContent    = jp.toFixed(2);
+    $('#ectsGrade').textContent = eu.letter;
+    $('#ectsLabel').textContent = eu.label;
+  }
+
+  syncSlider('cgpaSlider', 'cgpaNum', updateGpaConversions);
+  syncSlider('ectsCreditsSlider', 'ectsCredits');
+  syncSlider('researchScoreSlider', 'researchScoreNum');
+
+  // ── GRE Percentile badges ─────────────────────────────────────────────
+
+  function updatePercentile(inputId, badgeId, type) {
+    const input = $(`#${inputId}`);
+    const badge = $(`#${badgeId}`);
+    if (!input || !badge) return;
+
+    const update = () => {
+      const val = parseFloat(input.value);
+      if (isNaN(val)) { badge.textContent = ''; return; }
+      const { percentile, label } = greToPercentile(val, type);
+      badge.textContent = `~${percentile}th percentile — ${label}`;
+      badge.className = 'percentile-badge';
+      if (percentile >= 75)      badge.classList.add('good');
+      else if (percentile >= 40) badge.classList.add('mid');
+      else                       badge.classList.add('low');
+    };
+
+    input.addEventListener('input', update);
+    update();
+  }
+
+  updatePercentile('greVerbal', 'greVPerc', 'V');
+  updatePercentile('greQuant',  'greQPerc', 'Q');
+  updatePercentile('greAW',     'greAWPerc', 'AW');
+
+  // ── Toggle label ──────────────────────────────────────────────────────
+
+  $('#bachelorThesis').addEventListener('change', function () {
+    $('#thesisLabel').textContent = this.checked ? 'Completed ✓' : 'Not completed';
+  });
+
+  // ── Region hint ───────────────────────────────────────────────────────
+
+  const regionHints = {
+    US:  '🇺🇸 Scores will be normalized to US 4.0 GPA scale. GRE scores are weighted heavily.',
+    EU:  '🇪🇺 ECTS credits and Bachelor\'s thesis matter significantly for European programs.',
+    JP:  '🇯🇵 JLPT level and research alignment are critical for Japanese university admissions.',
+    ALL: '🌐 Calculating compatibility across US, Europe, and Japan — full cross-border analysis.',
+  };
+
+  $$('input[name="targetRegion"]').forEach(r => {
+    r.addEventListener('change', () => {
+      $('#regionHint').textContent = regionHints[r.value] || '';
+    });
+  });
+
+  // ── Form progress ─────────────────────────────────────────────────────
+
+  const requiredFields = ['fullName', 'email', 'cgpaNum', 'universityName', 'degree', 'specialization', 'graduationYear'];
+
+  function updateProgress() {
+    const filled = requiredFields.filter(id => {
+      const el = $(`#${id}`);
+      return el && el.value.trim() !== '' && el.value !== '0';
+    }).length;
+    const pct = Math.round((filled / requiredFields.length) * 100);
+    $('#progressFill').style.width = `${pct}%`;
+    $('#formProgress').textContent = `${pct}% complete`;
+  }
+
+  document.addEventListener('input', updateProgress);
+  document.addEventListener('change', updateProgress);
+
+  // ── Form validation ───────────────────────────────────────────────────
+
+  function validateForm() {
+    let valid = true;
+
+    // Clear previous errors
+    $$('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    $$('.form-error').forEach(el => el.remove());
+
+    const addError = (fieldId, msg) => {
+      const el = $(`#${fieldId}`);
+      if (!el) return;
+      el.classList.add('is-invalid');
+      const err = document.createElement('span');
+      err.className = 'form-error';
+      err.textContent = msg;
+      el.parentNode.appendChild(err);
+      valid = false;
+    };
+
+    const fullName = $('#fullName').value.trim();
+    if (!fullName) addError('fullName', 'Full name is required.');
+
+    const email = $('#email').value.trim();
+    if (!email) addError('email', 'Email is required.');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) addError('email', 'Enter a valid email address.');
+
+    const cgpa = parseFloat($('#cgpaNum').value);
+    if (isNaN(cgpa) || cgpa < 0 || cgpa > 10) addError('cgpaNum', 'CGPA must be between 0 and 10.');
+
+    const uni = $('#universityName').value.trim();
+    if (!uni) addError('universityName', 'University name is required.');
+
+    const degree = $('#degree').value.trim();
+    if (!degree) addError('degree', 'Degree is required.');
+
+    const spec = $('#specialization').value;
+    if (!spec) addError('specialization', 'Please select a specialization.');
+
+    const gradYear = parseInt($('#graduationYear').value, 10);
+    if (isNaN(gradYear) || gradYear < 1990 || gradYear > 2030)
+      addError('graduationYear', 'Enter a valid graduation year (1990–2030).');
+
+    // GRE range checks (optional but if provided, validate)
+    const gv = $('#greVerbal').value;
+    if (gv && (parseFloat(gv) < 130 || parseFloat(gv) > 170))
+      addError('greVerbal', 'GRE Verbal must be between 130 and 170.');
+
+    const gq = $('#greQuant').value;
+    if (gq && (parseFloat(gq) < 130 || parseFloat(gq) > 170))
+      addError('greQuant', 'GRE Quant must be between 130 and 170.');
+
+    const gaw = $('#greAW').value;
+    if (gaw && (parseFloat(gaw) < 0 || parseFloat(gaw) > 6))
+      addError('greAW', 'GRE AW must be between 0 and 6.');
+
+    const toefl = $('#toefl').value;
+    if (toefl && (parseFloat(toefl) < 0 || parseFloat(toefl) > 120))
+      addError('toefl', 'TOEFL must be between 0 and 120.');
+
+    const ielts = $('#ielts').value;
+    if (ielts && (parseFloat(ielts) < 0 || parseFloat(ielts) > 9))
+      addError('ielts', 'IELTS must be between 0 and 9.');
+
+    const region = $('input[name="targetRegion"]:checked');
+    if (!region) { showToast('Region Required', 'Please select a target region.', 'warning'); valid = false; }
+
+    if (!valid) {
+      // Scroll to first error
+      const firstErr = $('.form-control.is-invalid');
+      firstErr?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    return valid;
+  }
+
+  // ── Collect form data ─────────────────────────────────────────────────
+
+  function collectFormData() {
+    const num = id => { const v = $(`#${id}`).value; return v === '' ? null : parseFloat(v); };
+    const str = id => $(`#${id}`).value.trim();
+    const int = id => { const v = $(`#${id}`).value; return v === '' ? null : parseInt(v, 10); };
+    const bool = id => $(`#${id}`).checked;
+
+    const c = num('cgpaNum');
+    return {
+      fullName:          str('fullName'),
+      email:             str('email'),
+      cgpa:              c,
+      cgpa10pt:          c,
+      universityName:    str('universityName'),
+      degree:            str('degree'),
+      specialization:    str('specialization'),
+      graduationYear:    int('graduationYear'),
+      greVerbal:         num('greVerbal'),
+      greQuant:          num('greQuant'),
+      greAW:             num('greAW'),
+      greAw:             num('greAW'),
+      gmat:              num('gmat'),
+      toefl:             num('toefl'),
+      toeflScore:        num('toefl'),
+      ielts:             num('ielts'),
+      ieltsScore:        num('ielts'),
+      jlptLevel:         str('jlptLevel'),
+      ectsCredits:       num('ectsCredits'),
+      ectsCreditsCs:     num('ectsCredits'),
+      bachelorThesis:    bool('bachelorThesis'),
+      thesisCompleted:   bool('bachelorThesis'),
+      researchScore:     num('researchScoreNum'),
+      internshipMonths:       num('internshipMonths'),
+      publications:           int('publications'),
+      publicationsCount:      int('publications'),
+      annualBudgetUsd:        num('annualBudgetUsd') ?? 35000,
+      annualBudget:           num('annualBudgetUsd') ?? 35000,
+      liquidSavingsUsd:       num('liquidSavingsUsd') ?? 25000,
+      liquidSavings:          num('liquidSavingsUsd') ?? 25000,
+      fundingPreference:      str('fundingPreference') || 'PARTIAL_SCHOLARSHIP',
+      postStudyWorkPriority:  str('postStudyWorkPriority') || 'HIGH',
+      targetRegion:           $('input[name="targetRegion"]:checked')?.value || 'ALL',
+    };
+  }
+
+  // ── Clear form ────────────────────────────────────────────────────────
+
+  $('#clearFormBtn').addEventListener('click', () => {
+    if (!confirm('Clear all form data?')) return;
+    document.getElementById('admissionsForm').reset();
+    updateGpaConversions(0);
+    $$('.percentile-badge').forEach(b => { b.textContent = ''; b.className = 'percentile-badge'; });
+    $$('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    $$('.form-error').forEach(el => el.remove());
+    $('#thesisLabel').textContent = 'Not completed';
+    updateProgress();
+    showToast('Form Cleared', 'All fields have been reset.', 'info');
+  });
+
+  // ── Submit handler ────────────────────────────────────────────────────
+
+  document.getElementById('admissionsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const profile = collectFormData();
+    sessionStorage.setItem('applicantProfile', JSON.stringify(profile));
+
+    const region = profile.targetRegion;
+
+    setLoading(true, 'Saving applicant profile…');
+
+    let apiError = null;
+
+    try {
+      setLoading(true, 'Saving applicant profile…');
+      const { applicant, results } = await runScoringPipeline(profile, region, {
+        onLoading: (v) => {
+          if (v) setLoading(true, 'Scoring against programs…');
+        },
+        onError: (err) => { apiError = err; },
+      });
+
+      if (results && results.length > 0) {
+        sessionStorage.setItem('scoringResults', JSON.stringify(results));
+        sessionStorage.setItem('applicantData', JSON.stringify(applicant || profile));
+      } else {
+        // Backend unavailable — store profile only; dashboard will use mock
+        sessionStorage.setItem('scoringResults', JSON.stringify([]));
+        sessionStorage.setItem('applicantData', JSON.stringify(profile));
+        if (apiError) {
+          showToast(
+            'Backend Unavailable',
+            'Using demo results on the dashboard. Start the Spring Boot server for live data.',
+            'warning'
+          );
+        }
+      }
+    } catch (err) {
+      console.error('[Submit]', err);
+      sessionStorage.setItem('scoringResults', JSON.stringify([]));
+      sessionStorage.setItem('applicantData', JSON.stringify(profile));
+      showToast('Error', err.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+
+    // Navigate to dashboard after a short delay so toast is visible
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+  });
+
+  // ── Initialize ────────────────────────────────────────────────────────
+  updateProgress();
+</script>
+
+</body>
+</html>

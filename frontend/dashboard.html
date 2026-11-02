@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎓 Results Dashboard — MS Admissions Matrix Engine</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* ── Dashboard-specific styles ──────────────────────────────────── */
+    .page-main { padding: 1.75rem 0 4rem; }
+
+    /* Applicant summary */
+    .summary-card {
+      background: linear-gradient(135deg, var(--clr-surface) 0%, var(--clr-surface-2) 100%);
+      border: 1.5px solid var(--clr-gold);
+      box-shadow: var(--shadow-gold), var(--shadow-md);
+    }
+
+    .summary-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .applicant-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--clr-gold-dark), var(--clr-gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--clr-bg);
+      flex-shrink: 0;
+      box-shadow: var(--shadow-gold);
+    }
+
+    .applicant-info { flex: 1; }
+    .applicant-name { font-size: 1.2rem; font-weight: 800; color: var(--clr-white); }
+    .applicant-sub  { font-size: 0.82rem; color: var(--clr-text-muted); margin-top: 0.15rem; }
+
+    /* Controls bar */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .controls-left, .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* Sort select */
+    .sort-select {
+      padding: 0.4rem 0.85rem;
+      background: var(--clr-bg-alt);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-sm);
+      color: var(--clr-text);
+      font-size: 0.85rem;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .sort-select:focus { border-color: var(--clr-gold); }
+
+    /* Results section header */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .results-count {
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+    }
+
+    .results-count strong { color: var(--clr-gold); }
+
+    /* ── Program card internals ──────────────────────────────── */
+    .program-region-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.07);
+      color: var(--clr-text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .program-card-divider {
+      height: 1px;
+      background: var(--clr-border);
+      margin: 0.25rem 0;
+    }
+
+    .program-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.25rem;
+    }
+
+    /* ── Sidebar detail panel ────────────────────────────────── */
+    .sidebar-section { margin-bottom: 1.5rem; }
+    .sidebar-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--clr-text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .detail-score-hero {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.25rem;
+      background: var(--clr-bg-alt);
+      border-radius: var(--radius-md);
+      margin-bottom: 1.25rem;
+    }
+
+    .detail-score-info h3 { margin-bottom: 0.25rem; }
+    .detail-score-info p  { font-size: 0.82rem; }
+
+    /* ── No results state ────────────────────────────────────── */
+    .no-results {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--clr-text-muted);
+    }
+    .no-results .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    /* Animation stagger for cards */
+    .program-card:nth-child(1)  { animation-delay: 0.04s; }
+    .program-card:nth-child(2)  { animation-delay: 0.08s; }
+    .program-card:nth-child(3)  { animation-delay: 0.12s; }
+    .program-card:nth-child(4)  { animation-delay: 0.16s; }
+    .program-card:nth-child(5)  { animation-delay: 0.20s; }
+    .program-card:nth-child(6)  { animation-delay: 0.24s; }
+    .program-card:nth-child(7)  { animation-delay: 0.28s; }
+    .program-card:nth-child(8)  { animation-delay: 0.32s; }
+    .program-card:nth-child(9)  { animation-delay: 0.36s; }
+    .program-card:nth-child(10) { animation-delay: 0.40s; }
+    .program-card:nth-child(n+11) { animation-delay: 0.44s; }
+
+    /* Demo banner */
+    .demo-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(244, 197, 66, 0.1);
+      border: 1px solid rgba(244, 197, 66, 0.35);
+      border-radius: var(--radius-md);
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+    }
+    .demo-banner strong { color: var(--clr-gold); }
+
+    @media (max-width: 768px) {
+      .controls-bar { flex-direction: column; align-items: flex-start; }
+      .controls-right { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="container">
+    <div class="brand">
+      <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+      <div class="brand-subtitle">Compatibility Results Dashboard</div>
+    </div>
+    <div class="flex items-center gap-md">
+      <button class="btn btn-ghost" id="printBtn" title="Export to PDF">
+        🖨 Export PDF
+      </button>
+      <a href="index.html" class="btn btn-secondary btn-sm">← Back to Form</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── Sidebar overlay ───────────────────────────────────────────────── -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ── Detail Sidebar ───────────────────────────────────────────────── -->
+<aside class="detail-sidebar" id="detailSidebar" aria-label="Program details">
+  <div class="detail-sidebar-header">
+    <h3 id="sidebarTitle">Program Details</h3>
+    <button class="btn btn-ghost btn-sm" id="closeSidebar" aria-label="Close">✕</button>
+  </div>
+  <div id="sidebarContent"></div>
+</aside>
+
+<!-- ── Toast container ──────────────────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ── Main ─────────────────────────────────────────────────────────── -->
+<main class="page-main">
+  <div class="container">
+
+    <!-- Demo banner (shown when no real backend data) -->
+    <div class="demo-banner hidden" id="demoBanner">
+      🎭 <span><strong>Demo Mode</strong> — Showing sample results. Submit the form with a running backend for live scoring.</span>
+    </div>
+
+    <!-- Applicant Summary Card -->
+    <div class="card summary-card mb-md" id="summaryCard">
+      <div class="summary-header">
+        <div class="applicant-avatar" id="avatarInitials">?</div>
+        <div class="applicant-info">
+          <div class="applicant-name" id="applicantName">Loading…</div>
+          <div class="applicant-sub" id="applicantSub"></div>
+        </div>
+        <div class="flex items-center gap-sm flex-wrap">
+          <span class="tier-badge" id="overallTier" style="font-size:0.85rem;padding:0.4rem 1rem"></span>
+        </div>
+      </div>
+      <div class="stat-grid" id="statGrid"></div>
+    </div>
+
+    <!-- Region Tabs -->
+    <div id="regionTabsWrap" class="mb-md hidden">
+      <div class="tab-bar" id="regionTabBar" role="tablist"></div>
+    </div>
+
+    <!-- Controls bar -->
+    <div class="controls-bar">
+      <div class="controls-left">
+        <!-- Dual Score Mode Switcher -->
+        <div class="score-mode-toggle" id="scoreModeToggle" title="Toggle between Holistic Index and Pure Academic Compatibility">
+          <button type="button" class="score-mode-btn active" id="btnModeHolistic" data-mode="holistic">✨ Holistic Index</button>
+          <button type="button" class="score-mode-btn" id="btnModeAcademic" data-mode="academic">🎓 Academic Fit</button>
+        </div>
+
+        <span class="filter-bar">
+          <span class="filter-label">Filter:</span>
+          <label class="check-pill pill-safe">
+            <input type="checkbox" id="filterSafe" checked />
+            <label for="filterSafe">🟢 Safe</label>
+          </label>
+          <label class="check-pill pill-match">
+            <input type="checkbox" id="filterMatch" checked />
+            <label for="filterMatch">🟡 Match</label>
+          </label>
+          <label class="check-pill pill-reach">
+            <input type="checkbox" id="filterReach" checked />
+            <label for="filterReach">🟠 Reach</label>
+          </label>
+          <label class="check-pill pill-unlikely">
+            <input type="checkbox" id="filterUnlikely" checked />
+            <label for="filterUnlikely">🔴 Unlikely</label>
+          </label>
+        </span>
+      </div>
+      <div class="controls-right">
+        <select class="sort-select" id="sortSelect" aria-label="Sort programs">
+          <option value="score-desc">Score: High → Low</option>
+          <option value="score-asc">Score: Low → High</option>
+          <option value="name-asc">University A → Z</option>
+          <option value="name-desc">University Z → A</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results header -->
+    <div class="results-header">
+      <div>
+        <h2 id="resultsTitle">Program Compatibility Results</h2>
+        <p class="results-count" id="resultsCount"></p>
+      </div>
+    </div>
+
+    <!-- Tab panels (populated dynamically) -->
+    <div id="tabPanelsContainer"></div>
+
+  </div><!-- .container -->
+</main>
+
+<script type="module">
+  import {
+    cgpaToUS4pt, cgpaToJapanese4pt, cgpaToEctsGrade,
+    greToPercentile, jlptToLabel, buildScoreComponents,
+    computeResearchComposite
+  } from './js/normalizer.js';
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: 'ℹ️', error: '❌', success: '✅', warning: '⚠️' };
+    const container = $('#toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function getTier(score) {
+    if (score >= 80) return 'SAFE';
+    if (score >= 65) return 'MATCH';
+    if (score >= 50) return 'REACH';
+    return 'UNLIKELY';
+  }
+
+  function getTierEmoji(tier) {
+    return { SAFE: '🟢', MATCH: '🟡', REACH: '🟠', UNLIKELY: '🔴' }[tier] || '';
+  }
+
+  function getTierClass(tier) {
+    return { SAFE: 'safe', MATCH: 'match', REACH: 'reach', UNLIKELY: 'unlikely' }[tier] || '';
+  }
+
+  function getScoreColor(tier) {
+    return {
+      SAFE:     'var(--tier-safe)',
+      MATCH:    'var(--tier-match)',
+      REACH:    'var(--tier-reach)',
+      UNLIKELY: 'var(--tier-unlikely)',
+    }[tier] || 'var(--clr-gold)';
+  }
+
+  function getBarClass(val) {
+    if (val >= 75) return 'bar-good';
+    if (val >= 55) return 'bar-mid';
+    if (val >= 35) return 'bar-low';
+    return 'bar-bad';
+  }
+
+  function regionFlag(region) {
+    return { US: '🇺🇸', EU: '🇪🇺', JP: '🇯🇵' }[region] || '🌐';
+  }
+
+  function regionName(region) {
+    return { US: 'United States', EU: 'Europe', JP: 'Japan', ALL: 'All Regions' }[region] || region;
+  }
+
+  function initials(name = '') {
+    return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+  }
+
+  // ── MOCK DATA ─────────────────────────────────────────────────────────────
+  // Self-contained demo results — always present if backend not available.
+
+  const MOCK_RESULTS = [
+    {
+      programId: 'US-001', programName: 'MS Computer Science',
+      universityName: 'Stanford University', region: 'US', country: 'United States',
+      academicScore: 87, financialScore: 80, visaScore: 85, holisticScore: 85,
+      tuitionAnnualUsd: 62000, livingCostAnnualUsd: 26000, blockedAccountRequirementUsd: 88000,
+      postStudyVisaMonths: 36, visaProgramName: 'USA F-1 STEM OPT (36 Months)',
+      matchedScholarships: ['Knight-Hennessy Scholars Program', 'Departmental TA/RA Appointments'], scholarshipEligible: true,
+      financialSummary: 'Estimated attendance cost: $88,000/yr. Self-funding supplemented by Graduate Research Assistantships.',
+      visaSummary: 'USA: 36-Month STEM OPT extension with E-Verify employer; transitions to H-1B lottery.',
+      components: { gpaScore: 90, greQ: 88, greV: 78, lang: 85, research: 72 },
+      deficits: [],
+      recommendations: ['Strong research alignment with ML labs', 'Consider applying Early Decision'],
+    },
+    {
+      programId: 'US-002', programName: 'MS Artificial Intelligence',
+      universityName: 'Carnegie Mellon University', region: 'US', country: 'United States',
+      academicScore: 74, financialScore: 78, visaScore: 85, holisticScore: 77,
+      tuitionAnnualUsd: 59000, livingCostAnnualUsd: 22000, blockedAccountRequirementUsd: 81000,
+      postStudyVisaMonths: 36, visaProgramName: 'USA F-1 STEM OPT (36 Months)',
+      matchedScholarships: ['Graduate TA/RA Departmental Appointments'], scholarshipEligible: true,
+      financialSummary: 'Total attendance: $81,000/yr. Partial funding gap of $46k requires educational loan or assistantship.',
+      visaSummary: 'USA: 36-Month STEM OPT authorization.',
+      components: { gpaScore: 80, greQ: 92, greV: 75, lang: 80, research: 60 },
+      deficits: [
+        { field: 'Research Experience', gap: 'Only 1 publication; CMU AI expects 2+' },
+        { field: 'GRE Verbal', gap: 'Score 158 is below the 85th percentile target' },
+      ],
+      recommendations: ['Strengthen SOP with publication pipeline details', 'Retake GRE Verbal if possible'],
+    },
+    {
+      programId: 'US-003', programName: 'MS Data Science',
+      universityName: 'MIT CSAIL', region: 'US', country: 'United States',
+      academicScore: 62, financialScore: 75, visaScore: 85, holisticScore: 71,
+      tuitionAnnualUsd: 60000, livingCostAnnualUsd: 25000, blockedAccountRequirementUsd: 85000,
+      postStudyVisaMonths: 36, visaProgramName: 'USA F-1 STEM OPT (36 Months)',
+      matchedScholarships: ['MIT Presidential Fellowship'], scholarshipEligible: false,
+      financialSummary: 'Annual cost is $85,000/yr (Budget: $35,000). Funding gap requires competitive assistantship.',
+      visaSummary: 'USA: 36-Month STEM OPT with E-Verify employer.',
+      components: { gpaScore: 75, greQ: 94, greV: 68, lang: 78, research: 45 },
+      deficits: [
+        { field: 'CGPA', gap: 'Threshold is 9.0/10 for top-tier consideration' },
+        { field: 'Research', gap: 'No conference publications detected' },
+        { field: 'GRE Verbal', gap: 'MIT target is 163+' },
+      ],
+      recommendations: ['Focus on strong LoRs from research supervisors', 'Highlight data-intensive projects'],
+    },
+    {
+      programId: 'US-004', programName: 'MS ECE (ML Track)',
+      universityName: 'UC Berkeley', region: 'US', country: 'United States',
+      academicScore: 55, financialScore: 74, visaScore: 85, holisticScore: 67,
+      tuitionAnnualUsd: 58000, livingCostAnnualUsd: 25000, blockedAccountRequirementUsd: 83000,
+      postStudyVisaMonths: 36, visaProgramName: 'USA F-1 STEM OPT (36 Months)',
+      matchedScholarships: [], scholarshipEligible: false,
+      financialSummary: 'Annual cost $83,000/yr requires international student financing.',
+      visaSummary: 'USA: 36-Month STEM OPT work authorization.',
+      components: { gpaScore: 72, greQ: 85, greV: 65, lang: 75, research: 38 },
+      deficits: [
+        { field: 'CGPA', gap: 'Average admit GPA is 9.2/10' },
+        { field: 'TOEFL', gap: 'Score below 110 may trigger conditional admit' },
+        { field: 'Research', gap: 'Internship experience is below 6 months' },
+      ],
+      recommendations: ['Apply alongside stronger programs as a reach', 'Request waiver for TOEFL if native English'],
+    },
+    {
+      programId: 'US-005', programName: 'MS CS (Systems Track)',
+      universityName: 'University of Michigan', region: 'US', country: 'United States',
+      academicScore: 82, financialScore: 81, visaScore: 85, holisticScore: 82,
+      tuitionAnnualUsd: 52000, livingCostAnnualUsd: 20000, blockedAccountRequirementUsd: 72000,
+      postStudyVisaMonths: 36, visaProgramName: 'USA F-1 STEM OPT (36 Months)',
+      matchedScholarships: ['Departmental GSRA / GSI Appointments'], scholarshipEligible: true,
+      financialSummary: 'Annual tuition + living $72,000/yr. Top admitted MS students receive GSI positions.',
+      visaSummary: 'USA: 36-Month STEM OPT authorization.',
+      components: { gpaScore: 85, greQ: 89, greV: 76, lang: 82, research: 65 },
+      deficits: [],
+      recommendations: ['Good systems/OS coursework will strengthen application', 'Consider contacting potential advisors early'],
+    },
+    {
+      programId: 'EU-001', programName: 'MSc Computer Science',
+      universityName: 'ETH Zürich', region: 'EU', country: 'Switzerland',
+      academicScore: 78, financialScore: 86, visaScore: 80, holisticScore: 81,
+      tuitionAnnualUsd: 1600, livingCostAnnualUsd: 24000, blockedAccountRequirementUsd: 24000,
+      postStudyVisaMonths: 6, visaProgramName: 'Switzerland 6-Month Jobseeker Visa',
+      matchedScholarships: ['ETH Excellence Scholarship & Opportunity Programme (ESOP)'], scholarshipEligible: true,
+      financialSummary: 'Low tuition ($1,600/yr) offsets Zurich living costs ($24,000/yr). Fully within $35,000 budget.',
+      visaSummary: 'Switzerland: 6-Month Jobseeker Visa for graduates; non-EU work permit quotas apply.',
+      components: { gpaScore: 82, greQ: 80, greV: 70, lang: 88, research: 55, ects: 74 },
+      deficits: [
+        { field: 'ECTS Credits', gap: 'Only 160 ECTS in CS; ETH expects 180+' },
+      ],
+      recommendations: ['Excellent research profile for ETH labs', 'Submit motivation letter with specific professor names'],
+    },
+    {
+      programId: 'EU-002', programName: 'MSc Informatics (AI)',
+      universityName: 'TU Munich', region: 'EU', country: 'Germany',
+      academicScore: 86, financialScore: 94, visaScore: 92, holisticScore: 90,
+      tuitionAnnualUsd: 6500, livingCostAnnualUsd: 13000, blockedAccountRequirementUsd: 13000,
+      postStudyVisaMonths: 18, visaProgramName: 'Germany 18-Month Jobseeker Visa / EU Blue Card Pathway',
+      matchedScholarships: ['DAAD Master Studies Scholarship — €934/mo stipend + travel + health coverage'], scholarshipEligible: true,
+      financialSummary: 'Annual cost $19,500/yr is well within budget. High DAAD scholarship eligibility bridges costs.',
+      visaSummary: 'Germany: 18-month Job Seeker Visa with unrestricted work rights; eligible for EU Blue Card and PR in 21–27 months.',
+      components: { gpaScore: 88, greQ: 82, greV: 72, lang: 86, research: 68, ects: 82 },
+      deficits: [],
+      recommendations: ['Strong ECTS foundation aligns well with TUM', 'Moderate non-EU tuition (€6k) + DAAD makes it highly cost-effective'],
+    },
+    {
+      programId: 'EU-003', programName: 'MSc Machine Learning',
+      universityName: 'KTH Stockholm', region: 'EU', country: 'Sweden',
+      academicScore: 91, financialScore: 88, visaScore: 84, holisticScore: 89,
+      tuitionAnnualUsd: 16500, livingCostAnnualUsd: 12500, blockedAccountRequirementUsd: 11500,
+      postStudyVisaMonths: 12, visaProgramName: 'Sweden 12-Month Job Seeking Residence Permit',
+      matchedScholarships: ['KTH Scholarship (Tuition Fee Waiver)'], scholarshipEligible: true,
+      financialSummary: 'Total annual cost $29,000/yr is fully covered by applicant budget ($35,000/yr).',
+      visaSummary: 'Sweden: 12-Month Job Seeking Residence Permit with direct transition to work permits.',
+      components: { gpaScore: 92, greQ: 88, greV: 74, lang: 90, research: 78, ects: 88 },
+      deficits: [],
+      recommendations: ['Top match! Apply in the first round for scholarship consideration', 'Strong thesis background highly valued'],
+    },
+    {
+      programId: 'EU-004', programName: 'MSc Data Science',
+      universityName: 'University of Amsterdam', region: 'EU', country: 'Netherlands',
+      academicScore: 67, financialScore: 82, visaScore: 84, holisticScore: 75,
+      tuitionAnnualUsd: 23000, livingCostAnnualUsd: 15000, blockedAccountRequirementUsd: 14000,
+      postStudyVisaMonths: 12, visaProgramName: 'Netherlands Zoekjaar / 1-Year Orientation Year',
+      matchedScholarships: ['Amsterdam Merit Scholarship (AMS)'], scholarshipEligible: false,
+      financialSummary: 'Annual cost $38,000/yr with small $3,000/yr funding gap against $35,000 budget.',
+      visaSummary: 'Netherlands: 1-Year Zoekjaar permit for graduates of top universities worldwide.',
+      components: { gpaScore: 76, greQ: 74, greV: 66, lang: 80, research: 42, ects: 60 },
+      deficits: [
+        { field: 'ECTS', gap: 'Mathematics ECTS credits appear low for this program' },
+        { field: 'Research', gap: 'Publications strengthen application significantly' },
+      ],
+      recommendations: ['Supplement with strong academic references', 'Highlight data analysis projects in portfolio'],
+    },
+    {
+      programId: 'EU-005', programName: 'MSc AI',
+      universityName: 'University of Edinburgh', region: 'EU', country: 'UK',
+      academicScore: 45, financialScore: 65, visaScore: 84, holisticScore: 59,
+      tuitionAnnualUsd: 42000, livingCostAnnualUsd: 18000, blockedAccountRequirementUsd: 16000,
+      postStudyVisaMonths: 24, visaProgramName: 'UK Graduate Route (2-Year Unsponsored Work Visa)',
+      matchedScholarships: [], scholarshipEligible: false,
+      financialSummary: 'Annual cost $60,000/yr exceeds self-funded budget ($35,000/yr) by $25,000.',
+      visaSummary: 'UK: 2-Year Graduate Route unsponsored work authorization.',
+      components: { gpaScore: 55, greQ: 78, greV: 68, lang: 82, research: 30, ects: 48 },
+      deficits: [
+        { field: 'CGPA', gap: 'Edinburgh requires first-class equivalent (≥8.5/10)' },
+        { field: 'Research', gap: 'Limited research output for this competitive program' },
+        { field: 'ECTS', gap: 'Insufficient CS-specific ECTS credits' },
+        { field: 'budgetDeficit', gap: 'Annual budget shortfall of $25,000' },
+      ],
+      recommendations: ['Consider a research internship before applying', 'Look at taught MSc vs research MSc routes'],
+    },
+    {
+      programId: 'JP-001', programName: 'Graduate School of Informatics',
+      universityName: 'Kyoto University', region: 'JP', country: 'Japan',
+      academicScore: 72, financialScore: 92, visaScore: 82, holisticScore: 80,
+      tuitionAnnualUsd: 3600, livingCostAnnualUsd: 11000, blockedAccountRequirementUsd: 14000,
+      postStudyVisaMonths: 24, visaProgramName: 'Japan J-Find / Designated Activities + HSP Points',
+      matchedScholarships: ['MEXT Japanese Government Scholarship — Full tuition waiver + ¥144,000/mo stipend'], scholarshipEligible: true,
+      financialSummary: 'Ultra-low national tuition ($3,600/yr) + living ($11,000/yr) is 100% within budget. MEXT candidate.',
+      visaSummary: 'Japan: Up to 24 months designated activities for job seeking + 1–3 yr PR via Highly Skilled Professional points.',
+      components: { gpaScore: 78, greQ: 80, greV: 65, lang: 75, research: 58, jlpt: 40 },
+      deficits: [
+        { field: 'JLPT', gap: 'N2 or higher recommended for lab integration' },
+      ],
+      recommendations: ['Research interests well-aligned with Kyoto Informatics labs', 'Contact target lab professor before applying — essential in Japan'],
+    },
+    {
+      programId: 'JP-002', programName: 'Graduate School of Information Science',
+      universityName: 'University of Tokyo', region: 'JP', country: 'Japan',
+      academicScore: 58, financialScore: 92, visaScore: 82, holisticScore: 73,
+      tuitionAnnualUsd: 3600, livingCostAnnualUsd: 12000, blockedAccountRequirementUsd: 14000,
+      postStudyVisaMonths: 24, visaProgramName: 'Japan J-Find / Designated Activities (Up to 24 Months) + HSP Fast-Track',
+      matchedScholarships: ['MEXT Japanese Government Scholarship — Full tuition waiver + ¥144,000/mo stipend'], scholarshipEligible: true,
+      financialSummary: 'Low tuition ($3,600) + MEXT fellowship eligibility bridges all financial constraints.',
+      visaSummary: 'Japan: J-Find 2-year job seeking visa + fast-track Permanent Residency.',
+      components: { gpaScore: 70, greQ: 82, greV: 62, lang: 70, research: 48, jlpt: 20 },
+      deficits: [
+        { field: 'CGPA', gap: 'Todai typically admits students above 8.5/10' },
+        { field: 'JLPT', gap: 'N2 minimum strongly recommended; N1 preferred' },
+        { field: 'Research', gap: 'Publications in top venues expected for research track' },
+      ],
+      recommendations: ['English-track MSc programs available — consider GSII program', 'MEXT scholarship aligned — check eligibility'],
+    },
+    {
+      programId: 'JP-003', programName: 'Graduate School of Information Science & Technology',
+      universityName: 'Osaka University', region: 'JP', country: 'Japan',
+      academicScore: 80, financialScore: 94, visaScore: 82, holisticScore: 85,
+      tuitionAnnualUsd: 3600, livingCostAnnualUsd: 10500, blockedAccountRequirementUsd: 14000,
+      postStudyVisaMonths: 24, visaProgramName: 'Japan Designated Activities (Job Hunting) + HSP Points',
+      matchedScholarships: ['JASSO Honors Scholarship — ¥48,000/mo study stipend'], scholarshipEligible: true,
+      financialSummary: 'Annual attendance $14,100 is less than half of your budget ($35,000). Highly affordable.',
+      visaSummary: 'Japan: Designated activities job hunting authorization with strong corporate placements.',
+      components: { gpaScore: 82, greQ: 78, greV: 66, lang: 76, research: 62, jlpt: 60 },
+      deficits: [],
+      recommendations: ['N3 JLPT adds significant points here', 'Consider Osaka as a target application — good admit probability'],
+    },
+  ];
+
+  // ── Load data from sessionStorage ─────────────────────────────────────────
+
+  let scoreMode = 'holistic'; // 'holistic' | 'academic'
+
+  function adaptResult(r) {
+    const academicScore = Math.round(r.academicScore ?? r.compatibilityScore ?? r.overallScore ?? 0);
+    const financialScore = Math.round(r.financialScore ?? 75);
+    const visaScore = Math.round(r.visaScore ?? 85);
+    const holisticScore = r.holisticScore !== undefined
+      ? Math.round(r.holisticScore)
+      : Math.round(0.50 * academicScore + 0.30 * financialScore + 0.20 * visaScore);
+
+    const np = r.normalizedProfile || {};
+    const dr = r.deficitReport || {};
+    const fieldDeltas = dr.fieldDeltas || {};
+    const deficits = r.deficits || Object.entries(fieldDeltas).map(([k, v]) => ({ field: k, gap: v }));
+
+    let reg = r.region || 'US';
+    if (reg === 'US_CANADA') reg = 'US';
+    else if (reg === 'EUROPE') reg = 'EU';
+    else if (reg === 'JAPAN') reg = 'JP';
+
+    const tuition = r.tuitionAnnualUsd ?? (reg === 'JP' ? 3600 : reg === 'EU' ? 12000 : 55000);
+    const living = r.livingCostAnnualUsd ?? (reg === 'JP' ? 11000 : reg === 'EU' ? 14000 : 24000);
+    const netAnnualCost = tuition + living;
+    const userBudget = profile?.annualBudgetUsd ?? profile?.annualBudget ?? 35000;
+    const budgetGap = Math.max(0, netAnnualCost - userBudget);
+
+    return {
+      programId: r.programId,
+      programName: r.programName || 'Master of Science',
+      universityName: r.universityName || 'University',
+      region: reg,
+      country: r.country || (reg === 'US' ? 'USA' : reg === 'JP' ? 'Japan' : 'Europe'),
+      academicScore: academicScore,
+      financialScore: financialScore,
+      visaScore: visaScore,
+      holisticScore: holisticScore,
+      overallScore: scoreMode === 'holistic' ? holisticScore : academicScore,
+      compatibilityTier: r.compatibilityTier || getTier(academicScore),
+      holisticTier: r.holisticTier || getTier(holisticScore),
+      tuitionAnnualUsd: tuition,
+      livingCostAnnualUsd: living,
+      netAnnualCost: netAnnualCost,
+      blockedAccountRequirementUsd: r.blockedAccountRequirementUsd ?? (reg === 'JP' ? 14000 : reg === 'EU' ? 13000 : 80000),
+      postStudyVisaMonths: r.postStudyVisaMonths ?? (reg === 'US' ? 36 : reg === 'JP' ? 24 : 18),
+      visaProgramName: r.visaProgramName || (reg === 'US' ? 'USA F-1 STEM OPT (36 Months)' : reg === 'JP' ? 'Japan J-Find / Designated Activities' : 'EU Jobseeker Route'),
+      scholarshipEligible: r.scholarshipEligible ?? (r.matchedScholarships && r.matchedScholarships.length > 0),
+      matchedScholarships: r.matchedScholarships || [],
+      financialSummary: r.financialSummary || '',
+      visaSummary: r.visaSummary || '',
+      budgetGap: budgetGap,
+      components: r.components || {
+        gpaScore: Math.round((np.normalizedGpa || 0) * 100),
+        greQ:     Math.round((np.normalizedGreQuant || 0) * 100),
+        greV:     Math.round((np.normalizedGreVerbal || 0) * 100),
+        lang:     Math.round((np.normalizedLanguage || 0) * 100),
+        research: Math.round((np.normalizedResearch || 0) * 100),
+        ects:     np.normalizedEcts !== undefined ? Math.round(np.normalizedEcts * 100) : undefined,
+        jlpt:     reg === 'JP' ? Math.round((np.normalizedLanguage || 0) * 100) : undefined,
+      },
+      deficits: deficits,
+      recommendations: r.recommendations || dr.actionableRecommendations || [],
+    };
+  }
+
+  let profile   = null;
+  let results   = [];
+  let isDemo    = false;
+
+  try {
+    const raw = sessionStorage.getItem('scoringResults');
+    const pro = sessionStorage.getItem('applicantData') || sessionStorage.getItem('applicantProfile');
+    if (pro) profile = JSON.parse(pro);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        results = parsed.map(adaptResult);
+      }
+    }
+  } catch (e) { console.error('sessionStorage parse error', e); }
+
+  if (!results || results.length === 0) {
+    results = MOCK_RESULTS;
+    isDemo  = true;
+  }
+
+  if (!profile) {
+    // Fallback demo profile
+    profile = {
+      fullName: 'Demo Applicant', email: 'demo@example.com',
+      cgpa: 8.0, universityName: 'IIT Bombay', degree: 'B.Tech',
+      specialization: 'CS', graduationYear: 2024,
+      greVerbal: 158, greQuant: 165, greAW: 4.0,
+      toefl: 105, ielts: 7.5, jlptLevel: 'N3',
+      ectsCredits: 180, bachelorThesis: true,
+      researchScore: 60, internshipMonths: 6, publications: 1,
+      targetRegion: 'ALL',
+    };
+    isDemo = true;
+  }
+
+  // Show demo banner
+  if (isDemo) {
+    $('#demoBanner').classList.remove('hidden');
+  }
+
+  // ── Render Applicant Summary ───────────────────────────────────────────────
+
+  function renderSummary() {
+    $('#avatarInitials').textContent = initials(profile.fullName);
+    $('#applicantName').textContent  = profile.fullName || 'Applicant';
+    $('#applicantSub').textContent   = [
+      profile.degree, profile.specialization, profile.universityName, profile.graduationYear
+    ].filter(Boolean).join(' · ');
+
+    const bestHolistic = results.reduce((max, r) => (r.holisticScore || 0) > max ? r.holisticScore : max, 0);
+    const bestAcademic = results.reduce((max, r) => (r.academicScore || 0) > max ? r.academicScore : max, 0);
+    const currentBest  = scoreMode === 'holistic' ? bestHolistic : bestAcademic;
+    const bestTier     = getTier(currentBest);
+    const tierEl       = $('#overallTier');
+    tierEl.textContent = `${getTierEmoji(bestTier)} Best ${scoreMode === 'holistic' ? 'Holistic' : 'Academic'}: ${currentBest}%`;
+    tierEl.className   = `tier-badge tier-${getTierClass(bestTier)}`;
+
+    // Stats
+    const us4 = typeof cgpaToUS4pt === 'function' ? cgpaToUS4pt(profile.cgpa || 0) : 3.2;
+    const jp4 = typeof cgpaToJapanese4pt === 'function' ? cgpaToJapanese4pt(profile.cgpa || 0) : 3.0;
+    const eu  = typeof cgpaToEctsGrade === 'function' ? cgpaToEctsGrade(profile.cgpa || 0) : { letter: 'B' };
+
+    const budget = profile.annualBudgetUsd ?? profile.annualBudget ?? 35000;
+    const savings = profile.liquidSavingsUsd ?? profile.liquidSavings ?? 25000;
+
+    const stats = [
+      { label: 'CGPA / 10', val: (profile.cgpa || 0).toFixed(1) },
+      { label: 'US 4.0 GPA', val: us4.toFixed(2) },
+      { label: 'JP 4.0 GPA', val: jp4.toFixed(2) },
+      { label: 'EU Grade', val: eu.letter },
+      { label: 'Annual Budget', val: `$${Math.round(budget/1000)}k` },
+      { label: 'Liquid Escrow', val: `$${Math.round(savings/1000)}k` },
+      { label: 'Visa Priority', val: profile.postStudyWorkPriority || 'HIGH' },
+      { label: 'Programs', val: results.length },
+    ];
+
+    $('#statGrid').innerHTML = stats.map(s => `
+      <div class="stat-item">
+        <div class="stat-val">${s.val}</div>
+        <div class="stat-label">${s.label}</div>
+      </div>`).join('');
+  }
+
+  // ── Region detection ─────────────────────────────────────────────────────
+
+  const distinctRegions = [...new Set(results.map(r => r.region))].filter(Boolean);
+  const showTabs = distinctRegions.length > 1;
+  const regions = showTabs ? ['ALL', ...distinctRegions] : distinctRegions;
+
+  // ── Filtering & Sorting ──────────────────────────────────────────────────
+
+  let activeRegion = showTabs ? 'ALL' : (regions[0] || 'ALL');
+  let activeFilters = { SAFE: true, MATCH: true, REACH: true, UNLIKELY: true };
+  let activeSort = 'score-desc';
+  let selectedCardId = null;
+
+  function getFilteredSorted(regionFilter) {
+    let list = regionFilter === 'ALL' ? results : results.filter(r => r.region === regionFilter);
+    list = list.filter(r => activeFilters[getTier(r.overallScore)]);
+
+    switch (activeSort) {
+      case 'score-asc':  list.sort((a, b) => a.overallScore - b.overallScore); break;
+      case 'name-asc':   list.sort((a, b) => a.universityName.localeCompare(b.universityName)); break;
+      case 'name-desc':  list.sort((a, b) => b.universityName.localeCompare(a.universityName)); break;
+      default:           list.sort((a, b) => b.overallScore - a.overallScore);
+    }
+    return list;
+  }
+
+  // ── Bar chart HTML helper ─────────────────────────────────────────────────
+
+  function renderBarChart(components, region) {
+    const bars = [
+      { label: 'GPA',      val: components.gpaScore ?? 0 },
+      { label: 'GRE-Q',    val: components.greQ ?? 0 },
+      { label: 'GRE-V',    val: components.greV ?? 0 },
+      { label: 'Language', val: components.lang ?? 0 },
+      { label: 'Research', val: components.research ?? 0 },
+    ];
+    if (components.ects  !== null && components.ects  !== undefined) bars.push({ label: 'ECTS',  val: components.ects });
+    if (components.jlpt  !== null && components.jlpt  !== undefined) bars.push({ label: 'JLPT',  val: components.jlpt });
+
+    return `<div class="bar-chart">
+      ${bars.map(b => `
+        <div class="bar-item">
+          <span class="bar-label">${b.label}</span>
+          <div class="bar-track">
+            <div class="bar-fill ${getBarClass(b.val)}" data-width="${b.val}" style="width:0%"></div>
+          </div>
+          <span class="bar-val">${b.val}%</span>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  // Animate all bar fills
+  function animateBars(container = document) {
+    container.querySelectorAll('.bar-fill[data-width]').forEach(bar => {
+      const w = parseFloat(bar.dataset.width);
+      // Trigger reflow then animate
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { bar.style.width = `${w}%`; });
+      });
+    });
+  }
+
+  // ── Program card HTML ─────────────────────────────────────────────────────
+
+  function renderProgramCard(prog, idx) {
+    const displayScore = scoreMode === 'holistic' ? prog.holisticScore : prog.academicScore;
+    const tier         = getTier(displayScore);
+    const tierClass    = getTierClass(tier);
+    const emoji        = getTierEmoji(tier);
+    const color        = getScoreColor(tier);
+
+    const deficitHtml = prog.deficits && prog.deficits.length > 0
+      ? `<div>
+          <button class="collapsible-toggle" aria-expanded="false">
+            ⚠️ ${prog.deficits.length} gap${prog.deficits.length > 1 ? 's' : ''} found
+            <i class="chevron">▾</i>
+          </button>
+          <div class="collapsible-content" style="max-height:0;transition:max-height 0.3s ease">
+            <ul class="deficit-list">
+              ${prog.deficits.map(d => `
+                <li class="deficit-item">
+                  <span class="icon">⚠️</span>
+                  <span><strong>${d.field}:</strong> ${d.gap}</span>
+                </li>`).join('')}
+            </ul>
+          </div>
+        </div>`
+      : '<p class="text-sm text-success">✅ No significant gaps identified</p>';
+
+    const recHtml = prog.recommendations && prog.recommendations.length > 0
+      ? `<ul class="rec-list">
+          ${prog.recommendations.map(r => `
+            <li class="rec-item"><span>💡</span><span>${r}</span></li>`).join('')}
+        </ul>`
+      : '';
+
+    const budgetBadge = prog.budgetGap <= 0
+      ? '<span class="feasibility-badge badge-within-budget">🟢 Within Budget</span>'
+      : `<span class="feasibility-badge badge-budget-gap">🟡 $${Math.round(prog.budgetGap / 1000)}k Gap</span>`;
+
+    const schBadge = prog.scholarshipEligible
+      ? `<span class="feasibility-badge badge-scholarship">✨ ${prog.matchedScholarships?.[0]?.split('—')?.[0]?.trim() || 'Scholarship Match'}</span>`
+      : '';
+
+    const visaShort = prog.visaProgramName
+      ? prog.visaProgramName.replace(/\(.*?\)/g, '').trim()
+      : `${prog.postStudyVisaMonths || 24}m Visa`;
+
+    return `
+      <div class="program-card" data-id="${prog.programId}" data-score="${displayScore}" tabindex="0" role="button"
+           aria-label="${prog.programName} at ${prog.universityName} — ${displayScore}%">
+        <div class="program-card-header">
+          <!-- Score circle -->
+          <div class="score-circle score-${tierClass}" style="--score-pct:${displayScore};--score-color:${color}">
+            <div class="score-value">
+              ${displayScore}<span>/ 100</span>
+            </div>
+          </div>
+          <div class="program-meta">
+            <div class="program-name" title="${prog.programName}">${prog.programName}</div>
+            <div class="program-uni">${prog.universityName}</div>
+            <div class="program-country">
+              <span class="program-region-tag">${regionFlag(prog.region)} ${prog.country || regionName(prog.region)}</span>
+              <span class="program-region-tag">🛂 ${prog.postStudyVisaMonths || 24}m Visa</span>
+            </div>
+          </div>
+          <span class="tier-badge tier-${tierClass}" style="flex-shrink:0">${emoji} ${tier}</span>
+        </div>
+
+        <!-- Sub-score Tri-Metric Pill Row -->
+        <div class="subscores-row">
+          <span class="subscore-pill pill-academic" title="Academic Compatibility">🎓 Acad: ${prog.academicScore}%</span>
+          <span class="subscore-pill pill-financial" title="Financial Feasibility">💰 Fin: ${prog.financialScore}%</span>
+          <span class="subscore-pill pill-visa" title="Post-Study Visa Outlook">🛂 Visa: ${prog.visaScore}%</span>
+        </div>
+
+        <!-- Financial & Visa Badges -->
+        <div class="badge-row">
+          ${budgetBadge}
+          ${schBadge}
+          <span class="feasibility-badge badge-visa">🛂 ${visaShort}</span>
+        </div>
+
+        <div class="program-card-divider"></div>
+
+        <!-- Mini bar chart -->
+        ${renderBarChart(prog.components || {}, prog.region)}
+
+        <div class="program-card-divider"></div>
+
+        <!-- Deficit & Recs -->
+        ${deficitHtml}
+        ${recHtml}
+
+        <div class="program-actions">
+          <span class="text-xs text-muted">#${prog.programId}</span>
+          <button type="button" class="btn btn-ghost btn-sm btn-breakdown" data-action="detail" data-id="${prog.programId}">Full Breakdown →</button>
+        </div>
+      </div>`;
+  }
+
+  // ── Programs grid for a region ────────────────────────────────────────────
+
+  function renderRegionPanel(region) {
+    const list = getFilteredSorted(region);
+    if (list.length === 0) {
+      return `<div class="no-results">
+        <div class="icon">🔍</div>
+        <h3>No programs match the current filters</h3>
+        <p>Try unchecking some tier filters above.</p>
+      </div>`;
+    }
+    return `<div class="programs-grid">${list.map((p, i) => renderProgramCard(p, i)).join('')}</div>`;
+  }
+
+  // ── Update results count ──────────────────────────────────────────────────
+
+  function updateCount(region) {
+    const list = getFilteredSorted(region);
+    const total = region === 'ALL' ? results.length : results.filter(r => r.region === region).length;
+    $('#resultsCount').innerHTML = `Showing <strong>${list.length}</strong> of ${total} programs`;
+  }
+
+  // ── Main render ───────────────────────────────────────────────────────────
+
+  function renderAll() {
+    const container = $('#tabPanelsContainer');
+    container.innerHTML = '';
+
+    if (showTabs) {
+      // Tab bar
+      const tabBar = $('#regionTabBar');
+      tabBar.innerHTML = regions.map(r => `
+        <button class="tab-btn ${r === activeRegion ? 'active' : ''}"
+                role="tab" aria-selected="${r === activeRegion}" data-region="${r}">
+          ${regionFlag(r)} ${regionName(r)}
+        </button>`).join('');
+      $('#regionTabsWrap').classList.remove('hidden');
+
+      // Panels
+      regions.forEach(r => {
+        const panel = document.createElement('div');
+        panel.className = `tab-panel ${r === activeRegion ? 'active' : ''}`;
+        panel.dataset.region = r;
+        panel.id = `panel-${r}`;
+        panel.setAttribute('role', 'tabpanel');
+        panel.innerHTML = renderRegionPanel(r);
+        container.appendChild(panel);
+      });
+
+      updateCount(activeRegion);
+    } else {
+      // Single region — no tabs
+      const r = regions[0] || 'ALL';
+      const panel = document.createElement('div');
+      panel.className = 'tab-panel active';
+      panel.dataset.region = r;
+      panel.innerHTML = renderRegionPanel(r);
+      container.appendChild(panel);
+      updateCount(r);
+    }
+
+    // Animate bars
+    setTimeout(() => animateBars(), 80);
+  }
+
+  // ── Global click handler for breakdowns and cards ─────────────────────────
+
+  document.addEventListener('click', (e) => {
+    // 1. Breakdown button or any click inside it
+    const btn = e.target.closest('[data-action="detail"], .btn-breakdown');
+    if (btn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = btn.closest('.program-card');
+      const progId = btn.dataset.id || card?.dataset.id;
+      if (progId) openSidebar(progId);
+      return;
+    }
+
+    // 2. Collapsible toggles
+    const toggle = e.target.closest('.collapsible-toggle');
+    if (toggle) {
+      e.preventDefault();
+      e.stopPropagation();
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      const content  = toggle.nextElementSibling;
+      toggle.setAttribute('aria-expanded', !expanded);
+      content.style.maxHeight = expanded ? '0' : content.scrollHeight + 'px';
+      return;
+    }
+
+    // 3. Card click (when not clicking collapsible content)
+    if (e.target.closest('.collapsible-content')) return;
+    const card = e.target.closest('.program-card');
+    if (card && card.dataset.id) {
+      openSidebar(card.dataset.id);
+    }
+  });
+
+  // Keyboard accessibility
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('program-card')) {
+      openSidebar(e.target.dataset.id);
+    }
+  });
+
+  // ── Tab switching ─────────────────────────────────────────────────────────
+
+  document.addEventListener('click', (e) => {
+    const tabBtn = e.target.closest('.tab-btn');
+    if (!tabBtn) return;
+    activeRegion = tabBtn.dataset.region;
+    $$('.tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.region === activeRegion);
+      b.setAttribute('aria-selected', b.dataset.region === activeRegion);
+    });
+    $$('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.region === activeRegion));
+    updateCount(activeRegion);
+    setTimeout(() => animateBars(), 80);
+  });
+
+  // ── Filters & Sort ────────────────────────────────────────────────────────
+
+  ['filterSafe', 'filterMatch', 'filterReach', 'filterUnlikely'].forEach(id => {
+    $(`#${id}`).addEventListener('change', function () {
+      const key = id.replace('filter', '').toUpperCase();
+      activeFilters[key] = this.checked;
+      renderAll();
+    });
+  });
+
+  $('#sortSelect').addEventListener('change', function () {
+    activeSort = this.value;
+    renderAll();
+  });
+
+  // ── Score Mode Switcher ───────────────────────────────────────────────────
+
+  $('#scoreModeToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('.score-mode-btn');
+    if (!btn || btn.dataset.mode === scoreMode) return;
+
+    scoreMode = btn.dataset.mode;
+    $$('.score-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === scoreMode));
+
+    // Update overallScore for all results
+    results.forEach(r => {
+      r.overallScore = scoreMode === 'holistic' ? r.holisticScore : r.academicScore;
+    });
+
+    renderSummary();
+    renderAll();
+    showToast(
+      scoreMode === 'holistic' ? '✨ Holistic Index Active' : '🎓 Academic Fit Active',
+      scoreMode === 'holistic'
+        ? 'Scores blend Academic fit (50%), Financial feasibility (30%), and Post-study visa advantages (20%).'
+        : 'Scores reflect pure Academic admission compatibility.',
+      'info'
+    );
+  });
+
+  // ── Sidebar ───────────────────────────────────────────────────────────────
+
+  function openSidebar(programId) {
+    if (!programId) return;
+    const prog = results.find(r => String(r.programId) === String(programId));
+    if (!prog) {
+      console.warn('Program not found for ID:', programId);
+      return;
+    }
+
+    // Highlight selected card
+    $$('.program-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-id="${programId}"]`)?.classList.add('selected');
+    selectedCardId = programId;
+
+    const displayScore = scoreMode === 'holistic' ? prog.holisticScore : prog.academicScore;
+    const tier         = getTier(displayScore);
+    const tierClass    = getTierClass(tier);
+    const color        = getScoreColor(tier);
+
+    // Compute full components (use backend data if available, else compute)
+    const comp = prog.components || (typeof buildScoreComponents === 'function' ? buildScoreComponents(profile, prog.region) : {});
+
+    const defHtml = prog.deficits && prog.deficits.length > 0
+      ? `<ul class="deficit-list">${prog.deficits.map(d => `
+          <li class="deficit-item"><span class="icon">⚠️</span>
+            <span><strong>${d.field}:</strong> ${d.gap}</span></li>`).join('')}</ul>`
+      : '<p class="text-sm text-success">✅ No significant gaps identified</p>';
+
+    const recHtml = prog.recommendations && prog.recommendations.length > 0
+      ? `<ul class="rec-list">${prog.recommendations.map(r => `
+          <li class="rec-item"><span>💡</span><span>${r}</span></li>`).join('')}</ul>`
+      : '<p class="text-sm text-muted">No specific recommendations.</p>';
+
+    const cgpaVal = profile?.cgpa ?? profile?.cgpa10pt ?? 0;
+    const usGpa = typeof cgpaToUS4pt === 'function' ? cgpaToUS4pt(cgpaVal).toFixed(2) : (cgpaVal * 0.4).toFixed(2);
+    const jpGpa = typeof cgpaToJapanese4pt === 'function' ? cgpaToJapanese4pt(cgpaVal).toFixed(2) : (cgpaVal * 0.4).toFixed(2);
+    const euGrade = typeof cgpaToEctsGrade === 'function' ? (cgpaToEctsGrade(cgpaVal)?.letter || 'B') : 'B';
+
+    const userBudget = profile?.annualBudgetUsd ?? profile?.annualBudget ?? 35000;
+    const userSavings = profile?.liquidSavingsUsd ?? profile?.liquidSavings ?? 25000;
+    const budgetDiff = userBudget - prog.netAnnualCost;
+    const budgetDiffText = budgetDiff >= 0
+      ? `<span style="color:#5edb97">+$${budgetDiff.toLocaleString()} surplus</span>`
+      : `<span style="color:#ffaa54">-$${Math.abs(budgetDiff).toLocaleString()} gap</span>`;
+
+    const scholarshipsHtml = (prog.matchedScholarships && prog.matchedScholarships.length > 0)
+      ? prog.matchedScholarships.map(s => `<div class="scholarship-item-box">✨ <strong>${s}</strong></div>`).join('')
+      : '<p class="text-xs text-muted">No government scholarships pre-matched. Departmental assistantships (TA/RA) or loan financing available upon admission.</p>';
+
+    $('#sidebarTitle').textContent = prog.programName;
+    $('#sidebarContent').innerHTML = `
+      <!-- Score hero -->
+      <div class="detail-score-hero">
+        <div class="score-circle score-circle-lg score-${tierClass}"
+             style="--score-pct:${displayScore};--score-color:${color}">
+          <div class="score-value">${displayScore}<span>/ 100</span></div>
+        </div>
+        <div class="detail-score-info">
+          <h3>${prog.universityName}</h3>
+          <p>${prog.country || regionName(prog.region)} · ${regionFlag(prog.region)}</p>
+          <div class="mt-sm flex gap-sm items-center flex-wrap">
+            <span class="tier-badge tier-${tierClass}">${getTierEmoji(tier)} ${tier}</span>
+            <span class="text-xs text-muted">Holistic: <strong>${prog.holisticScore}%</strong> | Academic: <strong>${prog.academicScore}%</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tri-Metric Score Comparison Grid -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Overlay Score Metrics</div>
+        <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="stat-item" style="border-top:2px solid #8ee2b2">
+            <div class="stat-val" style="color:#8ee2b2">${prog.academicScore}%</div>
+            <div class="stat-label">🎓 Academic</div>
+          </div>
+          <div class="stat-item" style="border-top:2px solid #ffd666">
+            <div class="stat-val" style="color:#ffd666">${prog.financialScore}%</div>
+            <div class="stat-label">💰 Financial</div>
+          </div>
+          <div class="stat-item" style="border-top:2px solid #9bc5ff">
+            <div class="stat-val" style="color:#9bc5ff">${prog.visaScore}%</div>
+            <div class="stat-label">🛂 Visa Outlook</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost of Attendance & Blocked Account Breakdown -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Cost of Attendance &amp; Blocked Account</div>
+        <table class="cost-table">
+          <tr><td>Estimated Annual Tuition</td><td>$${(prog.tuitionAnnualUsd || 0).toLocaleString()}</td></tr>
+          <tr><td>Estimated Annual Living Costs</td><td>$${(prog.livingCostAnnualUsd || 0).toLocaleString()}</td></tr>
+          <tr class="highlight"><td>Total Annual Cost</td><td>$${(prog.netAnnualCost || 0).toLocaleString()}</td></tr>
+          <tr><td>Mandatory Blocked Account / Escrow</td><td>$${(prog.blockedAccountRequirementUsd || 0).toLocaleString()}</td></tr>
+          <tr><td>Your Declared Annual Budget</td><td>$${userBudget.toLocaleString()}</td></tr>
+          <tr><td>Annual Funding Balance</td><td>${budgetDiffText}</td></tr>
+        </table>
+        <p class="text-xs text-muted mt-sm">${prog.financialSummary || ''}</p>
+      </div>
+
+      <!-- Scholarship Matches -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Scholarships &amp; Fellowships</div>
+        ${scholarshipsHtml}
+      </div>
+
+      <!-- Post-Study Work Visa Roadmap -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Post-Study Work Visa Pathway</div>
+        <div class="visa-card-box">
+          <div style="font-weight:700;color:var(--clr-white);margin-bottom:0.25rem">
+            🛂 ${prog.visaProgramName || 'Standard Student Visa'} (${prog.postStudyVisaMonths || 24} Months)
+          </div>
+          <p class="text-xs text-muted" style="margin:0">${prog.visaSummary || ''}</p>
+        </div>
+      </div>
+
+      <!-- Full Academic Breakdown -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Academic Score Breakdown</div>
+        ${renderBarChart(comp, prog.region)}
+      </div>
+
+      <!-- Identified Gaps -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Identified Gaps</div>
+        ${defHtml}
+      </div>
+
+      <!-- Recommendations -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Actionable Recommendations</div>
+        ${recHtml}
+      </div>
+
+      <!-- GPA conversions -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Your GPA in Regional Context</div>
+        <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="stat-item">
+            <div class="stat-val">${usGpa}</div>
+            <div class="stat-label">🇺🇸 US 4.0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val">${jpGpa}</div>
+            <div class="stat-label">🇯🇵 JP 4.0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val">${euGrade}</div>
+            <div class="stat-label">🇪🇺 ECTS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Program ID -->
+      <p class="text-xs text-muted" style="margin-top:1rem">Program ID: #${prog.programId}</p>
+    `;
+
+    $('#detailSidebar').classList.add('open');
+    $('#sidebarOverlay').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => animateBars($('#sidebarContent')), 120);
+  }
+
+  function closeSidebar() {
+    $('#detailSidebar').classList.remove('open');
+    $('#sidebarOverlay').classList.remove('visible');
+    document.body.style.overflow = '';
+    $$('.program-card').forEach(c => c.classList.remove('selected'));
+    selectedCardId = null;
+  }
+
+  $('#closeSidebar').addEventListener('click', closeSidebar);
+  $('#sidebarOverlay').addEventListener('click', closeSidebar);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
+
+  // ── Print / PDF export ────────────────────────────────────────────────────
+
+  $('#printBtn').addEventListener('click', () => {
+    closeSidebar();
+    setTimeout(() => window.print(), 300);
+  });
+
+  // ── Initialize ────────────────────────────────────────────────────────────
+
+  renderSummary();
+  renderAll();
+
+  if (isDemo) {
+    showToast('Demo Mode', 'Showing sample data. Submit the form with backend running for live results.', 'info');
+  }
+</script>
+
+</body>
+</html>
