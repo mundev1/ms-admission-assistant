@@ -35,9 +35,14 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (frameworkRepo.count() > 0 && programRepo.count() > 0) {
+        if (frameworkRepo.count() > 0 && programRepo.count() >= 30) {
             LOG.info("Database already seeded with " + programRepo.count() + " programs. Skipping initialization.");
             return;
+        }
+
+        if (programRepo.count() > 0 && programRepo.count() < 30) {
+            LOG.info("Refreshing database with expanded global university programs (Spain, Portugal, Italy, France, Ireland, Australia, etc.)...");
+            programRepo.deleteAll();
         }
 
         LOG.info("Seeding admissions frameworks, regional weights, and university programs...");
@@ -145,7 +150,16 @@ public class DataInitializer implements CommandLineRunner {
                 .postStudyVisaMonths(36).visaProgramName("Canada PGWP (36 Months Open Work Permit)")
                 .scholarshipTypes("International Master's Award of Excellence (IMAE)").build(),
 
-            // Europe
+            // Australia
+            UniversityProgram.builder().universityName("University of Melbourne").programName("Master of Computer Science")
+                .country("Australia").frameworkId(1).region("US_CANADA").specialization("CS")
+                .thresholdGpa(3.3).thresholdGreV(152).thresholdGreQ(158).thresholdGreAw(3.5)
+                .thresholdToefl(85).thresholdIelts(6.5).acceptanceRate(0.24).avgAcceptedGpa(3.45)
+                .tuitionAnnualUsd(32000.0).livingCostAnnualUsd(18000.0).blockedAccountRequirementUsd(16000.0)
+                .postStudyVisaMonths(36).visaProgramName("Australia Subclass 485 Temporary Graduate Visa (3 Years)")
+                .scholarshipTypes("Melbourne International Graduate Scholarship, Australia Awards").build(),
+
+            // Europe - Germany
             UniversityProgram.builder().universityName("TU Munich").programName("MSc Informatics (AI)")
                 .country("Germany").frameworkId(2).region("EUROPE").specialization("AI/ML")
                 .thresholdGpa(3.3).thresholdIelts(6.5).thresholdEctsCs(90).thesisRequired(true)
@@ -154,6 +168,23 @@ public class DataInitializer implements CommandLineRunner {
                 .postStudyVisaMonths(18).visaProgramName("Germany 18-Month Jobseeker Visa / EU Blue Card Pathway")
                 .scholarshipTypes("DAAD Master Studies Scholarship, Deutschlandstipendium").build(),
 
+            UniversityProgram.builder().universityName("RWTH Aachen University").programName("MSc Computer Science")
+                .country("Germany").frameworkId(2).region("EUROPE").specialization("CS")
+                .thresholdGpa(3.2).thresholdIelts(6.5).thresholdEctsCs(85).thesisRequired(true)
+                .acceptanceRate(0.19).avgAcceptedGpa(3.30)
+                .tuitionAnnualUsd(0.0).livingCostAnnualUsd(11500.0).blockedAccountRequirementUsd(13000.0)
+                .postStudyVisaMonths(18).visaProgramName("Germany 18-Month Jobseeker Visa / EU Blue Card Pathway")
+                .scholarshipTypes("DAAD Master Studies Scholarship, Deutschlandstipendium, RWTH Bildungsfonds").build(),
+
+            UniversityProgram.builder().universityName("TU Berlin").programName("MSc Computer Science")
+                .country("Germany").frameworkId(2).region("EUROPE").specialization("CS")
+                .thresholdGpa(3.0).thresholdIelts(6.5).thresholdEctsCs(80).thesisRequired(true)
+                .acceptanceRate(0.22).avgAcceptedGpa(3.25)
+                .tuitionAnnualUsd(0.0).livingCostAnnualUsd(12500.0).blockedAccountRequirementUsd(13000.0)
+                .postStudyVisaMonths(18).visaProgramName("Germany 18-Month Jobseeker Visa / EU Blue Card Pathway")
+                .scholarshipTypes("DAAD Master Studies Scholarship, Deutschlandstipendium").build(),
+
+            // Europe - Switzerland
             UniversityProgram.builder().universityName("ETH Zurich").programName("MSc Computer Science")
                 .country("Switzerland").frameworkId(2).region("EUROPE").specialization("CS")
                 .thresholdGpa(3.7).thresholdIelts(7.0).thresholdEctsCs(120).thesisRequired(true)
@@ -162,6 +193,83 @@ public class DataInitializer implements CommandLineRunner {
                 .postStudyVisaMonths(6).visaProgramName("Switzerland 6-Month Jobseeker Visa")
                 .scholarshipTypes("ETH Excellence Scholarship & Opportunity Programme (ESOP)").build(),
 
+            UniversityProgram.builder().universityName("EPFL").programName("MSc Computer Science")
+                .country("Switzerland").frameworkId(2).region("EUROPE").specialization("CS/AI")
+                .thresholdGpa(3.6).thresholdIelts(7.0).thresholdEctsCs(110).thesisRequired(true)
+                .acceptanceRate(0.10).avgAcceptedGpa(3.70)
+                .tuitionAnnualUsd(1600.0).livingCostAnnualUsd(22000.0).blockedAccountRequirementUsd(24000.0)
+                .postStudyVisaMonths(6).visaProgramName("Switzerland 6-Month Jobseeker Visa")
+                .scholarshipTypes("EPFL Master Excellence Fellowship").build(),
+
+            // Europe - Spain (Top Technical Universities)
+            UniversityProgram.builder().universityName("UPC BarcelonaTech").programName("MSc in Artificial Intelligence")
+                .country("Spain").frameworkId(2).region("EUROPE").specialization("AI/ML")
+                .thresholdGpa(3.0).thresholdIelts(6.5).thresholdEctsCs(80).thesisRequired(false)
+                .acceptanceRate(0.26).avgAcceptedGpa(3.20)
+                .tuitionAnnualUsd(4200.0).livingCostAnnualUsd(11000.0).blockedAccountRequirementUsd(7500.0)
+                .postStudyVisaMonths(12).visaProgramName("Spain 12-Month Job Search Visa (Búsqueda de Empleo) / EU Blue Card")
+                .scholarshipTypes("UPC Erasmus+ Mundus Grant, Catalonia Beatriu de Pinós, Spanish Ministry Grants").build(),
+
+            UniversityProgram.builder().universityName("Universidad Politécnica de Madrid").programName("MSc in Artificial Intelligence")
+                .country("Spain").frameworkId(2).region("EUROPE").specialization("AI/ML")
+                .thresholdGpa(2.9).thresholdIelts(6.0).thresholdEctsCs(75).thesisRequired(false)
+                .acceptanceRate(0.30).avgAcceptedGpa(3.10)
+                .tuitionAnnualUsd(4800.0).livingCostAnnualUsd(11500.0).blockedAccountRequirementUsd(7500.0)
+                .postStudyVisaMonths(12).visaProgramName("Spain 12-Month Job Search Visa / EU Blue Card")
+                .scholarshipTypes("UPM International Mobility Grants, Spanish MAEC AECID Scholarships").build(),
+
+            UniversityProgram.builder().universityName("Carlos III University of Madrid").programName("MSc Computer Science & Technology")
+                .country("Spain").frameworkId(2).region("EUROPE").specialization("CS")
+                .thresholdGpa(3.0).thresholdIelts(6.5).thresholdEctsCs(80).thesisRequired(false)
+                .acceptanceRate(0.28).avgAcceptedGpa(3.15)
+                .tuitionAnnualUsd(6000.0).livingCostAnnualUsd(11000.0).blockedAccountRequirementUsd(7500.0)
+                .postStudyVisaMonths(12).visaProgramName("Spain 12-Month Job Search Visa / EU Blue Card")
+                .scholarshipTypes("UC3M Master Tuition Grants, Ibercaja Academic Excellence").build(),
+
+            // Europe - Portugal (Leading Engineering Hubs)
+            UniversityProgram.builder().universityName("Instituto Superior Técnico").programName("MSc Computer Science and Engineering")
+                .country("Portugal").frameworkId(2).region("EUROPE").specialization("CS/AI")
+                .thresholdGpa(3.0).thresholdIelts(6.5).thresholdEctsCs(80).thesisRequired(false)
+                .acceptanceRate(0.28).avgAcceptedGpa(3.20)
+                .tuitionAnnualUsd(4000.0).livingCostAnnualUsd(9500.0).blockedAccountRequirementUsd(10000.0)
+                .postStudyVisaMonths(12).visaProgramName("Portugal 12-Month Post-Study Job Seeker Visa / D4 Residence Permit")
+                .scholarshipTypes("FCT Master Fellowships (€990/mo), University of Lisbon International Merit Grant").build(),
+
+            UniversityProgram.builder().universityName("University of Porto").programName("MSc in Artificial Intelligence")
+                .country("Portugal").frameworkId(2).region("EUROPE").specialization("AI/ML")
+                .thresholdGpa(2.8).thresholdIelts(6.0).thresholdEctsCs(75).thesisRequired(false)
+                .acceptanceRate(0.32).avgAcceptedGpa(3.05)
+                .tuitionAnnualUsd(4500.0).livingCostAnnualUsd(8500.0).blockedAccountRequirementUsd(10000.0)
+                .postStudyVisaMonths(12).visaProgramName("Portugal 12-Month Post-Study Job Seeker Visa / D4 Residence Permit")
+                .scholarshipTypes("FEUP Merit Scholarship, Santander International Mobility Grants").build(),
+
+            // Europe - Italy & France
+            UniversityProgram.builder().universityName("Politecnico di Milano").programName("MSc Computer Science and Engineering")
+                .country("Italy").frameworkId(2).region("EUROPE").specialization("CS")
+                .thresholdGpa(3.2).thresholdIelts(6.5).thresholdEctsCs(85).thesisRequired(false)
+                .acceptanceRate(0.20).avgAcceptedGpa(3.35)
+                .tuitionAnnualUsd(3900.0).livingCostAnnualUsd(12500.0).blockedAccountRequirementUsd(6500.0)
+                .postStudyVisaMonths(12).visaProgramName("Italy 12-Month Permesso di Soggiorno per Ricerca Lavoro / EU Blue Card")
+                .scholarshipTypes("DSU Regional Scholarship (Full Tuition Waiver + €7,200/yr), PoliMi Platinum/Gold Merit Award").build(),
+
+            UniversityProgram.builder().universityName("IP Paris").programName("MSc Computer Science - Data & AI")
+                .country("France").frameworkId(2).region("EUROPE").specialization("AI/ML")
+                .thresholdGpa(3.4).thresholdIelts(6.5).thresholdEctsCs(90).thesisRequired(true)
+                .acceptanceRate(0.16).avgAcceptedGpa(3.50)
+                .tuitionAnnualUsd(8000.0).livingCostAnnualUsd(14000.0).blockedAccountRequirementUsd(7500.0)
+                .postStudyVisaMonths(24).visaProgramName("France 24-Month RECE / APS Visa + 2-Yr Fast-Track Naturalization")
+                .scholarshipTypes("Eiffel Excellence Scholarship (€1,181/mo), IP Paris Master Fellowships").build(),
+
+            // Europe - Ireland
+            UniversityProgram.builder().universityName("Trinity College Dublin").programName("MSc Computer Science (Intelligent Systems)")
+                .country("Ireland").frameworkId(2).region("EUROPE").specialization("AI/ML")
+                .thresholdGpa(3.3).thresholdIelts(6.5).thresholdEctsCs(80).thesisRequired(false)
+                .acceptanceRate(0.22).avgAcceptedGpa(3.40)
+                .tuitionAnnualUsd(26000.0).livingCostAnnualUsd(16000.0).blockedAccountRequirementUsd(11000.0)
+                .postStudyVisaMonths(24).visaProgramName("Ireland 24-Month Stamp 1G Third Level Graduate Scheme (Dublin Tech Hub)")
+                .scholarshipTypes("Government of Ireland International Education Scholarship (GOI-IES), Trinity Global Excellence Award").build(),
+
+            // Europe - Netherlands, Sweden, UK
             UniversityProgram.builder().universityName("KTH Stockholm").programName("MSc Machine Learning")
                 .country("Sweden").frameworkId(2).region("EUROPE").specialization("AI/ML")
                 .thresholdGpa(3.2).thresholdIelts(6.5).thresholdEctsCs(90).thesisRequired(false)
@@ -193,6 +301,14 @@ public class DataInitializer implements CommandLineRunner {
                 .tuitionAnnualUsd(42000.0).livingCostAnnualUsd(18000.0).blockedAccountRequirementUsd(16000.0)
                 .postStudyVisaMonths(24).visaProgramName("UK Graduate Route (2-Year Unsponsored Work Visa)")
                 .scholarshipTypes("Edinburgh Global Research Scholarship, Chevening Scholarship").build(),
+
+            UniversityProgram.builder().universityName("Imperial College London").programName("MSc Advanced Computing")
+                .country("UK").frameworkId(2).region("EUROPE").specialization("CS/AI")
+                .thresholdGpa(3.7).thresholdIelts(7.0).thresholdEctsCs(100).thesisRequired(true)
+                .acceptanceRate(0.11).avgAcceptedGpa(3.80)
+                .tuitionAnnualUsd(48000.0).livingCostAnnualUsd(22000.0).blockedAccountRequirementUsd(18000.0)
+                .postStudyVisaMonths(24).visaProgramName("UK Graduate Route (2-Year Unsponsored Work Visa)")
+                .scholarshipTypes("Imperial President's Scholarship, Chevening Scholarship").build(),
 
             // Japan
             UniversityProgram.builder().universityName("University of Tokyo").programName("Graduate School of Information Science")
@@ -233,7 +349,15 @@ public class DataInitializer implements CommandLineRunner {
                 .acceptanceRate(0.35).avgAcceptedGpa(2.80)
                 .tuitionAnnualUsd(3600.0).livingCostAnnualUsd(9000.0).blockedAccountRequirementUsd(14000.0)
                 .postStudyVisaMonths(24).visaProgramName("Japan Designated Activities (Job Hunting) + HSP Points")
-                .scholarshipTypes("MEXT Japanese Government Scholarship, JASSO Honors, NAIST Foundation").build()
+                .scholarshipTypes("MEXT Japanese Government Scholarship, JASSO Honors, NAIST Foundation").build(),
+
+            UniversityProgram.builder().universityName("Tokyo Institute of Technology").programName("Graduate Major in CS & AI")
+                .country("Japan").frameworkId(3).region("JAPAN").specialization("CS/AI")
+                .thresholdGpa(3.1).thresholdJlpt("N2").thresholdToefl(75).thesisRequired(true)
+                .acceptanceRate(0.26).avgAcceptedGpa(3.25)
+                .tuitionAnnualUsd(3600.0).livingCostAnnualUsd(11500.0).blockedAccountRequirementUsd(14000.0)
+                .postStudyVisaMonths(24).visaProgramName("Japan J-Find / Designated Activities + HSP Points")
+                .scholarshipTypes("MEXT Japanese Government Scholarship, Tokyo Tech Tsubame Scholarship").build()
         );
 
         programRepo.saveAll(programs);

@@ -29,10 +29,14 @@ class FacultyAlignmentServiceTest {
         boolean hasTodai = all.stream().anyMatch(f -> f.getUniversityName().contains("Tokyo"));
         boolean hasMit = all.stream().anyMatch(f -> f.getUniversityName().equals("MIT"));
         boolean hasTum = all.stream().anyMatch(f -> f.getUniversityName().contains("Munich"));
+        boolean hasSpain = all.stream().anyMatch(f -> f.getCountry().equalsIgnoreCase("Spain"));
+        boolean hasPortugal = all.stream().anyMatch(f -> f.getCountry().equalsIgnoreCase("Portugal"));
 
         assertTrue(hasTodai, "Must contain University of Tokyo faculty");
         assertTrue(hasMit, "Must contain MIT faculty");
         assertTrue(hasTum, "Must contain TU Munich faculty");
+        assertTrue(hasSpain, "Must contain Spanish faculty (UPC/UPM)");
+        assertTrue(hasPortugal, "Must contain Portuguese faculty (IST/Porto)");
     }
 
     @Test

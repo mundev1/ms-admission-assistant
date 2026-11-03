@@ -153,7 +153,51 @@ public class FinancialVisaEvaluator {
             }
         }
 
-        // 3. US Fulbright Foreign Student Program
+        // 3. Spanish & Portuguese Scholarships
+        if (country.contains("spain")) {
+            if (cgpa >= 7.8) {
+                matches.add("Spanish MAEC / Erasmus+ Master Mobility Grant — Tuition fee waiver + monthly allowance");
+                maxCoverage = Math.max(maxCoverage, 0.75);
+            }
+        }
+        if (country.contains("portugal")) {
+            if (cgpa >= 8.0) {
+                matches.add("FCT Master Research Fellowship — Full tuition remission + €990/mo living stipend");
+                maxCoverage = Math.max(maxCoverage, 0.85);
+            }
+        }
+
+        // 4. Italian DSU Regional Scholarship (Diritto allo Studio Universitario)
+        if (country.contains("italy")) {
+            matches.add("DSU Regional Scholarship — 100% Tuition Waiver + Free Canteen + up to €7,200/yr Cash Stipend");
+            maxCoverage = Math.max(maxCoverage, 0.90);
+        }
+
+        // 5. French Eiffel Excellence Scholarship
+        if (country.contains("france")) {
+            if (cgpa >= 8.5 && (research >= 70.0 || thesis)) {
+                matches.add("Eiffel Excellence Scholarship (Campus France) — €1,181/mo living allowance + return flight");
+                maxCoverage = Math.max(maxCoverage, 0.90);
+            }
+        }
+
+        // 6. Irish Government Scholarship (GOI-IES)
+        if (country.contains("ireland")) {
+            if (cgpa >= 8.5) {
+                matches.add("Government of Ireland International Education Scholarship (GOI-IES) — Full tuition waiver + €10,000 stipend");
+                maxCoverage = Math.max(maxCoverage, 0.85);
+            }
+        }
+
+        // 7. Australian Graduate Scholarships
+        if (country.contains("australia")) {
+            if (cgpa >= 8.4) {
+                matches.add("Melbourne International Graduate Scholarship — 50% to 100% fee remission grant");
+                maxCoverage = Math.max(maxCoverage, 0.75);
+            }
+        }
+
+        // 8. US Fulbright Foreign Student Program
         if ("US_CANADA".equals(region) && country.contains("usa")) {
             if (cgpa >= 8.8 && greQ >= 165 && (toefl >= 100 || ielts >= 7.5)) {
                 matches.add("Fulbright Foreign Student Program — Comprehensive tuition grant + monthly stipend");
@@ -161,7 +205,7 @@ public class FinancialVisaEvaluator {
             }
         }
 
-        // 4. Departmental Graduate Teaching / Research Assistantship (TA / RA)
+        // 9. Departmental Graduate Teaching / Research Assistantship (TA / RA)
         if (greQ >= 164 && cgpa >= 8.2 && (thesis || research >= 70.0)) {
             matches.add("Graduate Teaching/Research Assistantship (TA/RA) — Tuition remission + departmental salary");
             maxCoverage = Math.max(maxCoverage, 0.80);
@@ -183,8 +227,26 @@ public class FinancialVisaEvaluator {
         } else if (country.contains("germany")) {
             // Germany: 18-month job seeker visa with unrestricted work authorization + 21-27 month EU Blue Card to PR
             return 92.0;
+        } else if (country.contains("australia")) {
+            // Australia: 3-year Subclass 485 Temporary Graduate Visa
+            return 90.0;
+        } else if (country.contains("france")) {
+            // France: 24-month RECE/APS + accelerated 2-year naturalization for Master's holders
+            return 89.0;
+        } else if (country.contains("spain")) {
+            // Spain: 12-month job seeker visa (búsqueda de empleo) -> EU Blue Card or work permit
+            return 88.0;
+        } else if (country.contains("portugal")) {
+            // Portugal: 12-month post-study visa -> D4 Residence Permit + Europe's fastest 5-year citizenship
+            return 88.0;
+        } else if (country.contains("ireland")) {
+            // Ireland: 24-month Stamp 1G Stay Back visa in Dublin tech hub
+            return 87.0;
         } else if (country.contains("usa") || country.contains("united states")) {
             // US: 36-month STEM OPT (12 mos + 24 mos extension), tied to E-Verify employer, H-1B cap subject
+            return 85.0;
+        } else if (country.contains("italy")) {
+            // Italy: 12-month Permesso di Soggiorno per Ricerca Lavoro
             return 85.0;
         } else if (country.contains("japan") || "JAPAN".equals(region)) {
             // Japan: J-Find 2-year job seeker visa / Highly Skilled Professional (HSP) points system (PR in 1-3 years)
@@ -208,6 +270,18 @@ public class FinancialVisaEvaluator {
             return "Canada PGWP: Up to 36 months open work permit with direct Express Entry/PNP permanent residency pathways.";
         } else if (country.contains("germany")) {
             return "Germany: 18-month Job Seeker Visa with unrestricted work rights; eligible for EU Blue Card and PR in 21–27 months.";
+        } else if (country.contains("spain")) {
+            return "Spain: 12-Month Job Search Visa (Autorización de búsqueda de empleo) with transition to EU Blue Card / Work Permit.";
+        } else if (country.contains("portugal")) {
+            return "Portugal: 12-Month Post-Study Job Seeker Visa / D4 Residence Permit; fastest 5-year pathway to EU citizenship.";
+        } else if (country.contains("italy")) {
+            return "Italy: 12-Month Permesso di Soggiorno per Ricerca Lavoro (Job Search Permit) for master's graduates.";
+        } else if (country.contains("france")) {
+            return "France: 24-Month RECE / APS Visa with accelerated 2-year residency pathway to French naturalization.";
+        } else if (country.contains("ireland")) {
+            return "Ireland: 24-Month Stamp 1G Stay Back Option for Master's graduates in Dublin's tech ecosystem.";
+        } else if (country.contains("australia")) {
+            return "Australia: Subclass 485 Temporary Graduate Visa granting 2 to 3 years full post-study work authorization.";
         } else if (country.contains("usa") || country.contains("united states")) {
             return "USA: 36-Month STEM OPT extension (12+24 mos) with E-Verify employer; transitions to H-1B lottery.";
         } else if (country.contains("japan")) {

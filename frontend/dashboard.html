@@ -323,10 +323,16 @@
         <div class="flex items-center gap-md flex-wrap">
           <span style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);letter-spacing:0.5px">DESTINATION:</span>
           <div class="country-pills" id="countryPills">
-            <button type="button" class="country-pill active" data-country="Germany">🇩🇪 Germany / Europe</button>
+            <button type="button" class="country-pill active" data-country="Germany">🇩🇪 Germany</button>
+            <button type="button" class="country-pill" data-country="Spain">🇪🇸 Spain</button>
+            <button type="button" class="country-pill" data-country="Portugal">🇵🇹 Portugal</button>
             <button type="button" class="country-pill" data-country="USA">🇺🇸 USA</button>
             <button type="button" class="country-pill" data-country="Japan">🇯🇵 Japan</button>
             <button type="button" class="country-pill" data-country="Canada">🇨🇦 Canada</button>
+            <button type="button" class="country-pill" data-country="Italy">🇮🇹 Italy</button>
+            <button type="button" class="country-pill" data-country="France">🇫🇷 France</button>
+            <button type="button" class="country-pill" data-country="Ireland">🇮🇪 Ireland</button>
+            <button type="button" class="country-pill" data-country="Australia">🇦🇺 Australia</button>
           </div>
         </div>
 
@@ -392,6 +398,14 @@
               <option value="CMU">🇺🇸 Carnegie Mellon University (CMU)</option>
               <option value="TU Munich">🇩🇪 TU Munich (TUM)</option>
               <option value="ETH Zurich">🇨🇭 ETH Zurich</option>
+              <option value="UPC BarcelonaTech">🇪🇸 UPC BarcelonaTech (Spain)</option>
+              <option value="Universidad Politécnica de Madrid">🇪🇸 UPM Madrid (Spain)</option>
+              <option value="Instituto Superior Técnico">🇵🇹 IST Lisbon (Portugal)</option>
+              <option value="University of Porto">🇵🇹 University of Porto (Portugal)</option>
+              <option value="Politecnico di Milano">🇮🇹 Politecnico di Milano (Italy)</option>
+              <option value="IP Paris">🇫🇷 IP Paris / Télécom Paris (France)</option>
+              <option value="Trinity College Dublin">🇮🇪 Trinity College Dublin (Ireland)</option>
+              <option value="University of Melbourne">🇦🇺 University of Melbourne (Australia)</option>
             </select>
           </div>
 
@@ -498,6 +512,28 @@
     if (val >= 55) return 'bar-mid';
     if (val >= 35) return 'bar-low';
     return 'bar-bad';
+  }
+
+  function countryFlag(country, region) {
+    if (!country && !region) return '🌐';
+    const c = (country || '').toLowerCase();
+    if (c.includes('spain')) return '🇪🇸';
+    if (c.includes('portugal')) return '🇵🇹';
+    if (c.includes('italy')) return '🇮🇹';
+    if (c.includes('france')) return '🇫🇷';
+    if (c.includes('ireland')) return '🇮🇪';
+    if (c.includes('germany') || c.includes('deutschland')) return '🇩🇪';
+    if (c.includes('switzerland')) return '🇨🇭';
+    if (c.includes('sweden')) return '🇸🇪';
+    if (c.includes('netherlands')) return '🇳🇱';
+    if (c.includes('uk') || c.includes('united kingdom') || c.includes('britain')) return '🇬🇧';
+    if (c.includes('usa') || c.includes('united states')) return '🇺🇸';
+    if (c.includes('canada')) return '🇨🇦';
+    if (c.includes('australia')) return '🇦🇺';
+    if (c.includes('japan')) return '🇯🇵';
+    if (region === 'JP') return '🇯🇵';
+    if (region === 'US') return '🇺🇸';
+    return '🇪🇺';
   }
 
   function regionFlag(region) {
@@ -666,6 +702,45 @@
         { field: 'budgetDeficit', gap: 'Annual budget shortfall of $25,000' },
       ],
       recommendations: ['Consider a research internship before applying', 'Look at taught MSc vs research MSc routes'],
+    },
+    {
+      programId: 'EU-006', programName: 'MSc in Artificial Intelligence',
+      universityName: 'UPC BarcelonaTech', region: 'EU', country: 'Spain',
+      academicScore: 86, financialScore: 95, visaScore: 88, holisticScore: 89,
+      tuitionAnnualUsd: 4200, livingCostAnnualUsd: 11000, blockedAccountRequirementUsd: 7500,
+      postStudyVisaMonths: 12, visaProgramName: 'Spain 12-Month Job Search Visa (Búsqueda de Empleo) / EU Blue Card',
+      matchedScholarships: ['UPC Erasmus+ Mundus Grant', 'Catalonia Beatriu de Pinós Grant'], scholarshipEligible: true,
+      financialSummary: 'Extremely affordable attendance cost ($15,200/yr). Fully funded within typical student budget.',
+      visaSummary: 'Spain: 12-Month Job Search Visa with straightforward transition to EU Blue Card or Work Permit.',
+      components: { gpaScore: 88, greQ: 84, greV: 72, lang: 86, research: 74, ects: 84 },
+      deficits: [],
+      recommendations: ['Top Spanish polytechnic with renowned Image Processing Group (GPI)', 'Ensure Indian degree receives MEA Hague Apostille'],
+    },
+    {
+      programId: 'EU-007', programName: 'MSc Computer Science and Engineering',
+      universityName: 'Instituto Superior Técnico', region: 'EU', country: 'Portugal',
+      academicScore: 88, financialScore: 96, visaScore: 88, holisticScore: 90,
+      tuitionAnnualUsd: 4000, livingCostAnnualUsd: 9500, blockedAccountRequirementUsd: 10000,
+      postStudyVisaMonths: 12, visaProgramName: 'Portugal 12-Month Post-Study Job Seeker Visa / D4 Residence Permit',
+      matchedScholarships: ['FCT Master Research Fellowship (€990/mo)', 'University of Lisbon International Merit Grant'], scholarshipEligible: true,
+      financialSummary: 'Total attendance: $13,500/yr. One of the highest quality-to-cost ratios in the European Union.',
+      visaSummary: 'Portugal: 12-Month Post-Study Job Seeker Visa leading to D4 residence and fastest 5-year EU citizenship pathway.',
+      components: { gpaScore: 90, greQ: 86, greV: 74, lang: 88, research: 76, ects: 86 },
+      deficits: [],
+      recommendations: ['Apply in Fase 1 (Jan–Mar) for priority processing', 'Strong alignment with ML and optimization labs'],
+    },
+    {
+      programId: 'EU-008', programName: 'MSc Computer Science and Engineering',
+      universityName: 'Politecnico di Milano', region: 'EU', country: 'Italy',
+      academicScore: 84, financialScore: 96, visaScore: 85, holisticScore: 87,
+      tuitionAnnualUsd: 3900, livingCostAnnualUsd: 12500, blockedAccountRequirementUsd: 6500,
+      postStudyVisaMonths: 12, visaProgramName: 'Italy 12-Month Permesso di Soggiorno per Ricerca Lavoro / EU Blue Card',
+      matchedScholarships: ['DSU Regional Scholarship (100% Tuition Waiver + Free Canteen + €7,200/yr Cash Stipend)'], scholarshipEligible: true,
+      financialSummary: 'Total tuition €3,900/yr. DSU scholarship provides 100% tuition waiver and living grant for eligible applicants.',
+      visaSummary: 'Italy: 12-Month Permesso di Soggiorno per Ricerca Lavoro for Master\'s graduates.',
+      components: { gpaScore: 86, greQ: 85, greV: 72, lang: 86, research: 70, ects: 82 },
+      deficits: [],
+      recommendations: ['Submit family income documentation for DSU regional grant by August', 'Top 20 global QS ranking in engineering'],
     },
     {
       programId: 'JP-001', programName: 'Graduate School of Informatics',
@@ -986,7 +1061,7 @@
             <div class="program-name" title="${prog.programName}">${prog.programName}</div>
             <div class="program-uni">${prog.universityName}</div>
             <div class="program-country">
-              <span class="program-region-tag">${regionFlag(prog.region)} ${prog.country || regionName(prog.region)}</span>
+              <span class="program-region-tag">${countryFlag(prog.country, prog.region)} ${prog.country || regionName(prog.region)}</span>
               <span class="program-region-tag">🛂 ${prog.postStudyVisaMonths || 24}m Visa</span>
             </div>
           </div>
@@ -1246,7 +1321,7 @@
         </div>
         <div class="detail-score-info">
           <h3>${prog.universityName}</h3>
-          <p>${prog.country || regionName(prog.region)} · ${regionFlag(prog.region)}</p>
+          <p>${prog.country || regionName(prog.region)} · ${countryFlag(prog.country, prog.region)}</p>
           <div class="mt-sm flex gap-sm items-center flex-wrap">
             <span class="tier-badge tier-${tierClass}">${getTierEmoji(tier)} ${tier}</span>
             <span class="text-xs text-muted">Holistic: <strong>${prog.holisticScore}%</strong> | Academic: <strong>${prog.academicScore}%</strong></span>

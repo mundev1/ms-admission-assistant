@@ -343,10 +343,18 @@ public class TimelinePlannerService {
 
     private void addCountryAdvisories(String country, LocalDate start, LocalDate today, List<String> alerts) {
         String c = country.toUpperCase();
-        if (c.contains("GERMANY") || c.contains("EUROPE")) {
+        if (c.contains("SPAIN")) {
+            alerts.add("🇪🇸 Hague Apostille (MEA India): Indian degree certificates, mark sheets, and Police Clearance Certificates (PCC) MUST carry the MEA Apostille sticker from New Delhi.");
+            alerts.add("📜 Sworn Spanish Translation (Traductor Jurado): Spanish consulates require official translations certified by a MAEC-recognized sworn translator for all English/regional documents.");
+            alerts.add("🏥 Sin Copago Medical Insurance: You must secure private medical insurance with an authorized Spanish provider (Sanitas, Adeslas) with 0 co-pay and repatriation coverage.");
+        } else if (c.contains("PORTUGAL")) {
+            alerts.add("🇵🇹 MEA Apostille & Police Clearance: Criminal record certificate (PCC) issued by Passport Seva Kendra (PSK) and academic degrees must be apostilled by MEA India.");
+            alerts.add("🛂 VFS Portugal D4 Visa Waitlist: National study visa appointment slots at VFS New Delhi/Mumbai should be booked 90–120 days prior to course commencement.");
+            alerts.add("💶 Proof of Financial Means: Portuguese immigration (AIMA) requires bank proof of 12 months minimum subsistence funds (€820/month national minimum wage).");
+        } else if (c.contains("GERMANY") || c.contains("EUROPE")) {
             alerts.add("🇩🇪 APS Certificate Backlog: Indian degree verification at APS New Delhi takes 60–120 days. Initiate application before Uni-Assist deadlines.");
             alerts.add("🛂 German VFS Waitlist: Peak summer (June–August) visa appointment queues require joining the Mission waitlist 12–16 weeks before intended flight date.");
-        } else if (c.contains("USA") || c.contains("US") || c.contains("AMERICA")) {
+        } else if (c.contains("USA") || c.contains("US") || c.contains("AMERICA") || c.contains("AUSTRALIA")) {
             alerts.add("🇺🇸 F-1 Visa Appointment Rush: US Embassy slots for Fall in India typically open in batches between May and July. Monitor USVisaScheduling.com daily.");
             alerts.add("📜 I-20 & Financial Solvency: Ensure your liquid bank certificate ($60k–$85k) or education loan sanction letter is ready by April to receive your I-20 promptly.");
         } else if (c.contains("JAPAN")) {
@@ -396,13 +404,167 @@ public class TimelinePlannerService {
 
     private List<MilestoneTemplate> getTemplatesForCountry(String country, LocalDate start) {
         String c = country.toUpperCase();
-        if (c.contains("USA") || c.contains("US") || c.contains("CANADA")) {
+        if (c.contains("USA") || c.contains("US") || c.contains("CANADA") || c.contains("AUSTRALIA")) {
             return getUsCanadaTemplates();
         } else if (c.contains("JAPAN")) {
             return getJapanTemplates();
+        } else if (c.contains("SPAIN")) {
+            return getSpainTemplates();
+        } else if (c.contains("PORTUGAL")) {
+            return getPortugalTemplates();
         } else {
             return getGermanyEuropeTemplates();
         }
+    }
+
+    private List<MilestoneTemplate> getSpainTemplates() {
+        return List.of(
+            new MilestoneTemplate(
+                "Language Proficiency & Spanish Language Primer",
+                "Appear for IELTS Academic (6.5+) and build conversational Spanish (A1/A2 level).",
+                TimelinePhase.TESTS_AND_PREP,
+                MilestoneCriticality.HIGH_PRIORITY,
+                -340,
+                "While Master's programs at UPC and UPM are taught in English, conversational Spanish eases daily life and visa consular processing in India.",
+                List.of("Register for IELTS Academic", "Achieve target band score (minimum 6.5)", "Begin basic Spanish A1 language prep via Cervantes or Duolingo"),
+                "https://www.ieltsidpindia.com/"
+            ),
+            new MilestoneTemplate(
+                "MEA Hague Apostille on Academic Transcripts & Degrees",
+                "Legalize degree certificates and marksheets with the Hague Apostille via Ministry of External Affairs (MEA), India.",
+                TimelinePhase.CREDENTIAL_VERIFICATION,
+                MilestoneCriticality.CRITICAL_PATH,
+                -300,
+                "⚠️ Non-negotiable: Spain is a Hague Apostille Convention signatory. Indian degrees MUST receive State HRD attestation followed by MEA Apostille sticker.",
+                List.of("Obtain State Education Department (HRD) authentication on degree", "Submit for MEA Apostille sticker through an authorized agency", "Prepare digital notarized color copies"),
+                "https://www.mea.gov.in/apostille.htm"
+            ),
+            new MilestoneTemplate(
+                "Spanish University Portal Applications (UPC, UPM, UC3M)",
+                "Submit online applications to Catalan and Madrid university admission portals.",
+                TimelinePhase.UNIVERSITY_APPLICATIONS,
+                MilestoneCriticality.CRITICAL_PATH,
+                -220,
+                "Spanish university master's portals open across Pre-enrollment Phases (Fase 1: Jan–Mar, Fase 2: Apr–May). Early application maximizes scholarship odds.",
+                List.of("Upload CV, Statement of Motivation, and Apostilled transcripts", "Request 2 academic reference letters", "Pay university pre-registration administrative fee"),
+                "https://www.upc.edu/en/masters"
+            ),
+            new MilestoneTemplate(
+                "Sworn Translation (Traductor Jurado) into Spanish",
+                "Commission official sworn translations of non-Spanish documents by a MAEC-certified sworn translator.",
+                TimelinePhase.CREDENTIAL_VERIFICATION,
+                MilestoneCriticality.CRITICAL_PATH,
+                -160,
+                "The Spanish Consulates in New Delhi and Mumbai require Police Clearance and Medical Certificates translated exclusively by official Traductores Jurados.",
+                List.of("Identify certified Spanish sworn translator", "Translate Apostilled Police Clearance Certificate", "Translate official Medical Certificate"),
+                "https://www.exteriores.gob.es/"
+            ),
+            new MilestoneTemplate(
+                "Police Clearance Certificate (PCC) & Sin Copago Health Insurance",
+                "Obtain PCC from Passport Seva Kendra (PSK) and purchase comprehensive Spanish private health insurance.",
+                TimelinePhase.CREDENTIAL_VERIFICATION,
+                MilestoneCriticality.CRITICAL_PATH,
+                -120,
+                "PCC validity is 3–6 months. Medical insurance must have zero co-pay (sin copago) from a registered Spanish insurer (Sanitas, Adeslas, Asisa).",
+                List.of("Book PCC slot at regional Passport Seva Kendra (PSK)", "Receive MEA Apostille on PCC", "Contract full-year Sin Copago student health insurance"),
+                "https://www.passportindia.gov.in/"
+            ),
+            new MilestoneTemplate(
+                "Spanish National Visa (Visado de Estudiante D) at BLS International",
+                "Book and attend Spanish student visa appointment at BLS International Visa Application Centre.",
+                TimelinePhase.VISA_AND_EMBASSY,
+                MilestoneCriticality.CRITICAL_PATH,
+                -75,
+                "Spanish student visa processing takes 4 to 8 weeks during peak summer. Ensure liquid bank proof exceeds 100% IPREM (~€7,200/year).",
+                List.of("Book appointment at BLS Spain Visa Centre (New Delhi or Mumbai)", "Compile complete dossier with original Apostilles & Translations", "Attend in-person biometric submission and visa interview"),
+                "https://india.blsspainvisa.com/"
+            ),
+            new MilestoneTemplate(
+                "Arrival in Spain & TIE Residence Card (Tarjeta de Identidad de Extranjero)",
+                "Fly to Spain, register local residency (Empadronamiento), and apply for TIE card at the Foreigners Office (Extranjería).",
+                TimelinePhase.PRE_DEPARTURE,
+                MilestoneCriticality.HIGH_PRIORITY,
+                -15,
+                "Your entry visa is valid for 90 days. Within 30 days of arrival in Spain, you must book a Cita Previa for your physical TIE residence card.",
+                List.of("Book temporary accommodation in Barcelona / Madrid", "Register municipal address (Empadronamiento) at City Hall", "Book Cita Previa for TIE fingerprinting (Toma de Huellas) at Extranjería"),
+                "https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus"
+            )
+        );
+    }
+
+    private List<MilestoneTemplate> getPortugalTemplates() {
+        return List.of(
+            new MilestoneTemplate(
+                "Language Proficiency Tests (IELTS / TOEFL)",
+                "Appear for IELTS Academic or TOEFL iBT test.",
+                TimelinePhase.TESTS_AND_PREP,
+                MilestoneCriticality.HIGH_PRIORITY,
+                -340,
+                "Portuguese graduate engineering programs at IST Lisbon and FEUP Porto accept IELTS 6.0–6.5 or TOEFL 80+.",
+                List.of("Register for IELTS Academic", "Achieve target band score (6.5 recommended)", "Collect certified electronic test report form"),
+                "https://www.ieltsidpindia.com/"
+            ),
+            new MilestoneTemplate(
+                "MEA Hague Apostille on Degrees & Academic Records",
+                "Legalize degree certificates and consolidated transcripts with the MEA Hague Apostille in India.",
+                TimelinePhase.CREDENTIAL_VERIFICATION,
+                MilestoneCriticality.CRITICAL_PATH,
+                -290,
+                "Portugal is a Hague Apostille country. Transcripts must be verified by State HRD and apostilled by MEA for university enrollment and visa processing.",
+                List.of("Notarize bachelor's degree & consolidated transcripts", "Obtain State HRD department authentication", "Secure MEA Apostille sticker from New Delhi"),
+                "https://www.mea.gov.in/apostille.htm"
+            ),
+            new MilestoneTemplate(
+                "Portuguese University Applications (IST Lisbon / FEUP Porto)",
+                "Submit graduate applications across international admissions calls (Candidaturas Mestrado).",
+                TimelinePhase.UNIVERSITY_APPLICATIONS,
+                MilestoneCriticality.CRITICAL_PATH,
+                -230,
+                "Universities in Portugal operate multiple application calls (1st phase: Jan–Mar, 2nd phase: Apr–May). 1st phase applicants receive earliest admission letters.",
+                List.of("Upload CV (Europass or standard format)", "Upload Apostilled transcripts and degree syllabus", "Draft tailored Statement of Purpose", "Pay application fee (~€50–€100)"),
+                "https://tecnico.ulisboa.pt/en/"
+            ),
+            new MilestoneTemplate(
+                "Police Clearance Certificate (PCC) & MEA Apostille",
+                "Obtain official PCC from Regional Passport Office and receive MEA Hague Apostille.",
+                TimelinePhase.CREDENTIAL_VERIFICATION,
+                MilestoneCriticality.CRITICAL_PATH,
+                -150,
+                "PCC is valid for 90 days for Portuguese visa applications. Ensure PCC carries the Apostille sticker.",
+                List.of("Apply for PCC at Passport Seva Kendra (PSK)", "Collect verified PCC document", "Apostille PCC via Ministry of External Affairs"),
+                "https://www.passportindia.gov.in/"
+            ),
+            new MilestoneTemplate(
+                "Proof of Subsistence Funds & Accommodation Confirmation",
+                "Organize bank proof demonstrating at least 12 months minimum Portuguese national wage (€820/mo = ~€9,840) and housing booking.",
+                TimelinePhase.FINANCES_AND_ADMISSION,
+                MilestoneCriticality.CRITICAL_PATH,
+                -110,
+                "Portuguese consulates require verifiable personal or parental liquid bank balance and proof of accommodation (dormitory letter or rental contract).",
+                List.of("Maintain required balance in personal bank account for 3+ months", "Obtain bank solvency certificate and stamped bank statements", "Secure University Dormitory reservation or verified rental agreement"),
+                "https://vistos.mne.gov.pt/en/"
+            ),
+            new MilestoneTemplate(
+                "National Study Visa (D4) Application at VFS Global India",
+                "Submit Portuguese National Study Visa (D4) dossier at VFS Global Visa Application Centre.",
+                TimelinePhase.VISA_AND_EMBASSY,
+                MilestoneCriticality.CRITICAL_PATH,
+                -70,
+                "Visa processing takes 30 to 60 days. The D4 visa allows 2 entries and is valid for 120 days while scheduling your in-person residence permit.",
+                List.of("Book appointment at VFS Global Portugal (New Delhi, Mumbai, etc.)", "Submit passport, university acceptance letter, Apostilled PCC, and fund proofs", "Provide biometric data and pay consular visa fee"),
+                "https://visa.vfsglobal.com/ind/en/prt/"
+            ),
+            new MilestoneTemplate(
+                "Arrival in Portugal & AIMA Residence Permit Appointment",
+                "Travel to Portugal, obtain NIF (Tax Number), and attend scheduled AIMA (formerly SEF) appointment for Title of Residence.",
+                TimelinePhase.PRE_DEPARTURE,
+                MilestoneCriticality.HIGH_PRIORITY,
+                -15,
+                "Your D4 visa usually includes an initial appointment URL with AIMA for your physical Residence Permit (Título de Residência).",
+                List.of("Book student flight to Lisbon (LIS) or Porto (OPO)", "Request Portuguese Tax Number (NIF) upon arrival", "Attend AIMA biometric interview for your 1-year renewable student residence card"),
+                "https://aima.gov.pt/pt"
+            )
+        );
     }
 
     private List<MilestoneTemplate> getGermanyEuropeTemplates() {
