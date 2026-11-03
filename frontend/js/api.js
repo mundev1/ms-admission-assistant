@@ -213,11 +213,18 @@ export async function getIntakes(callbacks = {}) {
  * @returns {Promise<Object>} TimelineSchedule
  */
 export async function planTimeline(timelineRequest, callbacks = {}) {
+  const payload = {
+    intakeId: timelineRequest.intakeId || timelineRequest.targetIntake || 'FALL_2027',
+    targetCountry: timelineRequest.targetCountry || timelineRequest.destinationCountry || timelineRequest.country || 'Germany',
+    targetStartDate: timelineRequest.targetStartDate || '2027-09-01',
+    targetUniversityName: timelineRequest.targetUniversityName || timelineRequest.universityName,
+    programId: timelineRequest.programId
+  };
   return apiFetch(
     `${API_BASE}/api/timeline/plan`,
     {
       method: 'POST',
-      body: JSON.stringify(timelineRequest),
+      body: JSON.stringify(payload),
     },
     callbacks
   );
@@ -229,10 +236,17 @@ export async function planTimeline(timelineRequest, callbacks = {}) {
  * @param {string} [filename]
  */
 export async function downloadTimelineIcs(timelineRequest, filename = 'ms-admissions-timeline.ics') {
+  const payload = {
+    intakeId: timelineRequest.intakeId || timelineRequest.targetIntake || 'FALL_2027',
+    targetCountry: timelineRequest.targetCountry || timelineRequest.destinationCountry || timelineRequest.country || 'Germany',
+    targetStartDate: timelineRequest.targetStartDate || '2027-09-01',
+    targetUniversityName: timelineRequest.targetUniversityName || timelineRequest.universityName,
+    programId: timelineRequest.programId
+  };
   const resp = await fetch(`${API_BASE}/api/timeline/export/ics`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(timelineRequest),
+    body: JSON.stringify(payload),
   });
   if (!resp.ok) {
     throw new Error(`Failed to export ICS: HTTP ${resp.status}`);

@@ -1,5 +1,6 @@
 package com.admissions.engine.model.timeline;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.time.LocalDate;
 
 /**
@@ -7,8 +8,12 @@ import java.time.LocalDate;
  */
 public class TimelineRequest {
 
+    @JsonAlias({"targetIntake", "intake"})
     private String intakeId;
+
+    @JsonAlias({"destinationCountry", "country"})
     private String targetCountry;
+
     private LocalDate targetStartDate;
     private Integer programId;
     private String targetUniversityName;
