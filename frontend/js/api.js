@@ -301,5 +301,55 @@ export async function generateColdEmail(draftRequest, callbacks = {}) {
   );
 }
 
+// ─── Global Scholarship & Assistantship Radar Functions ─────────────────────
+
+/**
+ * Executes a scholarship radar scan against an applicant profile.
+ * @param {Object} radarRequest - { profile, targetRegion, minCoverageType }
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object>} ScholarshipRadarResult
+ */
+export async function scanScholarshipRadar(radarRequest, callbacks = {}) {
+  return apiFetch(
+    `${API_BASE}/api/scholarships/radar`,
+    {
+      method: 'POST',
+      body: JSON.stringify(radarRequest),
+    },
+    callbacks
+  );
+}
+
+/**
+ * Retrieve curated scholarship opportunities with optional region/coverage filters.
+ * @param {{ region?: string, coverageType?: string }} [filters]
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object[]>}
+ */
+export async function getScholarshipOpportunities(filters = {}, callbacks = {}) {
+  const params = new URLSearchParams();
+  if (filters.region)       params.set('region', filters.region);
+  if (filters.coverageType) params.set('coverageType', filters.coverageType);
+  const qs = params.toString() ? `?${params}` : '';
+  return apiFetch(`${API_BASE}/api/scholarships/opportunities${qs}`, { method: 'GET' }, callbacks);
+}
+
+/**
+ * Evaluate Graduate Teaching / Research Assistantship (TA/RA) fee remission.
+ * @param {Object} profile - Applicant profile
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object>} AssistantshipEvaluation
+ */
+export async function evaluateAssistantship(profile, callbacks = {}) {
+  return apiFetch(
+    `${API_BASE}/api/scholarships/assistantship`,
+    {
+      method: 'POST',
+      body: JSON.stringify(profile),
+    },
+    callbacks
+  );
+}
+
 // Export handleApiError so callers can re-use it
 export { handleApiError };

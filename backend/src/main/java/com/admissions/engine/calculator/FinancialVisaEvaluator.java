@@ -133,27 +133,54 @@ public class FinancialVisaEvaluator {
         boolean thesis = Boolean.TRUE.equals(p.getThesisCompleted());
         double research = p.getResearchScore() != null ? p.getResearchScore() : 0.0;
         String jlpt = p.getJlptLevel() != null ? p.getJlptLevel().toUpperCase() : "";
+        int workMonths = p.getInternshipMonths() != null ? p.getInternshipMonths() : 0;
 
-        // 1. Japanese MEXT Scholarship & MIRAI-Setu
+        // 1. Japanese Scholarships (MEXT Embassy & University Recommendations, JASSO)
         if ("JAPAN".equals(region) || country.contains("japan")) {
-            if (cgpa >= 8.0 && (research >= 75.0 || jlpt.equals("N1") || jlpt.equals("N2"))) {
-                matches.add("MEXT Japanese Government Scholarship — Full tuition waiver + ¥144,000/mo living stipend");
+            if (cgpa >= 8.2 && (research >= 70.0 || thesis)) {
+                matches.add("MEXT Japanese Government Scholarship (Embassy Recommendation) — Full tuition waiver + ¥144,000/mo + flight");
                 maxCoverage = Math.max(maxCoverage, 0.95);
-            } else if (cgpa >= 7.5) {
+            } else if (cgpa >= 8.0) {
+                matches.add("MEXT Japanese Government Scholarship (University Recommendation / Naidaku Track) — Full tuition waiver + ¥144,000/mo");
+                maxCoverage = Math.max(maxCoverage, 0.90);
+            }
+            if (cgpa >= 7.0) {
                 matches.add("JASSO Honors Scholarship — ¥48,000/mo study stipend for international students");
                 maxCoverage = Math.max(maxCoverage, 0.60);
             }
         }
 
-        // 2. German DAAD Scholarship
+        // 2. German Scholarships (DAAD EPOS, Helmut-Schmidt, Study Scholarship, Deutschlandstipendium)
         if (country.contains("germany") || country.contains("deutschland")) {
-            if (cgpa >= 8.5 && (thesis || p.getInternshipMonths() >= 6)) {
+            if (cgpa >= 8.5 && (thesis || workMonths >= 6)) {
                 matches.add("DAAD Master Studies Scholarship — €934/mo stipend + travel + health coverage");
                 maxCoverage = Math.max(maxCoverage, 0.90);
             }
+            if (cgpa >= 7.5 && workMonths >= 24) {
+                matches.add("DAAD EPOS (Development-Related Postgraduate Courses) — €934/mo living stipend + travel allowance");
+                maxCoverage = Math.max(maxCoverage, 0.90);
+            }
+            if (cgpa >= 7.5) {
+                matches.add("DAAD Helmut-Schmidt-Programme (Public Policy & Good Governance) — Full tuition waiver + €934/mo stipend");
+                maxCoverage = Math.max(maxCoverage, 0.85);
+            }
+            if (cgpa >= 8.0) {
+                matches.add("Deutschlandstipendium (National Merit Scholarship) — €300/mo tax-free cash stipend");
+                maxCoverage = Math.max(maxCoverage, 0.50);
+            }
         }
 
-        // 3. Spanish & Portuguese Scholarships
+        // 3. Pan-European Erasmus Mundus Joint Masters (EMJM)
+        if ("EUROPE".equals(region) || country.contains("germany") || country.contains("spain")
+                || country.contains("portugal") || country.contains("italy") || country.contains("france")
+                || country.contains("switzerland") || country.contains("netherlands") || country.contains("sweden")) {
+            if (cgpa >= 8.0 && (toefl >= 90 || ielts >= 6.5)) {
+                matches.add("Erasmus Mundus Joint Masters (EMJM) Scholarship — 100% Tuition Waiver + €1,400/mo stipend + €3,000/yr travel");
+                maxCoverage = Math.max(maxCoverage, 0.95);
+            }
+        }
+
+        // 4. Spanish & Portuguese Scholarships
         if (country.contains("spain")) {
             if (cgpa >= 7.8) {
                 matches.add("Spanish MAEC / Erasmus+ Master Mobility Grant — Tuition fee waiver + monthly allowance");
@@ -167,13 +194,13 @@ public class FinancialVisaEvaluator {
             }
         }
 
-        // 4. Italian DSU Regional Scholarship (Diritto allo Studio Universitario)
+        // 5. Italian DSU Regional Scholarship (Diritto allo Studio Universitario)
         if (country.contains("italy")) {
             matches.add("DSU Regional Scholarship — 100% Tuition Waiver + Free Canteen + up to €7,200/yr Cash Stipend");
             maxCoverage = Math.max(maxCoverage, 0.90);
         }
 
-        // 5. French Eiffel Excellence Scholarship
+        // 6. French Eiffel Excellence Scholarship
         if (country.contains("france")) {
             if (cgpa >= 8.5 && (research >= 70.0 || thesis)) {
                 matches.add("Eiffel Excellence Scholarship (Campus France) — €1,181/mo living allowance + return flight");
@@ -181,7 +208,7 @@ public class FinancialVisaEvaluator {
             }
         }
 
-        // 6. Irish Government Scholarship (GOI-IES)
+        // 7. Irish Government Scholarship (GOI-IES)
         if (country.contains("ireland")) {
             if (cgpa >= 8.5) {
                 matches.add("Government of Ireland International Education Scholarship (GOI-IES) — Full tuition waiver + €10,000 stipend");
@@ -189,7 +216,7 @@ public class FinancialVisaEvaluator {
             }
         }
 
-        // 7. Australian Graduate Scholarships
+        // 8. Australian Graduate Scholarships
         if (country.contains("australia")) {
             if (cgpa >= 8.4) {
                 matches.add("Melbourne International Graduate Scholarship — 50% to 100% fee remission grant");
@@ -197,18 +224,22 @@ public class FinancialVisaEvaluator {
             }
         }
 
-        // 8. US Fulbright Foreign Student Program
-        if ("US_CANADA".equals(region) && country.contains("usa")) {
-            if (cgpa >= 8.8 && greQ >= 165 && (toefl >= 100 || ielts >= 7.5)) {
-                matches.add("Fulbright Foreign Student Program — Comprehensive tuition grant + monthly stipend");
+        // 9. US & UK: Fulbright-Nehru, Inlaks Shivdasani, and University TA/RA Fee Remission
+        if (("US_CANADA".equals(region) || "US".equals(region) || country.contains("usa") || country.contains("uk") || country.contains("united kingdom"))) {
+            if (country.contains("usa")) {
+                if (cgpa >= 7.0 && workMonths >= 36) {
+                    matches.add("Fulbright-Nehru Master's Fellowship (USIEF) — Full tuition + living stipend + round-trip flights + J-1 visa");
+                    maxCoverage = Math.max(maxCoverage, 0.95);
+                }
+            }
+            if (cgpa >= 8.5 && (thesis || research >= 75.0)) {
+                matches.add("Inlaks Shivdasani Foundation Scholarship — Up to $100,000 covering tuition fees, travel & living expenses");
+                maxCoverage = Math.max(maxCoverage, 0.95);
+            }
+            if (greQ >= 164 && cgpa >= 8.0 && (thesis || research >= 70.0 || toefl >= 100 || ielts >= 7.5)) {
+                matches.add("University Graduate Teaching/Research Assistantship (TA/RA) — 100% Tuition Remission + $2,450/mo salary");
                 maxCoverage = Math.max(maxCoverage, 0.85);
             }
-        }
-
-        // 9. Departmental Graduate Teaching / Research Assistantship (TA / RA)
-        if (greQ >= 164 && cgpa >= 8.2 && (thesis || research >= 70.0)) {
-            matches.add("Graduate Teaching/Research Assistantship (TA/RA) — Tuition remission + departmental salary");
-            maxCoverage = Math.max(maxCoverage, 0.80);
         }
 
         return maxCoverage;
