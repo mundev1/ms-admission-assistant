@@ -195,5 +195,61 @@ export async function runScoringPipeline(profileData, region, callbacks = {}) {
   return { applicant, results: allResults };
 }
 
+// ─── Timeline & Visa Tracker Functions ──────────────────────────────────────
+
+/**
+ * Fetch supported university intake cycles.
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object[]>}
+ */
+export async function getIntakes(callbacks = {}) {
+  return apiFetch(`${API_BASE}/api/timeline/intakes`, { method: 'GET' }, callbacks);
+}
+
+/**
+ * Calculate backwards-scheduled deadlines and visa milestones.
+ * @param {Object} timelineRequest
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object>} TimelineSchedule
+ */
+export async function planTimeline(timelineRequest, callbacks = {}) {
+  return apiFetch(
+    `${API_BASE}/api/timeline/plan`,
+    {
+      method: 'POST',
+      body: JSON.stringify(timelineRequest),
+    },
+    callbacks
+  );
+}
+
+/**
+ * Trigger browser download of the .ics calendar file.
+ * @param {Object} timelineRequest
+ * @param {string} [filename]
+ */
+export async function downloadTimelineIcs(timelineRequest, filename = 'ms-admissions-timeline.ics') {
+  const resp = await fetch(`${API_BASE}/api/timeline/export/ics`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(timelineRequest),
+  });
+  if (!resp.ok) {
+    throw new Error(`Failed to export ICS: HTTP ${resp.status}`);
+  }
+  const blob = await resp.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  }, 1000);
+}
+
 // Export handleApiError so callers can re-use it
 export { handleApiError };

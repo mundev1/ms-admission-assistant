@@ -51,8 +51,23 @@ open frontend/index.html
 | `GET` | `/api/programs` | List all university programs |
 | `POST` | `/api/score/region/{region}` | Score against all programs in a region (`ALL`, `US`, `EU`, `JP`) |
 | `POST` | `/api/score/program/{programId}` | Score against a specific program |
+| `GET` | `/api/timeline/intakes` | List standard admission intakes (Fall, Spring, Japan April/Oct) |
+| `POST` | `/api/timeline/plan` | Backwards-scheduled timeline calculation from target start date |
+| `POST` | `/api/timeline/export/ics` | Download RFC 5545 iCalendar (.ics) with alarms & milestones |
 
 **Regions:** `ALL`, `US_CANADA` (`US`), `EUROPE` (`EU`), `JAPAN` (`JP`)
+
+## Visa Appointment & Application Deadline Timeline Tracker
+
+Many international applicants miss intake cycles due to administrative backlogs rather than academic rejections. The Timeline Tracker features:
+- **Intake Roadmaps**: Standard support for Fall 2027/2028, Spring 2027, Japan April (MEXT track), and Japan October (English-taught degrees).
+- **Backwards Scheduling Engine**: Input target start date & destination country; the engine computes exact deadlines for:
+  - **Standardized Tests**: GRE, IELTS, TOEFL, and JLPT (enforces biannual July/Dec constraint for Japanese April admissions).
+  - **Credential Attestation**: German **APS Certificate** (60–120 days backlog at APS New Delhi) and US **WES** evaluation.
+  - **University Portals**: Uni-Assist VPD preliminary documentation and early scholarship cutoffs (DAAD, MEXT).
+  - **Funding Proof**: German **Sperrkonto** (€11,904 blocked account) and US Form **I-20** solvency letters.
+  - **Visa Appointment Booking**: VFS Global appointment waitlists and US Embassy F-1 interview slot monitoring.
+- **One-Click Calendar Sync**: Export to standard `.ics` (Apple Calendar, Google Calendar, Outlook) with automated 7-day and 1-day reminder alarms.
 
 ## Holistic Scoring & Feasibility Overlay
 
