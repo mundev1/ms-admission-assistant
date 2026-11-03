@@ -2837,3 +2837,74 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background: var(--clr-gold);
   color: var(--clr-bg);
 }
+
+/* ---------- Feature Launchpad & Quick Links ---------- */
+.launchpad-suite-card {
+  background: var(--clr-surface);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.launchpad-suite-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  border-color: var(--clr-gold);
+}
+
+.launchpad-suite-card:hover .launchpad-card-title {
+  color: var(--clr-gold);
+}
+
+.launchpad-card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--clr-white);
+  margin-bottom: 0.45rem;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.program-quick-links {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed var(--clr-border);
+}
+
+.quick-link-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--clr-bg-alt);
+  color: var(--clr-text-muted);
+  border: 1px solid var(--clr-border);
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+.quick-link-chip:hover {
+  background: var(--clr-surface-2);
+  color: var(--clr-gold);
+  border-color: var(--clr-gold);
+  transform: translateY(-1px);
+}
+
