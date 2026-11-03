@@ -251,5 +251,55 @@ export async function downloadTimelineIcs(timelineRequest, filename = 'ms-admiss
   }, 1000);
 }
 
+// ─── Faculty & Lab Alignment Critic Functions ───────────────────────────────
+
+/**
+ * Analyze semantic alignment of an SOP or research proposal.
+ * @param {Object} alignmentRequest
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object>} AlignmentAnalysisResult
+ */
+export async function analyzeFacultyAlignment(alignmentRequest, callbacks = {}) {
+  return apiFetch(
+    `${API_BASE}/api/alignment/analyze`,
+    {
+      method: 'POST',
+      body: JSON.stringify(alignmentRequest),
+    },
+    callbacks
+  );
+}
+
+/**
+ * Retrieve faculty and laboratory profiles.
+ * @param {{ university?: string, country?: string }} [filters]
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object[]>}
+ */
+export async function getFaculty(filters = {}, callbacks = {}) {
+  const params = new URLSearchParams();
+  if (filters.university) params.set('university', filters.university);
+  if (filters.country)    params.set('country', filters.country);
+  const qs = params.toString() ? `?${params}` : '';
+  return apiFetch(`${API_BASE}/api/alignment/faculty${qs}`, { method: 'GET' }, callbacks);
+}
+
+/**
+ * Generate a personalized cold email draft to a faculty member.
+ * @param {Object} draftRequest
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object>} ColdEmailDraft
+ */
+export async function generateColdEmail(draftRequest, callbacks = {}) {
+  return apiFetch(
+    `${API_BASE}/api/alignment/generate-email`,
+    {
+      method: 'POST',
+      body: JSON.stringify(draftRequest),
+    },
+    callbacks
+  );
+}
+
 // Export handleApiError so callers can re-use it
 export { handleApiError };
