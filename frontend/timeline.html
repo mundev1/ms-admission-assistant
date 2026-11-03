@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📅 Visa & Deadline Timeline Tracker — MS Admissions Engine</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .page-main { padding: 1.75rem 0 4rem; }
+    .timeline-page-header {
+      background: linear-gradient(135deg, var(--clr-surface) 0%, var(--clr-surface-2) 100%);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    .timeline-page-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #f59e0b, #3b82f6);
+    }
+    .applicant-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--clr-bg-alt);
+      border: 1px solid var(--clr-border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      color: var(--clr-white);
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="container">
+    <div class="brand">
+      <a href="index.html" style="text-decoration:none;color:inherit">
+        <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+      </a>
+      <div class="brand-subtitle">Visa &amp; Deadline Timeline Tracker</div>
+    </div>
+    <nav class="nav-links">
+      <a href="dashboard.html" class="nav-link">📊 Program Matches</a>
+      <a href="scholarships.html" class="nav-link">💰 Scholarship Radar</a>
+      <a href="faculty-critic.html" class="nav-link">🔬 Faculty Critic</a>
+      <a href="timeline.html" class="nav-link active">📅 Visa Timeline</a>
+      <a href="index.html" class="btn btn-secondary btn-sm" style="margin-left:0.5rem">✏️ Edit Profile</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-main">
+  <div class="container">
+
+    <!-- Hero / Header Card -->
+    <div class="timeline-page-header">
+      <div class="flex items-center justify-between gap-md flex-wrap">
+        <div>
+          <h1 style="font-size:1.75rem;font-weight:900;color:var(--clr-white);display:flex;align-items:center;gap:0.6rem">
+            📅 Visa Appointment &amp; Application Deadline Timeline Tracker
+          </h1>
+          <p style="color:var(--clr-text-muted);font-size:0.92rem;max-width:850px;line-height:1.6;margin-top:0.4rem">
+            Many Indian students miss admissions cycles due to external administrative bottlenecks rather than academic rejection (e.g. German APS certificate delays of 8–16 weeks or US VFS visa wait times of 3–6 months). This backwards scheduling engine calculates your strict countdown to target start dates.
+          </p>
+          <div class="applicant-pill-badge" id="applicantBadge">
+            👤 Candidate: <strong id="candName" style="color:var(--clr-gold)">Loading...</strong>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candDegree">B.Tech in Computer Science</span>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candUni" style="color:var(--clr-gold-light)">COER University, Roorkee</span>
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn btn-outline-gold" id="btnExportIcs" title="Download RFC 5545 .ics Calendar for Google / Apple Calendar">
+            📥 Export .ics Calendar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Main Timeline Section ── -->
+    <section class="timeline-section" id="timelineTrackerSection" style="margin-top:0">
+      <!-- Intake Selector Bar -->
+      <div style="font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:0.6rem">
+        SELECT TARGET INTAKE CYCLE:
+      </div>
+      <div class="intake-chips-wrap" id="intakeChipsWrap"></div>
+
+      <!-- Controls Row: Country & Target Start Date -->
+      <div class="timeline-controls-row">
+        <div class="flex items-center gap-md flex-wrap">
+          <span style="font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);letter-spacing:0.5px">DESTINATION:</span>
+          <div class="country-pills" id="countryPills">
+            <button type="button" class="country-pill active" data-country="Germany">🇩🇪 Germany</button>
+            <button type="button" class="country-pill" data-country="Spain">🇪🇸 Spain</button>
+            <button type="button" class="country-pill" data-country="Portugal">🇵🇹 Portugal</button>
+            <button type="button" class="country-pill" data-country="USA">🇺🇸 USA</button>
+            <button type="button" class="country-pill" data-country="Japan">🇯🇵 Japan</button>
+            <button type="button" class="country-pill" data-country="Canada">🇨🇦 Canada</button>
+            <button type="button" class="country-pill" data-country="Italy">🇮🇹 Italy</button>
+            <button type="button" class="country-pill" data-country="France">🇫🇷 France</button>
+            <button type="button" class="country-pill" data-country="Ireland">🇮🇪 Ireland</button>
+            <button type="button" class="country-pill" data-country="Australia">🇦🇺 Australia</button>
+          </div>
+        </div>
+
+        <div class="timeline-date-input-wrap">
+          <label for="customStartDateInput" style="font-weight:600;font-size:0.85rem">Target Start Date:</label>
+          <input type="date" id="customStartDateInput" class="timeline-date-input" value="2027-09-01" />
+          <button type="button" class="btn btn-ghost btn-sm" id="btnRecalculateTimeline">⚡ Recalculate</button>
+        </div>
+      </div>
+
+      <!-- Indian Student Bottleneck Advisories Box -->
+      <div class="timeline-advisories-card" id="timelineAdvisoriesCard">
+        <div class="timeline-advisories-header">
+          <span>⚠️ INDIAN APPLICANT VISA &amp; DEADLINE ADVISORY</span>
+        </div>
+        <ul class="timeline-advisories-list" id="timelineAdvisoriesList"></ul>
+      </div>
+
+      <!-- Timeline Statistics Bar -->
+      <div class="timeline-stats-bar" id="timelineStatsBar"></div>
+
+      <!-- Interactive Milestones Flow -->
+      <div class="timeline-roadmap" id="timelineRoadmap"></div>
+    </section>
+
+  </div><!-- .container -->
+</main>
+
+<!-- Toast notification container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module">
+  import { getIntakes, planTimeline, downloadTimelineIcs } from './js/api.js';
+
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: 'ℹ️', error: '❌', success: '✅', warning: '⚠️' };
+    const container = $('#toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Load applicant profile
+  let profile = null;
+  try {
+    const pro = sessionStorage.getItem('applicantData') || sessionStorage.getItem('applicantProfile');
+    if (pro) profile = JSON.parse(pro);
+  } catch (e) { console.error('sessionStorage parse error', e); }
+
+  if (!profile) {
+    profile = {
+      fullName: 'Aarav Sharma',
+      universityName: 'COER University, Roorkee',
+      degree: 'B.Tech',
+      specialization: 'Computer Science'
+    };
+  }
+
+  $('#candName').textContent = profile.fullName || 'Prospective Scholar';
+  $('#candDegree').textContent = `${profile.degree || 'B.Tech'} in ${profile.specialization || 'Computer Science'}`;
+  $('#candUni').textContent = profile.universityName || 'Indian Engineering Institute';
+
+  // Read URL query parameters if navigated from program card
+  const urlParams = new URLSearchParams(window.location.search);
+  const qCountry = urlParams.get('country');
+  const qUni = urlParams.get('uni');
+
+  // Available intakes
+  const STANDARD_INTAKES = [
+    { intakeId: 'FALL_2027', name: 'Fall 2027', region: 'US/EU/Global', targetStartDate: '2027-09-01', description: 'Primary global graduate intake (US, Germany, Europe, Canada)' },
+    { intakeId: 'SPRING_2028', name: 'Spring 2028', region: 'US/Germany', targetStartDate: '2028-01-15', description: 'Secondary intake with lower cohort sizes' },
+    { intakeId: 'JAPAN_APRIL_2028', name: 'Japan April 2028', region: 'Japan', targetStartDate: '2028-04-01', description: 'Standard Japanese academic year entry (MEXT Embassy track)' },
+    { intakeId: 'JAPAN_OCT_2027', name: 'Japan Oct 2027', region: 'Japan', targetStartDate: '2027-10-01', description: 'English-medium graduate track entry (GSII, IGP, G30)' },
+    { intakeId: 'GERMANY_SUMMER_2028', name: 'Germany Sommersemester 2028', region: 'Germany', targetStartDate: '2028-04-01', description: 'German Sommersemester intake' }
+  ];
+
+  let currentIntakeId = 'FALL_2027';
+  let currentCountry = qCountry || 'Germany';
+  let currentStartDate = '2027-09-01';
+  let currentTimelineData = null;
+
+  // Render Intake Selector Chips
+  function renderIntakeChips() {
+    const wrap = $('#intakeChipsWrap');
+    if (!wrap) return;
+
+    wrap.innerHTML = STANDARD_INTAKES.map(opt => `
+      <div class="intake-chip ${opt.intakeId === currentIntakeId ? 'active' : ''}" data-intake-id="${opt.intakeId}" data-date="${opt.targetStartDate}">
+        <div class="intake-chip-name">${opt.name}</div>
+        <div class="intake-chip-sub">${opt.region} • Starts ${opt.targetStartDate}</div>
+      </div>
+    `).join('');
+  }
+
+  // Pre-select country pill
+  function syncCountryPills() {
+    $$('.country-pill', $('#countryPills')).forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.country.toLowerCase() === currentCountry.toLowerCase());
+    });
+  }
+
+  // Local fallback generator for offline / resilient behavior
+  function buildLocalTimeline(targetDate, country) {
+    const start = new Date(targetDate);
+    const subtractWeeks = (d, w) => new Date(d.getTime() - w * 7 * 24 * 60 * 60 * 1000);
+    const fmt = d => d.toISOString().split('T')[0];
+
+    const milestones = [
+      {
+        id: 'M1',
+        title: 'Standardized Exams (GRE & TOEFL/IELTS)',
+        phase: 'PHASE_1_FOUNDATION',
+        calculatedDeadline: fmt(subtractWeeks(start, 48)),
+        weeksBeforeStart: 48,
+        criticality: 'HIGH',
+        category: 'EXAM',
+        description: 'Complete GRE General and TOEFL/IELTS tests to allow score reporting and potential retakes.',
+        advisoryNotes: 'Aim for GRE Quantitative 165+ for US/Germany and TOEFL 100+ / IELTS 7.5+ for GTA eligibility.'
+      },
+      {
+        id: 'M2',
+        title: country.toLowerCase() === 'germany' ? 'German APS Certification Submission' : (country.toLowerCase() === 'usa' ? 'WES / SpanTran Credential Evaluation' : 'Degree & Academic Transcript Legalization'),
+        phase: 'PHASE_2_ATTESTATION',
+        calculatedDeadline: fmt(subtractWeeks(start, 40)),
+        weeksBeforeStart: 40,
+        criticality: 'CRITICAL',
+        category: 'ATTESTATION',
+        description: country.toLowerCase() === 'germany' ? 'Mandatory Akademische Prüfstelle (APS) India certificate verification. 8-16 week wait time.' : 'Document attestation and official transcripts dispatch from your Indian university.',
+        advisoryNotes: country.toLowerCase() === 'germany' ? 'Apply for APS as soon as Semester 6/7 marksheets are in hand.' : 'Order at least 5 sealed official transcript sets from Registrar.'
+      },
+      {
+        id: 'M3',
+        title: 'University Portal Admissions Submissions',
+        phase: 'PHASE_3_APPLICATIONS',
+        calculatedDeadline: fmt(subtractWeeks(start, 32)),
+        weeksBeforeStart: 32,
+        criticality: 'CRITICAL',
+        category: 'APPLICATION',
+        description: 'Complete Uni-Assist, university portals, Statement of Purpose, and Letter of Recommendation submissions.',
+        advisoryNotes: 'Submit at least 10 days before hard cutoffs to avoid portal server congestion.'
+      },
+      {
+        id: 'M4',
+        title: country.toLowerCase() === 'germany' ? 'Blocked Account Funding (Sperrkonto €11,904)' : (country.toLowerCase() === 'usa' ? 'I-20 Issuance & SEVIS Fee Payment' : 'Financial Solvency Proof & Tuition Deposit'),
+        phase: 'PHASE_4_FINANCIALS',
+        calculatedDeadline: fmt(subtractWeeks(start, 18)),
+        weeksBeforeStart: 18,
+        criticality: 'CRITICAL',
+        category: 'FINANCIAL',
+        description: country.toLowerCase() === 'germany' ? 'Fund mandatory German Sperrkonto via Expatrio or Fintiba.' : 'Submit bank solvency certificates for Form I-20 issuance.',
+        advisoryNotes: 'Bank loans and international SWIFT wire transfers take 7-14 business days.'
+      },
+      {
+        id: 'M5',
+        title: country.toLowerCase() === 'germany' ? 'German Student Visa VFS Slot Booking' : (country.toLowerCase() === 'usa' ? 'US F-1 Visa Interview Appointment Booking' : 'National Student Visa Filing & Biometrics'),
+        phase: 'PHASE_5_VISA_DEPARTURE',
+        calculatedDeadline: fmt(subtractWeeks(start, 12)),
+        weeksBeforeStart: 12,
+        criticality: 'CRITICAL',
+        category: 'VISA',
+        description: 'Schedule biometrics and visa appointment with VFS / Consulate in New Delhi, Mumbai, or Chennai.',
+        advisoryNotes: 'VFS slot waitlists during peak summer can stretch up to 8-12 weeks.'
+      },
+      {
+        id: 'M6',
+        title: 'Flight Booking, Health Insurance & Departure',
+        phase: 'PHASE_5_VISA_DEPARTURE',
+        calculatedDeadline: fmt(subtractWeeks(start, 3)),
+        weeksBeforeStart: 3,
+        criticality: 'MEDIUM',
+        category: 'DEPARTURE',
+        description: 'Finalize student health insurance, international forex card, student accommodation, and travel itinerary.',
+        advisoryNotes: 'Arrive 7-10 days before university orientation for campus registration.'
+      }
+    ];
+
+    const advisories = [
+      country.toLowerCase() === 'germany'
+        ? 'German APS Certificate: Backlog currently stands at 8–16 weeks for Indian engineering students. You cannot receive a German national visa without an original APS verification certificate.'
+        : 'Visa Appointment Backlogs: Indian consular posts experience peak appointment queues. Monitor slot availability immediately upon admission offer.',
+      'Sperrkonto / Bank Solvency: Sanction education loans and wire funds early to prevent delays in I-20 or visa eligibility certificate issuance.'
+    ];
+
+    return {
+      targetStartDate: targetDate,
+      destinationCountry: country,
+      milestones,
+      indianStudentAdvisories: advisories
+    };
+  }
+
+  // Load timeline data from backend or local generator
+  async function loadTimeline() {
+    try {
+      const resp = await planTimeline({
+        targetIntake: currentIntakeId,
+        destinationCountry: currentCountry,
+        targetStartDate: currentStartDate
+      });
+
+      if (resp && resp.milestones && resp.milestones.length > 0) {
+        currentTimelineData = resp;
+      } else {
+        currentTimelineData = buildLocalTimeline(currentStartDate, currentCountry);
+      }
+    } catch (err) {
+      console.warn('[Timeline] Backend call failed, using local generator:', err.message);
+      currentTimelineData = buildLocalTimeline(currentStartDate, currentCountry);
+    }
+
+    renderTimeline();
+  }
+
+  function renderTimeline() {
+    if (!currentTimelineData) return;
+
+    // 1. Advisories List
+    const advisoriesList = $('#timelineAdvisoriesList');
+    if (advisoriesList) {
+      const advs = currentTimelineData.indianStudentAdvisories || [];
+      advisoriesList.innerHTML = advs.map(a => `<li>${escapeHtml(a)}</li>`).join('');
+    }
+
+    // 2. Statistics Bar
+    const statsBar = $('#timelineStatsBar');
+    const milestones = currentTimelineData.milestones || [];
+
+    const savedChecked = JSON.parse(localStorage.getItem(`timeline_checked_${currentCountry}`) || '{}');
+    const completedCount = milestones.filter(m => savedChecked[m.id]).length;
+    const criticalCount = milestones.filter(m => m.criticality === 'CRITICAL').length;
+    const highCount = milestones.filter(m => m.criticality === 'HIGH').length;
+
+    if (statsBar) {
+      statsBar.innerHTML = `
+        <div class="stat-pill"><span class="stat-dot" style="background:#10b981"></span> Completed: <strong>${completedCount} / ${milestones.length}</strong></div>
+        <div class="stat-pill"><span class="stat-dot" style="background:#ef4444"></span> Critical Deadlines: <strong>${criticalCount}</strong></div>
+        <div class="stat-pill"><span class="stat-dot" style="background:#f59e0b"></span> High Priority: <strong>${highCount}</strong></div>
+        <div class="stat-pill"><span class="stat-dot" style="background:#3b82f6"></span> Target Intake Start: <strong>${currentStartDate}</strong></div>
+      `;
+    }
+
+    // 3. Group by Phase
+    const roadmap = $('#timelineRoadmap');
+    if (!roadmap) return;
+
+    const phaseLabels = {
+      PHASE_1_FOUNDATION: 'PHASE 1: Standardized Testing & Academic Foundation (T-12 to T-10 Months)',
+      PHASE_2_ATTESTATION: 'PHASE 2: Document Attestation & Prerequisite Validation (T-10 to T-8 Months)',
+      PHASE_3_APPLICATIONS: 'PHASE 3: University Application Portal Submissions (T-8 to T-6 Months)',
+      PHASE_4_FINANCIALS: 'PHASE 4: Financial Proof, Blocked Account & I-20 Issuance (T-5 to T-3 Months)',
+      PHASE_5_VISA_DEPARTURE: 'PHASE 5: Visa Filing, Biometrics & Departure (T-3 to T-0 Months)'
+    };
+
+    const grouped = {};
+    milestones.forEach(m => {
+      const p = m.phase || 'PHASE_1_FOUNDATION';
+      if (!grouped[p]) grouped[p] = [];
+      grouped[p].push(m);
+    });
+
+    const phasesOrder = ['PHASE_1_FOUNDATION', 'PHASE_2_ATTESTATION', 'PHASE_3_APPLICATIONS', 'PHASE_4_FINANCIALS', 'PHASE_5_VISA_DEPARTURE'];
+
+    let html = '';
+    phasesOrder.forEach(pKey => {
+      const ms = grouped[pKey];
+      if (!ms || ms.length === 0) return;
+
+      html += `
+        <div class="timeline-phase-group">
+          <div class="timeline-phase-title">
+            <span>●</span> ${phaseLabels[pKey] || pKey}
+          </div>
+      `;
+
+      ms.forEach(m => {
+        const isChecked = Boolean(savedChecked[m.id]);
+        const critClass = m.criticality === 'CRITICAL' ? 'urgency-critical' : (m.criticality === 'HIGH' ? 'urgency-high' : 'urgency-moderate');
+        const critLabel = m.criticality === 'CRITICAL' ? 'CRITICAL PATH' : (m.criticality === 'HIGH' ? 'HIGH PRIORITY' : 'RECOMMENDED');
+
+        html += `
+          <div class="milestone-card ${isChecked ? 'completed' : ''}" data-milestone-id="${m.id}">
+            <div class="milestone-card-top">
+              <div class="milestone-checkbox-wrap">
+                <input type="checkbox" class="milestone-checkbox" data-milestone-id="${m.id}" ${isChecked ? 'checked' : ''} />
+                <div class="milestone-title-text">${escapeHtml(m.title)}</div>
+              </div>
+              <div class="milestone-badges">
+                <span class="milestone-urgency-tag ${critClass}">${critLabel}</span>
+                <span class="milestone-date-badge">📅 Deadline: <strong>${m.calculatedDeadline}</strong></span>
+              </div>
+            </div>
+            <div class="milestone-desc">${escapeHtml(m.description)}</div>
+            ${m.advisoryNotes ? `
+              <div class="milestone-advisory-box">
+                <strong>Strategy &amp; Bottleneck Warning:</strong> ${escapeHtml(m.advisoryNotes)}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    });
+
+    roadmap.innerHTML = html;
+  }
+
+  // ── Event Listeners ───────────────────────────────────────────────────────
+
+  // Intake selection
+  $('#intakeChipsWrap')?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.intake-chip');
+    if (!chip) return;
+
+    $$('.intake-chip', $('#intakeChipsWrap')).forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+
+    currentIntakeId = chip.dataset.intakeId;
+    currentStartDate = chip.dataset.date;
+    $('#customStartDateInput').value = currentStartDate;
+
+    loadTimeline();
+    showToast('Intake Selected', `Configured for ${chip.querySelector('.intake-chip-name').textContent}`, 'info');
+  });
+
+  // Country selection
+  $('#countryPills')?.addEventListener('click', (e) => {
+    const pill = e.target.closest('.country-pill');
+    if (!pill) return;
+
+    $$('.country-pill', $('#countryPills')).forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+
+    currentCountry = pill.dataset.country;
+    loadTimeline();
+    showToast('Destination Updated', `Loaded visa regulations for ${currentCountry}`, 'info');
+  });
+
+  // Recalculate button
+  $('#btnRecalculateTimeline')?.addEventListener('click', () => {
+    const val = $('#customStartDateInput')?.value;
+    if (val) {
+      currentStartDate = val;
+      loadTimeline();
+      showToast('Timeline Recalculated', `Calculated backwards schedule from ${currentStartDate}`, 'success');
+    }
+  });
+
+  // Export .ics calendar
+  $('#btnExportIcs')?.addEventListener('click', async () => {
+    try {
+      await downloadTimelineIcs({
+        targetIntake: currentIntakeId,
+        destinationCountry: currentCountry,
+        targetStartDate: currentStartDate
+      }, `ms-admissions-timeline-${currentCountry.toLowerCase()}.ics`);
+      showToast('Calendar Exported', 'Downloaded .ics calendar with all critical milestones.', 'success');
+    } catch (err) {
+      console.warn('Backend ICS download failed, generating client-side fallback:', err);
+      // Fallback client-side ICS generator
+      const ms = currentTimelineData?.milestones || [];
+      let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//MS Admissions Matrix Engine//Timeline//EN',
+        `X-WR-CALNAME:MS Admissions & Visa Timeline (${currentCountry})`
+      ];
+
+      ms.forEach(m => {
+        const d = (m.calculatedDeadline || '').replace(/-/g, '');
+        if (d.length === 8) {
+          ics.push('BEGIN:VEVENT');
+          ics.push(`UID:${m.id}-${d}@admissions.engine`);
+          ics.push(`DTSTART;VALUE=DATE:${d}`);
+          ics.push(`DTEND;VALUE=DATE:${d}`);
+          ics.push(`SUMMARY:[${m.criticality || 'IMPORTANT'}] ${m.title}`);
+          ics.push(`DESCRIPTION:${(m.description || '').replace(/\n/g, ' ')}`);
+          ics.push('STATUS:CONFIRMED');
+          ics.push('END:VEVENT');
+        }
+      });
+      ics.push('END:VCALENDAR');
+
+      const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ms-timeline-${currentCountry.toLowerCase()}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      showToast('Calendar Exported', 'Generated .ics calendar file for import.', 'success');
+    }
+  });
+
+  // Checkbox state persistence
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('.milestone-checkbox')) {
+      const id = e.target.dataset.milestoneId;
+      const checked = e.target.checked;
+      const card = e.target.closest('.milestone-card');
+      if (card) card.classList.toggle('completed', checked);
+
+      const saved = JSON.parse(localStorage.getItem(`timeline_checked_${currentCountry}`) || '{}');
+      saved[id] = checked;
+      localStorage.setItem(`timeline_checked_${currentCountry}`, JSON.stringify(saved));
+
+      renderTimeline(); // Refresh stats
+    }
+  });
+
+  // ── Initialize ────────────────────────────────────────────────────────────
+  renderIntakeChips();
+  syncCountryPills();
+  loadTimeline();
+
+  if (qUni) {
+    showToast('University Timeline', `Calculated backwards schedule for admission at ${qUni}.`, 'info');
+  }
+</script>
+
+</body>
+</html>

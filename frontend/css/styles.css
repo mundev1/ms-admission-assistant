@@ -167,6 +167,40 @@ p { color: var(--clr-text-muted); font-size: 0.95rem; }
   text-transform: uppercase;
 }
 
+/* ---------- Top Navigation Links ---------- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nav-link:hover {
+  color: var(--clr-white);
+  border-color: var(--clr-border);
+  background: var(--clr-surface);
+}
+
+.nav-link.active {
+  color: var(--clr-gold);
+  background: rgba(217, 119, 6, 0.15);
+  border-color: var(--clr-gold);
+}
+
 /* ---------- Card ---------- */
 .card {
   background: var(--clr-surface);
