@@ -293,6 +293,27 @@ select.form-control option {
   color: var(--clr-text);
 }
 
+select.form-control optgroup {
+  background: var(--clr-surface-2);
+  color: var(--clr-gold);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.2rem;
+}
+
+select.form-control optgroup option {
+  background: var(--clr-surface);
+  color: var(--clr-text);
+  font-weight: 400;
+  padding: 0.35rem 0.6rem;
+}
+
+.select-search-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Slider */
 .form-slider-wrap {
   display: flex;
