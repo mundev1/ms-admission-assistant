@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎓 Results Dashboard — MS Admissions Matrix Engine</title>
+  <script>const t=localStorage.getItem('ms-admissions-theme')||'dark';document.documentElement.setAttribute('data-theme',t);</script>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     /* ── Dashboard-specific styles ──────────────────────────────────── */
@@ -200,6 +201,10 @@
         <span class="spotlight-btn-label">Quick Search...</span>
         <kbd class="spotlight-btn-kbd">⌘K</kbd>
       </button>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Black and White Theme" title="Toggle Theme (Dark / Light)">
+        <span class="theme-toggle-icon">☀️</span>
+        <span class="theme-toggle-label">Light</span>
+      </button>
       <a href="dashboard.html" class="nav-link active">📊 Program Matches</a>
       <a href="scholarships.html" class="nav-link">💰 Scholarship Radar</a>
       <a href="faculty-critic.html" class="nav-link">🔬 Faculty Critic</a>
@@ -324,7 +329,7 @@
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.25rem">
         <!-- Suite 1: Scholarship Radar -->
-        <a href="scholarships.html" class="launchpad-suite-card" style="border-top:3.5px solid #10b981">
+        <a href="scholarships.html" class="launchpad-suite-card" style="border-top:3px solid var(--clr-success)">
           <div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
               <span style="font-size:1.85rem">💰</span>
@@ -346,7 +351,7 @@
         </a>
 
         <!-- Suite 2: Faculty Critic -->
-        <a href="faculty-critic.html" class="launchpad-suite-card" style="border-top:3.5px solid #818cf8">
+        <a href="faculty-critic.html" class="launchpad-suite-card" style="border-top:3px solid var(--clr-info)">
           <div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
               <span style="font-size:1.85rem">🔬</span>
@@ -368,7 +373,7 @@
         </a>
 
         <!-- Suite 3: Timeline Tracker -->
-        <a href="timeline.html" class="launchpad-suite-card" style="border-top:3.5px solid #f59e0b">
+        <a href="timeline.html" class="launchpad-suite-card" style="border-top:3px solid var(--clr-warn)">
           <div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
               <span style="font-size:1.85rem">📅</span>
@@ -390,11 +395,11 @@
         </a>
 
         <!-- Suite 4: German ECTS Pre-Screener -->
-        <a href="ects-screener.html" class="launchpad-suite-card" style="border-top:3.5px solid #ef4444">
+        <a href="ects-screener.html" class="launchpad-suite-card" style="border-top:3px solid var(--clr-danger)">
           <div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
               <span style="font-size:1.85rem">📐</span>
-              <span class="coverage-badge" style="background:rgba(239,68,68,0.2);color:#ff8585;border:1px solid rgba(239,68,68,0.4)">Curriculum Pre-Screener</span>
+              <span class="coverage-badge" style="background:var(--clr-danger-subtle);color:var(--clr-danger);border:1px solid var(--clr-danger)">Curriculum Pre-Screener</span>
             </div>
             <h3 class="launchpad-card-title">
               <span>German ECTS Credit Screener</span>
@@ -1316,16 +1321,16 @@
       <div class="sidebar-section">
         <div class="sidebar-section-title">Overlay Score Metrics</div>
         <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr">
-          <div class="stat-item" style="border-top:2px solid #8ee2b2">
-            <div class="stat-val" style="color:#8ee2b2">${prog.academicScore}%</div>
+          <div class="stat-item" style="border-top:2px solid var(--clr-success)">
+            <div class="stat-val" style="color:var(--clr-success)">${prog.academicScore}%</div>
             <div class="stat-label">🎓 Academic</div>
           </div>
-          <div class="stat-item" style="border-top:2px solid #ffd666">
-            <div class="stat-val" style="color:#ffd666">${prog.financialScore}%</div>
+          <div class="stat-item" style="border-top:2px solid var(--clr-warn)">
+            <div class="stat-val" style="color:var(--clr-warn)">${prog.financialScore}%</div>
             <div class="stat-label">💰 Financial</div>
           </div>
-          <div class="stat-item" style="border-top:2px solid #9bc5ff">
-            <div class="stat-val" style="color:#9bc5ff">${prog.visaScore}%</div>
+          <div class="stat-item" style="border-top:2px solid var(--clr-info)">
+            <div class="stat-val" style="color:var(--clr-info)">${prog.visaScore}%</div>
             <div class="stat-label">🛂 Visa Outlook</div>
           </div>
         </div>
@@ -1468,6 +1473,7 @@
   }
 </script>
 
+<script src="js/theme.js"></script>
 <script src="js/spotlight.js"></script>
 </body>
 </html>

@@ -575,6 +575,15 @@
 
   const SPOTLIGHT_ACTIONS = [
     {
+      id: 'act-toggle-theme',
+      type: 'ACTION',
+      title: '🌓 Toggle Black & White Theme',
+      subtitle: 'Switch between modern matte black and crisp clean white theme',
+      icon: '🌓',
+      badge: 'Theme',
+      keywords: ['theme', 'dark', 'light', 'black', 'white', 'mode', 'color', 'background', 'toggle']
+    },
+    {
       id: 'act-load-aicte',
       type: 'ACTION',
       title: '📋 Load AICTE B.Tech CSE (4-Yr Model Syllabus)',
@@ -968,6 +977,13 @@
   function executeItem(item) {
     if (!item) return;
     closeSpotlight();
+
+    if (item.id === 'act-toggle-theme') {
+      if (window.MS_Theme) {
+        window.MS_Theme.toggle();
+      }
+      return;
+    }
 
     if (item.url) {
       window.location.href = item.url;

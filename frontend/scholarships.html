@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💰 Global Scholarship & Assistantship Radar — MS Admissions Engine</title>
+  <script>const t=localStorage.getItem('ms-admissions-theme')||'dark';document.documentElement.setAttribute('data-theme',t);</script>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     .page-main { padding: 1.75rem 0 4rem; }
@@ -52,6 +53,10 @@
         <span class="spotlight-btn-icon">🔍</span>
         <span class="spotlight-btn-label">Quick Search...</span>
         <kbd class="spotlight-btn-kbd">⌘K</kbd>
+      </button>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Black and White Theme" title="Toggle Theme (Dark / Light)">
+        <span class="theme-toggle-icon">☀️</span>
+        <span class="theme-toggle-label">Light</span>
       </button>
       <a href="dashboard.html" class="nav-link">📊 Program Matches</a>
       <a href="scholarships.html" class="nav-link active">💰 Scholarship Radar</a>
@@ -174,7 +179,7 @@
           </div>
           <div class="assistantship-metric-item">
             <div class="metric-title">Weekly Appointment</div>
-            <div class="metric-val" style="color:#a7f3d0">20 hrs/week (50% FTE)</div>
+            <div class="metric-val" style="color:var(--clr-success)">20 hrs/week (50% FTE)</div>
           </div>
         </div>
 
@@ -888,6 +893,7 @@
   }
 </script>
 
+<script src="js/theme.js"></script>
 <script src="js/spotlight.js"></script>
 </body>
 </html>

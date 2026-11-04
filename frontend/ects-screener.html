@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>📐 German ECTS Credit Equivalence & Prerequisite Pre-Screener — MS Admissions Engine</title>
+  <script>const t=localStorage.getItem('ms-admissions-theme')||'dark';document.documentElement.setAttribute('data-theme',t);</script>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     .page-main { padding: 1.75rem 0 4rem; }
@@ -49,6 +50,10 @@
         <span class="spotlight-btn-icon">🔍</span>
         <span class="spotlight-btn-label">Quick Search...</span>
         <kbd class="spotlight-btn-kbd">⌘K</kbd>
+      </button>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Black and White Theme" title="Toggle Theme (Dark / Light)">
+        <span class="theme-toggle-icon">☀️</span>
+        <span class="theme-toggle-label">Light</span>
       </button>
       <a href="dashboard.html" class="nav-link">📊 Program Matches</a>
       <a href="scholarships.html" class="nav-link">💰 Scholarship Radar</a>
@@ -162,7 +167,7 @@
       <p style="font-size:0.88rem;color:var(--clr-text);line-height:1.6;margin-bottom:0.6rem" id="verdictSummaryText">
         Evaluating undergraduate syllabus...
       </p>
-      <div style="font-size:0.8rem;background:rgba(0,0,0,0.25);padding:0.6rem 0.85rem;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.06);color:#fae19c" id="verdictAuflagenText">
+      <div style="font-size:0.8rem;background:var(--clr-surface-2);padding:0.6rem 0.85rem;border-radius:var(--radius-sm);border:1px solid var(--clr-border);color:var(--clr-gold)" id="verdictAuflagenText">
         German Auflagen Policy: Direct admission without remedial bachelor exams.
       </div>
     </div>
@@ -174,14 +179,14 @@
     <div class="ects-categories-grid" id="categoryCardsGrid"></div>
 
     <!-- ── Critical Deficit Callout Box (Shown only when gaps exist) ── -->
-    <div class="card" id="criticalDeficitCard" style="display:none;background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.35);margin-bottom:2rem">
-      <div style="font-size:0.92rem;font-weight:800;color:#ff8585;display:flex;align-items:center;gap:0.4rem;margin-bottom:0.6rem">
+    <div class="card" id="criticalDeficitCard" style="display:none;background:var(--clr-danger-subtle);border-color:var(--clr-danger);margin-bottom:2rem">
+      <div style="font-size:0.92rem;font-weight:800;color:var(--clr-danger);display:flex;align-items:center;gap:0.4rem;margin-bottom:0.6rem">
         <span>⚠️ FORMAL REJECTION DEFICIT BOTTLENECK</span>
       </div>
       <p style="font-size:0.84rem;color:var(--clr-text);line-height:1.55;margin-bottom:0.6rem">
         Under state university admission statutes in Bavaria and Baden-Württemberg, your application will be dismissed at the formal preliminary verification stage (Uni-Assist / Faculty Commission) regardless of high GPA unless these core prerequisite deficits are addressed:
       </p>
-      <ul style="list-style:disc;padding-left:1.5rem;font-size:0.82rem;color:#fca5a5;line-height:1.6" id="criticalDeficitList"></ul>
+      <ul style="list-style:disc;padding-left:1.5rem;font-size:0.82rem;color:var(--clr-danger);line-height:1.6" id="criticalDeficitList"></ul>
     </div>
 
     <!-- ── Targeted Bridge Course & MOOC Recommendations ── -->
@@ -209,7 +214,7 @@
           </p>
         </div>
         <div class="flex items-center gap-xs">
-          <button type="button" class="btn btn-ghost btn-sm" id="btnClearAllCourses" style="color:#ff8585">
+          <button type="button" class="btn btn-ghost btn-sm" id="btnClearAllCourses" style="color:var(--clr-danger)">
             🗑 Clear All
           </button>
         </div>
@@ -628,7 +633,7 @@
             <strong style="color:var(--clr-gold);font-family:var(--font-mono);font-size:0.92rem">${ects} ECTS</strong>
           </td>
           <td style="text-align:center">
-            <button type="button" class="btn btn-ghost btn-sm btn-del-row" data-index="${idx}" style="color:#ff8585;padding:0.2rem 0.4rem" title="Remove Course">
+            <button type="button" class="btn btn-ghost btn-sm btn-del-row" data-index="${idx}" style="color:var(--clr-danger);padding:0.2rem 0.4rem" title="Remove Course">
               ✕
             </button>
           </td>
@@ -1089,6 +1094,7 @@
   init();
 </script>
 
+<script src="js/theme.js"></script>
 <script src="js/spotlight.js"></script>
 </body>
 </html>
