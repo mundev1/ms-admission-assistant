@@ -1090,17 +1090,17 @@
             </div>
           </div>
           <div class="program-meta">
-            <div class="program-name" title="${prog.programName}">${prog.programName}</div>
-            <div class="program-uni">${prog.universityName}</div>
+            <div class="program-name" title="${escapeHtml(prog.programName)}">${escapeHtml(prog.programName)}</div>
+            <div class="program-uni" title="${escapeHtml(prog.universityName)}">${escapeHtml(prog.universityName)}</div>
             <div class="program-country">
               <span class="program-region-tag">${countryFlag(prog.country, prog.region)} ${prog.country || regionName(prog.region)}</span>
               <span class="program-region-tag">🛂 ${prog.postStudyVisaMonths || 24}m Visa</span>
             </div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;flex-shrink:0">
+          <div style="display:flex;align-items:center;gap:0.45rem;flex-shrink:0">
             <span class="tier-badge tier-${tierClass}">${emoji} ${tier}</span>
-            <button type="button" class="btn-pin-compare ${isPinned ? 'pinned' : ''}" data-action="pin" data-id="${prog.programId}" title="${isPinned ? 'Remove from compare tray' : 'Add to compare tray (max 3)'}">
-              <span>${isPinned ? '📌 Pinned ✓' : '📌 Pin to Compare'}</span>
+            <button type="button" class="btn-pin-icon ${isPinned ? 'pinned' : ''}" data-action="pin" data-id="${prog.programId}" title="${isPinned ? 'Remove from compare tray' : 'Pin to compare tray (max 3)'}">
+              <span aria-hidden="true">${isPinned ? '📌' : '📍'}</span>
             </button>
           </div>
         </div>
@@ -1132,9 +1132,9 @@
 
         <div class="program-actions">
           <span class="text-xs text-muted">#${prog.programId}</span>
-          <div style="display:flex;align-items:center;gap:0.4rem">
-            <button type="button" class="btn-pin-compare ${isPinned ? 'pinned' : ''}" data-action="pin" data-id="${prog.programId}" title="${isPinned ? 'Remove from compare tray' : 'Pin to compare'}">
-              <span>${isPinned ? '📌 Pinned' : '📌 Compare'}</span>
+          <div style="display:flex;align-items:center;gap:0.45rem">
+            <button type="button" class="btn btn-ghost btn-sm btn-pin-compare ${isPinned ? 'pinned' : ''}" data-action="pin" data-id="${prog.programId}" title="${isPinned ? 'Remove from compare tray' : 'Pin to compare tray'}">
+              <span class="pin-btn-text">${isPinned ? '📌 Pinned ✓' : '📌 Pin to Compare'}</span>
             </button>
             <button type="button" class="btn btn-ghost btn-sm btn-breakdown" data-action="detail" data-id="${prog.programId}">Full Breakdown →</button>
           </div>
@@ -1226,8 +1226,33 @@
   // ── Global click handler for breakdowns and cards ─────────────────────────
 
   document.addEventListener('click', (e) => {
-    // 0. Pin to compare button
-    const pinBtn = e.target.closest('[data-action="pin"], .btn-pin-compare');
+    // 0. Compare Now button in floating tray
+    const compareNowBtn = e.target.closest('#openCompareModalBtn, .btn-compare-now');
+    if (compareNowBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      openCompareModal();
+      return;
+    }
+
+    // Modal close button
+    const closeCompBtn = e.target.closest('#closeCompareModalBtn, .compare-modal-close');
+    if (closeCompBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeCompareModal();
+      return;
+    }
+
+    // Modal backdrop click
+    if (e.target.matches('#compareModalBackdrop, .compare-modal-backdrop')) {
+      e.preventDefault();
+      closeCompareModal();
+      return;
+    }
+
+    // Pin to compare button (icon or text button)
+    const pinBtn = e.target.closest('[data-action="pin"], .btn-pin-compare, .btn-pin-icon');
     if (pinBtn) {
       e.preventDefault();
       e.stopPropagation();
@@ -1756,12 +1781,17 @@
     const isNowPinned = pinnedProgramIds.includes(strId);
     $$(`.btn-pin-compare[data-id="${strId}"]`).forEach(btn => {
       btn.classList.toggle('pinned', isNowPinned);
-      const span = btn.querySelector('span');
+      const span = btn.querySelector('.pin-btn-text') || btn.querySelector('span');
       if (span) {
-        span.textContent = isNowPinned ? '📌 Pinned ✓' : '📌 Pin & Compare';
+        span.textContent = isNowPinned ? '📌 Pinned ✓' : '📌 Pin to Compare';
       } else {
-        btn.textContent = isNowPinned ? '📌 Pinned ✓' : '📌 Pin & Compare';
+        btn.textContent = isNowPinned ? '📌 Pinned ✓' : '📌 Pin to Compare';
       }
+    });
+    $$(`.btn-pin-icon[data-id="${strId}"]`).forEach(btn => {
+      btn.classList.toggle('pinned', isNowPinned);
+      btn.setAttribute('title', isNowPinned ? 'Remove from compare tray' : 'Pin to compare tray');
+      btn.innerHTML = `<span aria-hidden="true">${isNowPinned ? '📌' : '📍'}</span>`;
     });
 
     renderCompareTray();
@@ -1778,11 +1808,13 @@
     if (pinnedProgramIds.length === 0) {
       tray.classList.remove('visible');
       tray.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('has-compare-tray');
       return;
     }
 
     tray.classList.add('visible');
     tray.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('has-compare-tray');
 
     const countSpan = $('#compareCount');
     const badgeSpan = $('#compareActionBadge');
@@ -1792,6 +1824,7 @@
     const compareBtn = $('#openCompareModalBtn');
     if (compareBtn) {
       compareBtn.disabled = false;
+      compareBtn.removeAttribute('disabled');
       compareBtn.setAttribute('title', pinnedProgramIds.length === 1
         ? 'Click to view comparison (Select 2+ for side-by-side)'
         : `Compare ${pinnedProgramIds.length} programs side-by-side`);
@@ -1800,10 +1833,11 @@
     const wrapper = $('#compareSlotsWrapper');
     if (wrapper) {
       let slotsHtml = '';
+      const pool = (results && results.length > 0) ? results : (typeof MOCK_RESULTS !== 'undefined' ? MOCK_RESULTS : []);
       for (let i = 0; i < 3; i++) {
         const pid = pinnedProgramIds[i];
         if (pid) {
-          const prog = results.find(r => String(r.programId) === String(pid));
+          const prog = pool.find(r => String(r.programId) === String(pid));
           if (prog) {
             const costK = Math.round(((prog.tuitionAnnualUsd || 0) + (prog.livingCostAnnualUsd || 0)) / 1000);
             slotsHtml += `
@@ -1830,25 +1864,27 @@
   }
 
   function openCompareModal() {
-    const pinnedList = pinnedProgramIds
-      .map(id => results.find(p => String(p.programId) === String(id)))
-      .filter(Boolean);
+    try {
+      const pool = (results && results.length > 0) ? results : (typeof MOCK_RESULTS !== 'undefined' ? MOCK_RESULTS : []);
+      const pinnedList = pinnedProgramIds
+        .map(id => pool.find(p => String(p.programId) === String(id)))
+        .filter(Boolean);
 
-    if (pinnedList.length === 0) {
-      showToast('No Programs Pinned', 'Pin at least 1 program from the cards below to compare.', 'info');
-      return;
-    }
+      if (pinnedList.length === 0) {
+        showToast('No Programs Pinned', 'Pin at least 1 program from the cards below to compare.', 'info');
+        return;
+      }
 
-    const modalBody = $('#compareModalBody');
-    const colsClass = `cols-${pinnedList.length}`;
+      const modalBody = $('#compareModalBody');
+      const colsClass = `cols-${pinnedList.length}`;
 
-    let columnsHtml = pinnedList.map((prog) => {
-      const c = getCompareData(prog);
-      const tier = prog.compatibilityTier || 'Match';
-      const tierClass = tier.toLowerCase();
-      const color = TIER_COLORS[tier] || '#f59e0b';
-      const targetUni = encodeURIComponent(prog.universityName || '');
-      const isGerman = (prog.country && (prog.country.toLowerCase().includes('germany') || prog.country.toLowerCase().includes('deutschland'))) || prog.region === 'EU';
+      let columnsHtml = pinnedList.map((prog) => {
+        const c = getCompareData(prog);
+        const tier = prog.compatibilityTier || 'Match';
+        const tierClass = String(tier).toLowerCase();
+        const color = getScoreColor(String(tier).toUpperCase());
+        const targetUni = encodeURIComponent(prog.universityName || '');
+        const isGerman = (prog.country && (prog.country.toLowerCase().includes('germany') || prog.country.toLowerCase().includes('deutschland'))) || prog.region === 'EU';
 
       return `
         <div class="compare-column-card" data-id="${prog.programId}">
@@ -2011,6 +2047,10 @@
     $('#compareModal').setAttribute('aria-hidden', 'false');
     $('#compareModalBackdrop').setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    } catch (err) {
+      console.error('Error opening compare modal:', err);
+      showToast('Compare Error', err.message || 'Failed to open comparison modal.', 'error');
+    }
   }
 
   function closeCompareModal() {
@@ -2062,9 +2102,14 @@
       try { sessionStorage.setItem('pinnedPrograms', '[]'); } catch(e) {}
       $$('.btn-pin-compare').forEach(btn => {
         btn.classList.remove('pinned');
-        const span = btn.querySelector('span');
-        if (span) span.textContent = '📌 Pin & Compare';
-        else btn.textContent = '📌 Pin & Compare';
+        const span = btn.querySelector('.pin-btn-text') || btn.querySelector('span');
+        if (span) span.textContent = '📌 Pin to Compare';
+        else btn.textContent = '📌 Pin to Compare';
+      });
+      $$('.btn-pin-icon').forEach(btn => {
+        btn.classList.remove('pinned');
+        btn.setAttribute('title', 'Pin to compare tray (max 3)');
+        btn.innerHTML = '<span aria-hidden="true">📍</span>';
       });
       renderCompareTray();
       closeCompareModal();

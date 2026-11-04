@@ -1556,15 +1556,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .program-uni {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   color: var(--clr-text-muted);
   margin-top: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .program-country {
   font-size: 0.75rem;
   color: var(--clr-text-muted);
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
 }
 
 /* ---------- Sidebar / Detail Panel ---------- */
@@ -4240,6 +4249,43 @@ input[type="range"]::-webkit-slider-thumb:hover {
   color: var(--clr-gold-dark);
 }
 
+/* Compact Pin Icon button for card header (prevents squishing college name) */
+.btn-pin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--clr-bg-alt);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.btn-pin-icon:hover {
+  background: var(--clr-surface-2);
+  border-color: var(--clr-gold);
+  color: var(--clr-gold);
+  transform: scale(1.1);
+}
+
+.btn-pin-icon.pinned {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--clr-gold);
+  color: var(--clr-gold);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+}
+
+/* Prevent bottom cards & college names from being covered by floating tray */
+body.has-compare-tray .page-main {
+  padding-bottom: 120px;
+}
+
 /* Floating Bottom Compare Tray */
 .compare-tray {
   position: fixed;
@@ -4295,9 +4341,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
   align-items: center;
   gap: 0.75rem;
   flex: 1;
+  min-width: 0;
   max-width: 680px;
   overflow-x: auto;
   padding: 2px 0;
+  scrollbar-width: thin;
 }
 
 .compare-slot-chip {
@@ -4311,8 +4359,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   min-width: 175px;
-  max-width: 215px;
+  max-width: 225px;
   flex-shrink: 0;
+  overflow: hidden;
   animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -4320,6 +4369,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .compare-slot-uni {
@@ -4329,6 +4380,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
 }
 
 .compare-slot-prog {
@@ -4572,7 +4624,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.75rem;
+}
+
+.compare-col-top > div:first-child {
+  flex: 1;
+  min-width: 0;
 }
 
 .compare-col-uni {
@@ -4580,6 +4637,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   font-weight: 800;
   color: var(--clr-white);
   line-height: 1.25;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .compare-col-prog {
@@ -4759,6 +4818,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 @media (max-width: 768px) {
+  body.has-compare-tray .page-main {
+    padding-bottom: 220px;
+  }
   .compare-tray-container {
     flex-direction: column;
     align-items: stretch;
