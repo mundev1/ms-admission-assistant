@@ -38,3 +38,15 @@ yarn-error.log*
 # Temporary files
 *.tmp
 *.bak
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# Platform CLIs
+.vercel/
+.railway/
