@@ -244,9 +244,9 @@
     <div class="compare-tray-left">
       <div class="compare-tray-badge">
         <span class="compare-pin-icon">📌</span>
-        <span class="compare-count-text">Pin &amp; Compare (<span id="compareCount">0</span>/3)</span>
+        <span class="compare-count-text">Compare (<span id="compareCount">0</span>/3)</span>
       </div>
-      <div class="compare-tray-hint">Compare up to 3 universities side-by-side across costs, hours, visas &amp; credits</div>
+      <div class="compare-tray-hint">Cost • Work • Visa • ECTS</div>
     </div>
 
     <!-- Pinned Slot Items -->
@@ -896,7 +896,7 @@
   } catch (e) { console.error('sessionStorage parse error', e); }
 
   if (!results || results.length === 0) {
-    results = MOCK_RESULTS;
+    results = MOCK_RESULTS.map(adaptResult);
     isDemo  = true;
   }
 
@@ -1063,9 +1063,17 @@
     const targetUniParam = encodeURIComponent(prog.universityName || '');
     const targetRegionParam = encodeURIComponent(prog.region || 'EU');
 
-    const budgetBadge = prog.budgetGap <= 0
+    const netCost = (prog.netAnnualCost !== undefined && !isNaN(prog.netAnnualCost))
+      ? prog.netAnnualCost
+      : ((prog.tuitionAnnualUsd || 0) + (prog.livingCostAnnualUsd || 0));
+    const userBudget = profile?.annualBudgetUsd ?? profile?.annualBudget ?? 35000;
+    const computedGap = (prog.budgetGap !== undefined && !isNaN(prog.budgetGap))
+      ? prog.budgetGap
+      : Math.max(0, netCost - userBudget);
+
+    const budgetBadge = computedGap <= 0
       ? '<span class="feasibility-badge badge-within-budget">🟢 Within Budget</span>'
-      : `<span class="feasibility-badge badge-budget-gap">🟡 $${Math.round(prog.budgetGap / 1000)}k Gap</span>`;
+      : `<span class="feasibility-badge badge-budget-gap">🟡 $${Math.round(computedGap / 1000)}k Gap</span>`;
 
     const schBadge = prog.scholarshipEligible
       ? `<a href="scholarships.html?country=${targetCountryParam}&region=${targetRegionParam}&uni=${targetUniParam}" class="feasibility-badge badge-scholarship" style="text-decoration:none" title="Explore matching scholarships for ${prog.universityName}">✨ ${prog.matchedScholarships?.[0]?.split('—')?.[0]?.trim() || 'Scholarship Match'} ↗</a>`
@@ -1833,19 +1841,21 @@
     const wrapper = $('#compareSlotsWrapper');
     if (wrapper) {
       let slotsHtml = '';
-      const pool = (results && results.length > 0) ? results : (typeof MOCK_RESULTS !== 'undefined' ? MOCK_RESULTS : []);
+      const pool = (results && results.length > 0) ? results : (typeof MOCK_RESULTS !== 'undefined' ? MOCK_RESULTS.map(adaptResult) : []);
       for (let i = 0; i < 3; i++) {
         const pid = pinnedProgramIds[i];
         if (pid) {
-          const prog = pool.find(r => String(r.programId) === String(pid));
-          if (prog) {
+          const rawProg = pool.find(r => String(r.programId) === String(pid));
+          if (rawProg) {
+            const prog = rawProg.overallScore !== undefined ? rawProg : adaptResult(rawProg);
             const costK = Math.round(((prog.tuitionAnnualUsd || 0) + (prog.livingCostAnnualUsd || 0)) / 1000);
+            const scoreVal = prog.overallScore ?? prog.compatibilityScore ?? prog.academicScore ?? 85;
             slotsHtml += `
-              <div class="compare-slot-chip">
+              <div class="compare-slot-chip" title="${escapeHtml(prog.universityName)}: ${escapeHtml(prog.programName)}">
                 <div class="compare-slot-info">
                   <div class="compare-slot-uni" title="${escapeHtml(prog.universityName)}">${countryFlag(prog.country, prog.region)} ${escapeHtml(prog.universityName)}</div>
                   <div class="compare-slot-prog" title="${escapeHtml(prog.programName)}">${escapeHtml(prog.programName)}</div>
-                  <div class="compare-slot-cost">$${costK}k/yr • ${prog.overallScore}%</div>
+                  <div class="compare-slot-cost">$${costK}k/yr • ${scoreVal}% Match</div>
                 </div>
                 <button type="button" class="compare-slot-remove" data-id="${prog.programId}" title="Remove ${escapeHtml(prog.universityName)} from compare tray">✕</button>
               </div>
@@ -1865,10 +1875,11 @@
 
   function openCompareModal() {
     try {
-      const pool = (results && results.length > 0) ? results : (typeof MOCK_RESULTS !== 'undefined' ? MOCK_RESULTS : []);
+      const pool = (results && results.length > 0) ? results : (typeof MOCK_RESULTS !== 'undefined' ? MOCK_RESULTS.map(adaptResult) : []);
       const pinnedList = pinnedProgramIds
         .map(id => pool.find(p => String(p.programId) === String(id)))
-        .filter(Boolean);
+        .filter(Boolean)
+        .map(p => p.overallScore !== undefined ? p : adaptResult(p));
 
       if (pinnedList.length === 0) {
         showToast('No Programs Pinned', 'Pin at least 1 program from the cards below to compare.', 'info');
@@ -1885,6 +1896,7 @@
         const color = getScoreColor(String(tier).toUpperCase());
         const targetUni = encodeURIComponent(prog.universityName || '');
         const isGerman = (prog.country && (prog.country.toLowerCase().includes('germany') || prog.country.toLowerCase().includes('deutschland'))) || prog.region === 'EU';
+        const matchScore = prog.overallScore ?? prog.academicScore ?? 85;
 
       return `
         <div class="compare-column-card" data-id="${prog.programId}">
@@ -1899,7 +1911,7 @@
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.35rem">
               <span class="compare-col-score-badge tier-${tierClass}">
-                ${prog.overallScore}% Overall Match
+                ${matchScore}% Overall Match
               </span>
               <span class="text-xs text-muted">Rank #${prog.programId}</span>
             </div>
