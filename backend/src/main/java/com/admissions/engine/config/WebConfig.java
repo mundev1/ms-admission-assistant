@@ -29,19 +29,13 @@ public class WebConfig {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
-            /**
-             * {@inheritDoc}
-             *
-             * <p>Registers a wildcard CORS mapping for all API paths.</p>
-             *
-             * @param registry the {@link CorsRegistry} to configure
-             */
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("*");
+                        .allowedOriginPatterns("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }
