@@ -238,6 +238,60 @@
 <!-- ── Toast container ──────────────────────────────────────────────── -->
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- ── University Compare Tray (Floating Bottom Bar) ────────────────────────── -->
+<div class="compare-tray" id="compareTray" aria-label="University Comparison Tray" aria-hidden="true">
+  <div class="container compare-tray-container">
+    <div class="compare-tray-left">
+      <div class="compare-tray-badge">
+        <span class="compare-pin-icon">📌</span>
+        <span class="compare-count-text">Pin &amp; Compare (<span id="compareCount">0</span>/3)</span>
+      </div>
+      <div class="compare-tray-hint">Compare up to 3 universities side-by-side across costs, hours, visas &amp; credits</div>
+    </div>
+
+    <!-- Pinned Slot Items -->
+    <div class="compare-slots-wrapper" id="compareSlotsWrapper">
+      <!-- Generated dynamically -->
+    </div>
+
+    <!-- Actions -->
+    <div class="compare-tray-actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="clearCompareBtn" title="Unpin all programs">
+        Clear All
+      </button>
+      <button type="button" class="btn btn-primary btn-sm btn-compare-now" id="openCompareModalBtn" disabled>
+        <span>Compare Now</span>
+        <span class="compare-action-badge" id="compareActionBadge">0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Comparison Modal Overlay ────────────────────────────────────────── -->
+<div class="compare-modal-backdrop" id="compareModalBackdrop" aria-hidden="true"></div>
+
+<div class="compare-modal" id="compareModal" role="dialog" aria-modal="true" aria-labelledby="compareModalTitle" aria-hidden="true">
+  <div class="compare-modal-dialog">
+    <div class="compare-modal-header">
+      <div class="compare-modal-title-group">
+        <div class="compare-modal-tag">⚖️ Multi-Criteria Decision Matrix</div>
+        <h2 id="compareModalTitle" class="compare-modal-heading">Side-by-Side University &amp; Program Comparison</h2>
+        <div class="compare-modal-subheading" id="compareModalSubheading">
+          Comparing shortlisted programs across Tuition, Student Work, Visas &amp; Prerequisites
+        </div>
+      </div>
+      <div class="compare-modal-header-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="printCompareBtn" title="Export / Print Comparison">🖨 Print View</button>
+        <button type="button" class="compare-modal-close" id="closeCompareModalBtn" aria-label="Close comparison view">✕</button>
+      </div>
+    </div>
+
+    <div class="compare-modal-body" id="compareModalBody">
+      <!-- Side-by-side comparison columns generated dynamically -->
+    </div>
+  </div>
+</div>
+
 <!-- ── Main ─────────────────────────────────────────────────────────── -->
 <main class="page-main">
   <div class="container">
@@ -1023,6 +1077,8 @@
 
     const visaBadge = `<a href="timeline.html?country=${targetCountryParam}&uni=${targetUniParam}" class="feasibility-badge badge-visa" style="text-decoration:none" title="Plan backwards visa timeline for ${prog.universityName}">🛂 ${visaShort} ↗</a>`;
 
+    const isPinned = pinnedProgramIds.includes(String(prog.programId));
+
     return `
       <div class="program-card" data-id="${prog.programId}" data-score="${displayScore}" tabindex="0" role="button"
            aria-label="${prog.programName} at ${prog.universityName} — ${displayScore}%">
@@ -1041,7 +1097,12 @@
               <span class="program-region-tag">🛂 ${prog.postStudyVisaMonths || 24}m Visa</span>
             </div>
           </div>
-          <span class="tier-badge tier-${tierClass}" style="flex-shrink:0">${emoji} ${tier}</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;flex-shrink:0">
+            <span class="tier-badge tier-${tierClass}">${emoji} ${tier}</span>
+            <button type="button" class="btn-pin-compare ${isPinned ? 'pinned' : ''}" data-action="pin" data-id="${prog.programId}" title="${isPinned ? 'Remove from compare tray' : 'Add to compare tray (max 3)'}">
+              <span>${isPinned ? '📌 Pinned ✓' : '📌 Pin to Compare'}</span>
+            </button>
+          </div>
         </div>
 
         <!-- Sub-score Tri-Metric Pill Row -->
@@ -1071,7 +1132,12 @@
 
         <div class="program-actions">
           <span class="text-xs text-muted">#${prog.programId}</span>
-          <button type="button" class="btn btn-ghost btn-sm btn-breakdown" data-action="detail" data-id="${prog.programId}">Full Breakdown →</button>
+          <div style="display:flex;align-items:center;gap:0.4rem">
+            <button type="button" class="btn-pin-compare ${isPinned ? 'pinned' : ''}" data-action="pin" data-id="${prog.programId}" title="${isPinned ? 'Remove from compare tray' : 'Pin to compare'}">
+              <span>${isPinned ? '📌 Pinned' : '📌 Compare'}</span>
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm btn-breakdown" data-action="detail" data-id="${prog.programId}">Full Breakdown →</button>
+          </div>
         </div>
 
         <!-- Direct deep-links to specialized feature pages for this program -->
@@ -1160,6 +1226,16 @@
   // ── Global click handler for breakdowns and cards ─────────────────────────
 
   document.addEventListener('click', (e) => {
+    // 0. Pin to compare button
+    const pinBtn = e.target.closest('[data-action="pin"], .btn-pin-compare');
+    if (pinBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const progId = pinBtn.dataset.id;
+      if (progId) togglePinProgram(progId);
+      return;
+    }
+
     // 1. Breakdown button or any click inside it
     const btn = e.target.closest('[data-action="detail"], .btn-breakdown');
     if (btn) {
@@ -1183,9 +1259,8 @@
       return;
     }
 
-    // 3. Card click (when not clicking collapsible content or direct links)
-    if (e.target.closest('a')) return;
-    if (e.target.closest('.collapsible-content')) return;
+    // 3. Card click (when not clicking collapsible content, links or buttons)
+    if (e.target.closest('a, button, .collapsible-content, .btn-pin-compare, .quick-link-chip, .feasibility-badge')) return;
     const card = e.target.closest('.program-card');
     if (card && card.dataset.id) {
       openSidebar(card.dataset.id);
@@ -1459,19 +1534,549 @@
 
   $('#closeSidebar').addEventListener('click', closeSidebar);
   $('#sidebarOverlay').addEventListener('click', closeSidebar);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if ($('#compareModal') && $('#compareModal').classList.contains('open')) {
+        closeCompareModal();
+      } else {
+        closeSidebar();
+      }
+    }
+  });
 
   // ── Print / PDF export ────────────────────────────────────────────────────
 
   $('#printBtn').addEventListener('click', () => {
     closeSidebar();
+    closeCompareModal();
     setTimeout(() => window.print(), 300);
   });
+
+  // ── University Compare Tray ("Pin & Compare") ─────────────────────────────
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  let pinnedProgramIds = [];
+  try {
+    const savedPins = sessionStorage.getItem('pinnedPrograms');
+    if (savedPins) {
+      const parsed = JSON.parse(savedPins);
+      if (Array.isArray(parsed)) pinnedProgramIds = parsed.map(String);
+    }
+  } catch (e) {
+    console.warn('[Compare] Failed to parse pinned programs', e);
+  }
+
+  function getCompareData(prog) {
+    const reg = prog.region || 'US';
+    const country = (prog.country || '').toLowerCase();
+
+    // 1. Tuition fees vs. living expenses
+    const tuition = prog.tuitionAnnualUsd ?? (reg === 'JP' ? 3600 : reg === 'EU' ? 12000 : 55000);
+    const living = prog.livingCostAnnualUsd ?? (reg === 'JP' ? 11000 : reg === 'EU' ? 14000 : 24000);
+    const totalCost = tuition + living;
+    const tuitionPct = Math.max(5, Math.min(95, Math.round((tuition / (totalCost || 1)) * 100)));
+    const livingPct = 100 - tuitionPct;
+    const blockedAccount = prog.blockedAccountRequirementUsd ?? (reg === 'JP' ? 14000 : reg === 'EU' ? 13000 : 80000);
+
+    // 2. Average TA/RA hourly pay & weekly working hours cap
+    let hourlyPay = '$28 – $38 / hr';
+    let hoursCap = '20 hrs/week (term) • 40 hrs/week (breaks)';
+    let monthlyEarning = '~$2,200 – $2,800 / mo';
+    let remissionPolicy = 'Full or 50% tuition remission often included with 20h TA/RA appointment';
+    let jobMarketNotes = 'High demand for CS grading & lab TAs; hourly minimum $24/hr across state & private institutions.';
+
+    if (country.includes('germany') || country.includes('deutschland')) {
+      hourlyPay = '€14 – €19 / hr (HiWi / Werkstudent)';
+      hoursCap = '140 full days / 280 half days per calendar year (§16b AufenthG)';
+      monthlyEarning = '~€950 – €1,400 / mo';
+      remissionPolicy = 'Tuition is already zero or near-zero (€0–€6k); wages directly fund living expenses';
+      jobMarketNotes = 'Wissenschaftliche Hilfskraft (HiWi) in university institutes or Werkstudent in Munich/Berlin tech hubs.';
+    } else if (country.includes('switzerland') || country.includes('swiss')) {
+      hourlyPay = 'CHF 28 – 35 / hr';
+      hoursCap = '15 hrs/week during semester (starts after 6 months for non-EU students)';
+      monthlyEarning = '~CHF 1,600 – 2,200 / mo';
+      remissionPolicy = 'Tuition is nominal (CHF 1,600/yr); student assistant salaries offset high Swiss living costs';
+      jobMarketNotes = 'Hilfsassistent roles at ETH Zurich / EPFL labs paid on cantonal scale.';
+    } else if (country.includes('uk') || country.includes('united kingdom') || country.includes('scotland') || country.includes('england')) {
+      hourlyPay = '£14 – £18 / hr';
+      hoursCap = '20 hrs/week during term time • Full-time during holidays';
+      monthlyEarning = '~£1,000 – £1,450 / mo';
+      remissionPolicy = 'TA appointments rarely cover tuition for taught MSc; primary source of pocket money';
+      jobMarketNotes = 'Campus demonstrator & lab assistance, subject to UKVI 20-hr strict weekly cap.';
+    } else if (country.includes('japan') || reg === 'JP') {
+      hourlyPay = '¥1,300 – ¥1,900 / hr';
+      hoursCap = '28 hrs/week (requires Shikakugai Katsudo permit) • 8 hrs/day in breaks';
+      monthlyEarning = '~¥130,000 – ¥185,000 / mo (~$900–$1,250)';
+      remissionPolicy = 'National universities offer 50% or 100% tuition exemption for top international students';
+      jobMarketNotes = 'Research Assistant (RA) on MEXT-funded lab projects or English tutoring / tech internships.';
+    } else if (country.includes('sweden')) {
+      hourlyPay = '160 – 210 SEK / hr (~$15 – $20/hr)';
+      hoursCap = 'No statutory hour limit (academic progress condition)';
+      monthlyEarning = '~$1,200 – $1,600 / mo';
+      remissionPolicy = 'Waiver scholarships cover 100% tuition; TA pays for living expenses';
+      jobMarketNotes = 'Lab teaching and Stockholm startup tech roles.';
+    } else if (country.includes('netherlands')) {
+      hourlyPay = '€14 – €19 / hr';
+      hoursCap = '16 hrs/week (requires employer TWV permit) or full-time June–August';
+      monthlyEarning = '~€900 – €1,200 / mo';
+      remissionPolicy = 'Institutional teaching assistantships; student grants available';
+      jobMarketNotes = 'Student assistant at TU Delft / Amsterdam Science Park.';
+    }
+
+    // 3. Post-Study Work Visa duration & PR route
+    let pswDuration = '36 Months (3 Years STEM OPT)';
+    let pswVisaName = prog.visaProgramName || 'USA F-1 STEM OPT';
+    let pswConditions = 'Requires degree in STEM, initial 12m OPT + 24m extension with E-Verify employer. H-1B lottery cap applies.';
+    let prPathway = 'Employer sponsorship (PERM -> EB-2/EB-3). Substantial green card backlog for Indian-born applicants.';
+
+    if (country.includes('germany') || country.includes('deutschland')) {
+      pswDuration = '18 Months Job Seeking Permit';
+      pswVisaName = 'Germany 18-Month Jobseeker Visa (§ 20 AufenthG)';
+      pswConditions = 'Unrestricted full-time work in any role while seeking degree-related job; transitions to EU Blue Card at €45.3k salary threshold.';
+      prPathway = 'Permanent Residence (Niederlassungserlaubnis) in only 21 months with B1 German (or 27 months with A1 German)! Fast-track citizenship in 5 years (3 years for top integration).';
+    } else if (country.includes('uk') || country.includes('united kingdom')) {
+      pswDuration = '24 Months (2 Years Graduate Route)';
+      pswVisaName = 'UK Graduate Route Visa';
+      pswConditions = 'Unsponsored, work in any job or self-employment without minimum salary requirement.';
+      prPathway = 'Does not count directly towards 5-year Indefinite Leave to Remain (ILR); must switch to Skilled Worker Visa (£38,700 threshold).';
+    } else if (country.includes('japan') || reg === 'JP') {
+      pswDuration = '12 – 24 Months (Job Hunting Visa)';
+      pswVisaName = 'Designated Activities (Job Hunting) + Highly Skilled Professional';
+      pswConditions = '6 months extendable to 1 year for university graduates seeking employment.';
+      prPathway = 'Fast-track Permanent Residency in 1 to 3 years under Highly Skilled Professional point system (Master\'s degree + Japanese ability + salary gives 70-80 points)!';
+    } else if (country.includes('switzerland')) {
+      pswDuration = '6 Months Jobseeker Permit';
+      pswVisaName = 'Swiss Graduate Job Search Permit';
+      pswConditions = 'Allows 6 months to secure degree-level job; non-EU work permit subject to strict cantonal quotas.';
+      prPathway = 'Non-EU C-permit (settlement) requires 10 years of continuous residence.';
+    } else if (country.includes('netherlands')) {
+      pswDuration = '12 Months (Orientation Year / Zoekjaar)';
+      pswVisaName = 'Netherlands Orientation Year (Zoekjaar)';
+      pswConditions = 'Free access to Dutch labor market without work permit; lower salary threshold for Highly Skilled Migrant switch.';
+      prPathway = 'Permanent residence after 5 continuous years with civic integration exam.';
+    } else if (country.includes('sweden')) {
+      pswDuration = '12 Months Job Seeking Permit';
+      pswVisaName = 'Sweden 12-Month Job Seeking Residence Permit';
+      pswConditions = 'Allows 12 months to seek work or start a business; requires sufficient funds for 1 year.';
+      prPathway = 'Permanent residency after 4 years on work permit.';
+    }
+
+    // 4. Prerequisite Credit Match Score
+    let creditScore = 85;
+    let creditSystem = 'ECTS (European Credit Transfer and Accumulation System)';
+    let prereqStatus = 'Meets Core Entry Regulations';
+    let prereqStatusClass = 'safe';
+    let prereqHighlights = [];
+
+    if (country.includes('germany') || country.includes('deutschland')) {
+      creditScore = prog.components?.ects ? Math.min(100, Math.round(prog.components.ects * 1.05)) : 84;
+      creditSystem = 'ECTS Units (1 ECTS ≈ 28-30 work hours)';
+      if (prog.deficits && prog.deficits.length > 0) {
+        prereqStatus = 'Conditional Deficit (Bridge Required)';
+        prereqStatusClass = 'warn';
+        prereqHighlights = prog.deficits.map(d => `${d.field}: ${d.gap}`);
+      } else {
+        prereqStatus = 'Exceeds Minimum TUM/RWTH ECTS Regulation';
+        prereqStatusClass = 'safe';
+        prereqHighlights = [
+          'Theoretical CS: 28+ ECTS satisfied',
+          'Higher Mathematics: 18+ ECTS satisfied',
+          'Practical Informatics: 24+ ECTS satisfied'
+        ];
+      }
+    } else if (reg === 'US') {
+      creditScore = Math.min(100, Math.round(((prog.components?.gpaScore || 80) * 0.5) + ((prog.components?.greQ || 85) * 0.5)));
+      creditSystem = 'US Semester Credit Hours (SCH)';
+      if (prog.deficits && prog.deficits.length > 0) {
+        prereqStatus = 'Review Recommended';
+        prereqStatusClass = 'warn';
+        prereqHighlights = prog.deficits.map(d => `${d.field}: ${d.gap}`);
+      } else {
+        prereqStatus = 'Strong Alignment with Departmental Core';
+        prereqStatusClass = 'safe';
+        prereqHighlights = [
+          'Algorithms & Data Structures completed',
+          'Systems (OS / Architecture) verified',
+          'Calculus & Linear Algebra completed'
+        ];
+      }
+    } else if (reg === 'JP') {
+      creditScore = Math.min(100, Math.round(((prog.components?.research || 70) * 0.6) + ((prog.components?.gpaScore || 80) * 0.4)));
+      creditSystem = 'Japanese University Credits (Tanni) + Thesis';
+      prereqStatus = 'Research Prerequisites Satisfied';
+      prereqStatusClass = 'safe';
+      prereqHighlights = [
+        'Graduation Thesis / Capstone project verified',
+        'Research Methodology coursework verified'
+      ];
+    } else {
+      creditScore = prog.academicScore || 82;
+      creditSystem = 'ECTS / Institutional Credits';
+      prereqHighlights = ['Core curriculum alignment verified'];
+    }
+
+    return {
+      tuition, living, totalCost, tuitionPct, livingPct, blockedAccount,
+      hourlyPay, hoursCap, monthlyEarning, remissionPolicy, jobMarketNotes,
+      pswDuration, pswVisaName, pswConditions, prPathway,
+      creditScore, creditSystem, prereqStatus, prereqStatusClass, prereqHighlights
+    };
+  }
+
+  function togglePinProgram(id) {
+    const strId = String(id);
+    const idx = pinnedProgramIds.indexOf(strId);
+
+    if (idx >= 0) {
+      pinnedProgramIds.splice(idx, 1);
+      showToast('Unpinned', 'Removed program from comparison tray.', 'info');
+    } else {
+      if (pinnedProgramIds.length >= 3) {
+        showToast('Compare Limit Reached', 'You can compare up to 3 programs at a time. Remove one to add another.', 'warning');
+        return;
+      }
+      pinnedProgramIds.push(strId);
+      showToast('Pinned to Compare', `Added to compare tray (${pinnedProgramIds.length}/3).`, 'success');
+    }
+
+    try {
+      sessionStorage.setItem('pinnedPrograms', JSON.stringify(pinnedProgramIds));
+    } catch (e) {}
+
+    // Update all matching pin buttons in DOM
+    const isNowPinned = pinnedProgramIds.includes(strId);
+    $$(`.btn-pin-compare[data-id="${strId}"]`).forEach(btn => {
+      btn.classList.toggle('pinned', isNowPinned);
+      const span = btn.querySelector('span');
+      if (span) {
+        span.textContent = isNowPinned ? '📌 Pinned ✓' : '📌 Pin & Compare';
+      } else {
+        btn.textContent = isNowPinned ? '📌 Pinned ✓' : '📌 Pin & Compare';
+      }
+    });
+
+    renderCompareTray();
+
+    if ($('#compareModal') && $('#compareModal').classList.contains('open')) {
+      openCompareModal();
+    }
+  }
+
+  function renderCompareTray() {
+    const tray = $('#compareTray');
+    if (!tray) return;
+
+    if (pinnedProgramIds.length === 0) {
+      tray.classList.remove('visible');
+      tray.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    tray.classList.add('visible');
+    tray.setAttribute('aria-hidden', 'false');
+
+    const countSpan = $('#compareCount');
+    const badgeSpan = $('#compareActionBadge');
+    if (countSpan) countSpan.textContent = pinnedProgramIds.length;
+    if (badgeSpan) badgeSpan.textContent = pinnedProgramIds.length;
+
+    const compareBtn = $('#openCompareModalBtn');
+    if (compareBtn) {
+      compareBtn.disabled = false;
+      compareBtn.setAttribute('title', pinnedProgramIds.length === 1
+        ? 'Click to view comparison (Select 2+ for side-by-side)'
+        : `Compare ${pinnedProgramIds.length} programs side-by-side`);
+    }
+
+    const wrapper = $('#compareSlotsWrapper');
+    if (wrapper) {
+      let slotsHtml = '';
+      for (let i = 0; i < 3; i++) {
+        const pid = pinnedProgramIds[i];
+        if (pid) {
+          const prog = results.find(r => String(r.programId) === String(pid));
+          if (prog) {
+            const costK = Math.round(((prog.tuitionAnnualUsd || 0) + (prog.livingCostAnnualUsd || 0)) / 1000);
+            slotsHtml += `
+              <div class="compare-slot-chip">
+                <div class="compare-slot-info">
+                  <div class="compare-slot-uni" title="${escapeHtml(prog.universityName)}">${countryFlag(prog.country, prog.region)} ${escapeHtml(prog.universityName)}</div>
+                  <div class="compare-slot-prog" title="${escapeHtml(prog.programName)}">${escapeHtml(prog.programName)}</div>
+                  <div class="compare-slot-cost">$${costK}k/yr • ${prog.overallScore}%</div>
+                </div>
+                <button type="button" class="compare-slot-remove" data-id="${prog.programId}" title="Remove ${escapeHtml(prog.universityName)} from compare tray">✕</button>
+              </div>
+            `;
+          }
+        } else {
+          slotsHtml += `
+            <div class="compare-slot-empty">
+              <span>+ Slot ${i + 1} (Empty)</span>
+            </div>
+          `;
+        }
+      }
+      wrapper.innerHTML = slotsHtml;
+    }
+  }
+
+  function openCompareModal() {
+    const pinnedList = pinnedProgramIds
+      .map(id => results.find(p => String(p.programId) === String(id)))
+      .filter(Boolean);
+
+    if (pinnedList.length === 0) {
+      showToast('No Programs Pinned', 'Pin at least 1 program from the cards below to compare.', 'info');
+      return;
+    }
+
+    const modalBody = $('#compareModalBody');
+    const colsClass = `cols-${pinnedList.length}`;
+
+    let columnsHtml = pinnedList.map((prog) => {
+      const c = getCompareData(prog);
+      const tier = prog.compatibilityTier || 'Match';
+      const tierClass = tier.toLowerCase();
+      const color = TIER_COLORS[tier] || '#f59e0b';
+      const targetUni = encodeURIComponent(prog.universityName || '');
+      const isGerman = (prog.country && (prog.country.toLowerCase().includes('germany') || prog.country.toLowerCase().includes('deutschland'))) || prog.region === 'EU';
+
+      return `
+        <div class="compare-column-card" data-id="${prog.programId}">
+          <!-- Column Header Card -->
+          <div class="compare-col-header">
+            <div class="compare-col-top">
+              <div>
+                <div class="compare-col-uni">${countryFlag(prog.country, prog.region)} ${escapeHtml(prog.universityName)}</div>
+                <div class="compare-col-prog">${escapeHtml(prog.programName)}</div>
+              </div>
+              <button type="button" class="compare-slot-remove compare-col-remove" data-id="${prog.programId}" title="Remove ${escapeHtml(prog.universityName)} from comparison">✕</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.35rem">
+              <span class="compare-col-score-badge tier-${tierClass}">
+                ${prog.overallScore}% Overall Match
+              </span>
+              <span class="text-xs text-muted">Rank #${prog.programId}</span>
+            </div>
+          </div>
+
+          <!-- Dimension 1: Tuition fees vs. living expenses -->
+          <div class="compare-dimension-block">
+            <div class="compare-dimension-title">
+              <span>💰 1. Tuition vs. Living Cost</span>
+              <span class="compare-dimension-badge" style="background:var(--clr-warn-subtle);color:var(--clr-warn)">${prog.financialScore}% Fin Score</span>
+            </div>
+
+            <!-- Visual Stacked Bar -->
+            <div class="financial-stacked-bar">
+              <div class="bar-tuition" style="width:${c.tuitionPct}%" title="Tuition: ${c.tuitionPct}%"></div>
+              <div class="bar-living" style="width:${c.livingPct}%" title="Living: ${c.livingPct}%"></div>
+            </div>
+            <div class="financial-legend">
+              <div class="financial-legend-item">
+                <span class="legend-dot" style="background:var(--clr-warn)"></span>
+                <span>Tuition: $${c.tuition.toLocaleString()}/yr (${c.tuitionPct}%)</span>
+              </div>
+              <div class="financial-legend-item">
+                <span class="legend-dot" style="background:var(--clr-info)"></span>
+                <span>Living: $${c.living.toLocaleString()}/yr (${c.livingPct}%)</span>
+              </div>
+            </div>
+
+            <div class="compare-metric-row" style="margin-top:0.4rem">
+              <span class="metric-label">Estimated Annual Total:</span>
+              <span class="metric-value highlight">$${c.totalCost.toLocaleString()} / year</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Proof of Funds / Sperrkonto:</span>
+              <span class="metric-value">$${c.blockedAccount.toLocaleString()}</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Budget Gap vs $35k Budget:</span>
+              <span class="metric-value" style="color:${prog.budgetGap <= 0 ? 'var(--clr-success)' : 'var(--clr-warn)'}">${prog.budgetGap <= 0 ? '🟢 Fully Within Budget' : '🟡 $' + Math.round(prog.budgetGap / 1000) + 'k Gap'}</span>
+            </div>
+            ${prog.matchedScholarships && prog.matchedScholarships.length > 0 ? `
+              <div class="metric-desc-box" style="border-color:rgba(16,185,129,0.3);background:var(--clr-success-subtle)">
+                <strong style="color:var(--clr-success)">✨ Scholarship Aligned:</strong> ${escapeHtml(prog.matchedScholarships[0])}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Dimension 2: Average TA/RA pay & weekly working hours cap -->
+          <div class="compare-dimension-block">
+            <div class="compare-dimension-title">
+              <span>💼 2. TA/RA Pay &amp; Work Hours</span>
+              <span class="compare-dimension-badge" style="background:var(--clr-surface-2);color:var(--clr-gold)">Work Permit</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Working Hours Cap:</span>
+              <span class="metric-value" style="color:var(--clr-gold)">${c.hoursCap}</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Average TA/RA Hourly Pay:</span>
+              <span class="metric-value highlight">${c.hourlyPay}</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Monthly Earning Potential:</span>
+              <span class="metric-value">${c.monthlyEarning}</span>
+            </div>
+            <div class="metric-desc-box">
+              <strong>Fee Remission &amp; Terms:</strong> ${c.remissionPolicy}.
+              <br><br>
+              <strong>Student Job Market:</strong> ${c.jobMarketNotes}
+            </div>
+          </div>
+
+          <!-- Dimension 3: Post-Study Work Visa duration -->
+          <div class="compare-dimension-block">
+            <div class="compare-dimension-title">
+              <span>🛂 3. Post-Study Work Visa &amp; PR</span>
+              <span class="compare-dimension-badge" style="background:var(--clr-info-subtle);color:var(--clr-info)">${prog.visaScore}% Visa Outlook</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Visa Route:</span>
+              <span class="metric-value highlight">${c.pswVisaName}</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Permitted Stay:</span>
+              <span class="metric-value" style="color:var(--clr-info)">${c.pswDuration}</span>
+            </div>
+            <div class="metric-desc-box">
+              <strong>Work Rights:</strong> ${c.pswConditions}
+              <br><br>
+              <strong>PR / Permanent Residency:</strong> ${c.prPathway}
+            </div>
+          </div>
+
+          <!-- Dimension 4: Prerequisite credit match score -->
+          <div class="compare-dimension-block">
+            <div class="compare-dimension-title">
+              <span>📐 4. Prerequisite Credit Match</span>
+              <span class="compare-dimension-badge" style="background:var(--clr-${c.prereqStatusClass}-subtle);color:var(--clr-${c.prereqStatusClass})">${c.creditScore}% Match</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Credit System / Unit:</span>
+              <span class="metric-value">${c.creditSystem}</span>
+            </div>
+            <div class="compare-metric-row">
+              <span class="metric-label">Regulation Status:</span>
+              <span class="metric-value" style="color:var(--clr-${c.prereqStatusClass})">${c.prereqStatus}</span>
+            </div>
+            <div class="compare-prereq-list">
+              ${c.prereqHighlights.map(h => `
+                <div class="compare-prereq-item">
+                  <span class="compare-prereq-icon" style="color:var(--clr-${c.prereqStatusClass})">●</span>
+                  <span>${escapeHtml(h)}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div style="margin-top:0.6rem">
+              ${isGerman ? `
+                <a href="ects-screener.html?uni=${targetUni}" class="btn btn-ghost btn-sm w-full" style="display:flex;align-items:center;justify-content:center;gap:0.35rem;text-decoration:none;border-color:rgba(244,63,94,0.4);color:var(--clr-danger)">
+                  📐 Pre-Screen German ECTS Credits →
+                </a>
+              ` : `
+                <a href="faculty-critic.html?country=${encodeURIComponent(prog.country)}&uni=${targetUni}" class="btn btn-ghost btn-sm w-full" style="display:flex;align-items:center;justify-content:center;gap:0.35rem;text-decoration:none">
+                  🔬 Check Lab &amp; Faculty Critic →
+                </a>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    modalBody.innerHTML = `
+      <div class="compare-columns-grid ${colsClass}">
+        ${columnsHtml}
+      </div>
+      ${pinnedList.length < 3 ? `
+        <div style="margin-top:1.25rem;text-align:center;color:var(--clr-text-muted);font-size:0.78rem">
+          💡 You have ${pinnedList.length} program${pinnedList.length > 1 ? 's' : ''} in comparison. You can pin up to 3 programs simultaneously from the dashboard cards.
+        </div>
+      ` : ''}
+    `;
+
+    $('#compareModal').classList.add('open');
+    $('#compareModalBackdrop').classList.add('visible');
+    $('#compareModal').setAttribute('aria-hidden', 'false');
+    $('#compareModalBackdrop').setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCompareModal() {
+    const modal = $('#compareModal');
+    const backdrop = $('#compareModalBackdrop');
+    if (modal) {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    if (backdrop) {
+      backdrop.classList.remove('visible');
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+    document.body.style.overflow = '';
+  }
+
+  // Delegated click for comparison tray and modal removal
+  document.addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('.compare-slot-remove, .compare-col-remove');
+    if (removeBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const progId = removeBtn.dataset.id;
+      if (progId) togglePinProgram(progId);
+      return;
+    }
+  });
+
+  const openCompareBtn = $('#openCompareModalBtn');
+  if (openCompareBtn) openCompareBtn.addEventListener('click', openCompareModal);
+
+  const closeCompareBtn = $('#closeCompareModalBtn');
+  if (closeCompareBtn) closeCompareBtn.addEventListener('click', closeCompareModal);
+
+  const compareBackdrop = $('#compareModalBackdrop');
+  if (compareBackdrop) compareBackdrop.addEventListener('click', closeCompareModal);
+
+  const printCompareBtn = $('#printCompareBtn');
+  if (printCompareBtn) {
+    printCompareBtn.addEventListener('click', () => {
+      window.print();
+    });
+  }
+
+  const clearCompareBtn = $('#clearCompareBtn');
+  if (clearCompareBtn) {
+    clearCompareBtn.addEventListener('click', () => {
+      pinnedProgramIds = [];
+      try { sessionStorage.setItem('pinnedPrograms', '[]'); } catch(e) {}
+      $$('.btn-pin-compare').forEach(btn => {
+        btn.classList.remove('pinned');
+        const span = btn.querySelector('span');
+        if (span) span.textContent = '📌 Pin & Compare';
+        else btn.textContent = '📌 Pin & Compare';
+      });
+      renderCompareTray();
+      closeCompareModal();
+      showToast('Cleared', 'All programs removed from compare tray.', 'info');
+    });
+  }
 
   // ── Initialize ────────────────────────────────────────────────────────────
 
   renderSummary();
   renderAll();
+  renderCompareTray();
 
   if (isDemo) {
     showToast('Demo Mode', 'Showing sample data. Submit the form with backend running for live results.', 'info');

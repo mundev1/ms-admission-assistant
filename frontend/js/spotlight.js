@@ -575,6 +575,16 @@
 
   const SPOTLIGHT_ACTIONS = [
     {
+      id: 'act-open-compare',
+      type: 'ACTION',
+      title: '⚖️ Open University Compare Tray',
+      subtitle: 'Compare up to 3 pinned universities across tuition, TA pay, visas & ECTS',
+      icon: '📌',
+      badge: 'Compare',
+      url: 'dashboard.html',
+      keywords: ['compare', 'pin', 'tray', 'comparison', 'side by side', 'versus', 'tuition', 'working hours']
+    },
+    {
       id: 'act-toggle-sidebar',
       type: 'ACTION',
       title: '☰ Toggle Sidebar Menu (3 Lines)',
@@ -986,6 +996,23 @@
   function executeItem(item) {
     if (!item) return;
     closeSpotlight();
+
+    if (item.id === 'act-open-compare') {
+      if (window.location.pathname.includes('dashboard.html')) {
+        const btn = document.getElementById('openCompareModalBtn');
+        if (btn && !btn.disabled) {
+          btn.click();
+        } else {
+          const cardBtn = document.querySelector('.btn-pin-compare');
+          if (cardBtn) cardBtn.click();
+          const openBtn = document.getElementById('openCompareModalBtn');
+          if (openBtn) openBtn.click();
+        }
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+      return;
+    }
 
     if (item.id === 'act-toggle-sidebar') {
       if (window.MS_NavDrawer) {

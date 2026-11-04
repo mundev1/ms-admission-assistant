@@ -22,7 +22,7 @@
       id: 'dashboard',
       href: 'dashboard.html',
       title: 'Program Matches Dashboard',
-      desc: 'Admissions matrix, multi-criteria ranking & decision cards',
+      desc: 'Admissions matrix, multi-criteria ranking & 📌 Pin-to-Compare',
       icon: '📊',
       badge: 'Core'
     },
