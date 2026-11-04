@@ -2,8 +2,8 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "https://ms-admissions-backend-production.up.railway.app/$1"
+      "source": "/api/(.*)",
+      "destination": "https://ms-admissions-backend-production.up.railway.app/api/$1"
     }
   ]
 }

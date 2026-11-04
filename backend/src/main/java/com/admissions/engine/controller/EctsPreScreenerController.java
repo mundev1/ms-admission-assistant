@@ -14,7 +14,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/ects")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class EctsPreScreenerController {
 
     private final EctsPreScreenerService ectsPreScreenerService;

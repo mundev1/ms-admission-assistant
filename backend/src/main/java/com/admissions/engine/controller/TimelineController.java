@@ -19,7 +19,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/timeline")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class TimelineController {
 
     private final TimelinePlannerService timelinePlannerService;

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/scholarships")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class ScholarshipRadarController {
 
     private final ScholarshipRadarService radarService;

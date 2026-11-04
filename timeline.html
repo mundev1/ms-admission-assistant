@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📅 Visa & Deadline Timeline Tracker — MS Admissions Engine</title>
+  <script>const t=localStorage.getItem('ms-admissions-theme')||'dark';document.documentElement.setAttribute('data-theme',t);</script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .page-main { padding: 1.75rem 0 4rem; }
+    .timeline-page-header {
+      background: linear-gradient(135deg, var(--clr-surface) 0%, var(--clr-surface-2) 100%);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    .timeline-page-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #f59e0b, #3b82f6);
+    }
+    .applicant-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--clr-bg-alt);
+      border: 1px solid var(--clr-border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      color: var(--clr-white);
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="container header-container">
+    <div class="header-brand-group">
+      <button type="button" class="nav-menu-btn" id="navMenuBtn" aria-label="Open Navigation Menu" aria-expanded="false" title="Menu (Features &amp; Navigation)">
+        <span class="hamburger-icon" aria-hidden="true">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </span>
+        <span class="nav-menu-label">Menu</span>
+      </button>
+      <div class="brand">
+        <a href="index.html" style="text-decoration:none;color:inherit">
+          <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+        </a>
+        <div class="brand-subtitle">Visa &amp; Deadline Timeline Tracker</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="spotlight-header-btn" id="spotlightTriggerBtn" aria-label="Open Global Search" title="Quick Search (⌘K / Ctrl+K)">
+        <span class="spotlight-btn-icon">🔍</span>
+        <span class="spotlight-btn-label">Quick Search...</span>
+        <kbd class="spotlight-btn-kbd">⌘K</kbd>
+      </button>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Black and White Theme" title="Toggle Theme (Dark / Light)">
+        <span class="theme-toggle-icon">☀️</span>
+        <span class="theme-toggle-label">Light</span>
+      </button>
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">📊 Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<main class="page-main">
+  <div class="container">
+
+    <!-- Hero / Header Card -->
+    <div class="timeline-page-header">
+      <div class="flex items-center justify-between gap-md flex-wrap">
+        <div>
+          <h1 style="font-size:1.75rem;font-weight:900;color:var(--clr-white);display:flex;align-items:center;gap:0.6rem">
+            📅 Visa Appointment &amp; Application Deadline Timeline Tracker
+          </h1>
+          <p style="color:var(--clr-text-muted);font-size:0.92rem;max-width:850px;line-height:1.6;margin-top:0.4rem">
+            Many Indian students miss admissions cycles due to external administrative bottlenecks rather than academic rejection (e.g. German APS certificate delays of 8–16 weeks or US VFS visa wait times of 3–6 months). This backwards scheduling engine calculates your strict countdown to target start dates.
+          </p>
+          <div class="applicant-pill-badge" id="applicantBadge">
+            👤 Candidate: <strong id="candName" style="color:var(--clr-gold)">Loading...</strong>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candDegree">B.Tech in Computer Science</span>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candUni" style="color:var(--clr-gold-light)">COER University, Roorkee</span>
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn btn-outline-gold" id="btnExportIcs" title="Download RFC 5545 .ics Calendar for Google / Apple Calendar">
+            📥 Export .ics Calendar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Main Timeline Section ── -->
+    <section class="timeline-section" id="timelineTrackerSection" style="margin-top:0">
+      <!-- Intake Selector Bar -->
+      <div style="font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:0.6rem">
+        SELECT TARGET INTAKE CYCLE:
+      </div>
+      <div class="intake-chips-wrap" id="intakeChipsWrap"></div>
+
+      <!-- Controls Row: Country & Target Start Date -->
+      <div class="timeline-controls-row">
+        <div class="flex items-center gap-md flex-wrap">
+          <span style="font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);letter-spacing:0.5px">DESTINATION:</span>
+          <div class="country-pills" id="countryPills">
+            <button type="button" class="country-pill active" data-country="Germany">🇩🇪 Germany</button>
+            <button type="button" class="country-pill" data-country="Spain">🇪🇸 Spain</button>
+            <button type="button" class="country-pill" data-country="Portugal">🇵🇹 Portugal</button>
+            <button type="button" class="country-pill" data-country="USA">🇺🇸 USA</button>
+            <button type="button" class="country-pill" data-country="Japan">🇯🇵 Japan</button>
+            <button type="button" class="country-pill" data-country="Canada">🇨🇦 Canada</button>
+            <button type="button" class="country-pill" data-country="Italy">🇮🇹 Italy</button>
+            <button type="button" class="country-pill" data-country="France">🇫🇷 France</button>
+            <button type="button" class="country-pill" data-country="Ireland">🇮🇪 Ireland</button>
+            <button type="button" class="country-pill" data-country="Australia">🇦🇺 Australia</button>
+          </div>
+        </div>
+
+        <div class="timeline-date-input-wrap">
+          <label for="customStartDateInput" style="font-weight:600;font-size:0.85rem">Target Start Date:</label>
+          <input type="date" id="customStartDateInput" class="timeline-date-input" value="2027-09-01" />
+          <button type="button" class="btn btn-ghost btn-sm" id="btnRecalculateTimeline">⚡ Recalculate</button>
+        </div>
+      </div>
+
+      <!-- Indian Student Bottleneck Advisories Box -->
+      <div class="timeline-advisories-card" id="timelineAdvisoriesCard">
+        <div class="timeline-advisories-header">
+          <span>⚠️ INDIAN APPLICANT VISA &amp; DEADLINE ADVISORY</span>
+        </div>
+        <div id="timelineSummaryAdvisory" style="font-size:0.86rem;color:var(--clr-white);margin-bottom:0.75rem;line-height:1.55;font-weight:500"></div>
+        <ul class="timeline-advisories-list" id="timelineAdvisoriesList"></ul>
+      </div>
+
+      <!-- Timeline Statistics Bar -->
+      <div class="timeline-stats-bar" id="timelineStatsBar"></div>
+
+      <!-- Interactive Milestones Flow -->
+      <div class="timeline-roadmap" id="timelineRoadmap"></div>
+    </section>
+
+  </div><!-- .container -->
+</main>
+
+<!-- Toast notification container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module">
+  import { getIntakes, planTimeline, downloadTimelineIcs } from './js/api.js';
+
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: 'ℹ️', error: '❌', success: '✅', warning: '⚠️' };
+    const container = $('#toastContainer');
+    if (!container) return;
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Load applicant profile
+  let profile = null;
+  try {
+    const pro = sessionStorage.getItem('applicantData') || sessionStorage.getItem('applicantProfile');
+    if (pro) profile = JSON.parse(pro);
+  } catch (e) { console.error('sessionStorage parse error', e); }
+
+  if (!profile) {
+    profile = {
+      fullName: 'Aarav Sharma',
+      universityName: 'COER University, Roorkee',
+      degree: 'B.Tech',
+      specialization: 'Computer Science'
+    };
+  }
+
+  const elCandName = $('#candName');
+  if (elCandName) elCandName.textContent = profile.fullName || 'Prospective Scholar';
+  const elCandDegree = $('#candDegree');
+  if (elCandDegree) elCandDegree.textContent = `${profile.degree || 'B.Tech'} in ${profile.specialization || 'Computer Science'}`;
+  const elCandUni = $('#candUni');
+  if (elCandUni) elCandUni.textContent = profile.universityName || 'Indian Engineering Institute';
+
+  // Read URL query parameters if navigated from program card
+  const urlParams = new URLSearchParams(window.location.search);
+  const qCountry = urlParams.get('country');
+  const qUni = urlParams.get('uni');
+
+  // Standard fallback intake cycles
+  const DEFAULT_INTAKES = [
+    { id: 'FALL_2027', name: 'Fall 2027 (US / Canada / Europe)', region: 'US / EU', defaultCountry: 'Germany', defaultStartDate: '2027-09-01' },
+    { id: 'SPRING_2027', name: 'Spring 2027 (US / Europe)', region: 'US / EU', defaultCountry: 'USA', defaultStartDate: '2027-01-15' },
+    { id: 'JAPAN_APRIL_2027', name: 'Japan Spring (April 2027)', region: 'Japan', defaultCountry: 'Japan', defaultStartDate: '2027-04-01' },
+    { id: 'JAPAN_OCTOBER_2027', name: 'Japan Autumn (October 2027)', region: 'Japan', defaultCountry: 'Japan', defaultStartDate: '2027-10-01' },
+    { id: 'FALL_2028', name: 'Fall 2028 (Long-Range)', region: 'Global', defaultCountry: 'Germany', defaultStartDate: '2028-09-01' }
+  ];
+
+  let availableIntakes = [...DEFAULT_INTAKES];
+  let currentIntakeId = 'FALL_2027';
+  let currentCountry = qCountry || 'Germany';
+  let currentStartDate = '2027-09-01';
+  let timelineSchedule = null;
+
+  const STORAGE_KEY = 'timeline_checked_items';
+  function getCheckedItems() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function setCheckedItem(key, val) {
+    const data = getCheckedItems();
+    if (val) {
+      data[key] = true;
+    } else {
+      delete data[key];
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('localStorage save failed', e);
+    }
+  }
+
+  // Phase metadata mapping supporting both backend enums and legacy keys
+  const PHASE_METADATA = {
+    TESTS_AND_PREP: { title: 'Standardized Tests & Profile Prep', emoji: '📝', badge: 'T - 12 to T - 10 Months' },
+    CREDENTIAL_VERIFICATION: { title: 'Credential Verification & Attestation', emoji: '📜', badge: 'T - 10 to T - 8 Months' },
+    UNIVERSITY_APPLICATIONS: { title: 'University Applications & SOPs', emoji: '🏛️', badge: 'T - 8 to T - 6 Months' },
+    FINANCES_AND_ADMISSION: { title: 'Admissions & Financial Proof', emoji: '💰', badge: 'T - 5 to T - 3 Months' },
+    VISA_AND_EMBASSY: { title: 'Visa Slot & Consular Processing', emoji: '🛂', badge: 'T - 3 to T - 1 Months' },
+    PRE_DEPARTURE: { title: 'Pre-Departure & Relocation', emoji: '✈️', badge: 'T - 1 to T - 0 Months' },
+    // Fallback mappings
+    PHASE_1_FOUNDATION: { title: 'Standardized Testing & Academic Foundation', emoji: '📝', badge: 'T - 12 to T - 10 Months' },
+    PHASE_2_ATTESTATION: { title: 'Document Attestation & Verification', emoji: '📜', badge: 'T - 10 to T - 8 Months' },
+    PHASE_3_APPLICATIONS: { title: 'University Application Portals', emoji: '🏛️', badge: 'T - 8 to T - 6 Months' },
+    PHASE_4_FINANCIALS: { title: 'Financial Proof & Blocked Account', emoji: '💰', badge: 'T - 5 to T - 3 Months' },
+    PHASE_5_VISA_DEPARTURE: { title: 'Visa Filing, Biometrics & Departure', emoji: '🛂', badge: 'T - 3 to T - 0 Months' }
+  };
+
+  // Render Intake Selector Chips
+  function renderIntakeChips() {
+    const wrap = $('#intakeChipsWrap');
+    if (!wrap) return;
+
+    wrap.innerHTML = availableIntakes.map(opt => {
+      const optId = opt.id || opt.intakeId;
+      const optDate = opt.defaultStartDate || opt.targetStartDate || '2027-09-01';
+      const isActive = optId === currentIntakeId;
+      return `
+        <button type="button" class="intake-chip ${isActive ? 'active' : ''}" data-intake="${optId}" data-date="${optDate}" data-country="${opt.defaultCountry || ''}">
+          <div class="intake-chip-name">${escapeHtml(opt.name)}</div>
+          <div class="intake-chip-sub">${escapeHtml(opt.region || '')} • Starts ${optDate}</div>
+        </button>
+      `;
+    }).join('');
+  }
+
+  // Pre-select country pill
+  function syncCountryPills() {
+    $$('#countryPills .country-pill').forEach(btn => {
+      const match = btn.dataset.country.toLowerCase() === currentCountry.toLowerCase()
+        || (btn.dataset.country === 'Germany' && currentCountry.toLowerCase().includes('europe'));
+      btn.classList.toggle('active', match);
+    });
+  }
+
+  // Comprehensive fallback schedule generator for offline / resilient behavior
+  function generateFallbackSchedule(country, startDateStr) {
+    const start = new Date(startDateStr);
+    const offsetDate = (days) => {
+      const d = new Date(start);
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split('T')[0];
+    };
+
+    const c = (country || 'Germany').toLowerCase();
+    const isGer = c.includes('germany') || c.includes('europe');
+    const isJp = c.includes('japan');
+    const isSpain = c.includes('spain');
+    const isPortugal = c.includes('portugal');
+    const isUs = c.includes('usa') || c.includes('us');
+
+    let milestones = [];
+    let alerts = [];
+
+    if (isSpain) {
+      alerts = [
+        '🇪🇸 Hague Apostille (MEA India): Indian degree certificates, mark sheets, and Police Clearance Certificates (PCC) MUST carry the MEA Apostille sticker from New Delhi.',
+        '📜 Sworn Spanish Translation (Traductor Jurado): Spanish consulates require official translations certified by a MAEC-recognized sworn translator for all English/regional documents.',
+        '🏥 Sin Copago Medical Insurance: You must secure private medical insurance with an authorized Spanish provider (Sanitas, Adeslas) with 0 co-pay and repatriation coverage.'
+      ];
+      milestones = [
+        {
+          id: 'MS-01', title: 'Language Proficiency & Spanish Language Primer',
+          description: 'Appear for IELTS Academic (6.5+) and build conversational Spanish (A1/A2 level).',
+          phase: 'TESTS_AND_PREP', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-340), daysOffsetFromStart: -340, leadTimeDescription: 'T - 11 Months (340 days before start)',
+          indianStudentAdvisory: 'While Master\'s programs at UPC and UPM are taught in English, conversational Spanish eases daily life and visa consular processing in India.',
+          actionChecklist: ['Register for IELTS Academic', 'Achieve target band score (minimum 6.5)', 'Begin basic Spanish A1 language prep'],
+          externalResourceUrl: 'https://www.ieltsidpindia.com/'
+        },
+        {
+          id: 'MS-02', title: 'MEA Apostille Attestation & Criminal Record Certificate (PCC)',
+          description: 'Obtain PCC from Regional Passport Office (PSK) and get university degrees apostilled by MEA India in New Delhi.',
+          phase: 'CREDENTIAL_VERIFICATION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-280), daysOffsetFromStart: -280, leadTimeDescription: 'T - 9 Months (280 days before start)',
+          indianStudentAdvisory: '⚠️ MANDATORY: Spanish consulate rejects documents without Hague Apostille sticker. Police verification takes 3–6 weeks.',
+          actionChecklist: ['Apply for Police Clearance Certificate (PCC) on Passport Seva portal', 'Apostille degree certificate & transcripts via MEA agency', 'Apostille original PCC'],
+          externalResourceUrl: 'https://www.passportindia.gov.in/'
+        },
+        {
+          id: 'MS-03', title: 'Spanish University Portal Applications & Pre-enrolment',
+          description: 'Submit master application dossiers to Spanish university portals (e.g. UPC, UPM, UC3M).',
+          phase: 'UNIVERSITY_APPLICATIONS', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-210), daysOffsetFromStart: -210, leadTimeDescription: 'T - 7 Months (210 days before start)',
+          indianStudentAdvisory: 'Submit authenticated Bachelor certificate indicating equivalent European ECTS workload (240 ECTS).',
+          actionChecklist: ['Upload apostilled marksheets and Statement of Purpose', 'Obtain University ECTS equivalence certificate', 'Submit application before Phase 1 international cutoffs'],
+          externalResourceUrl: 'https://www.educacionfpydeportes.gob.es/'
+        },
+        {
+          id: 'MS-04', title: 'Admission Acceptance & Certified Spanish Translation (Traductor Jurado)',
+          description: 'Receive formal Carta de Admisión and arrange sworn translations for visa file.',
+          phase: 'FINANCES_AND_ADMISSION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-135), daysOffsetFromStart: -135, leadTimeDescription: 'T - 4.5 Months (135 days before start)',
+          indianStudentAdvisory: 'Official translations must be produced by a recognized Traductor Jurado registered with Spain\'s Ministry of Foreign Affairs.',
+          actionChecklist: ['Receive official Carta de Admisión indicating full-time on-campus credits', 'Pay university enrolment deposit', 'Submit PCC and medical certificates for official sworn Spanish translation'],
+          externalResourceUrl: 'https://www.exteriores.gob.es/'
+        },
+        {
+          id: 'MS-05', title: 'Spanish National Student Visa Filing & Biometrics (BLS International)',
+          description: 'Submit national long-stay student visa (Visado de Estudios) dossier at BLS New Delhi or Mumbai.',
+          phase: 'VISA_AND_EMBASSY', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-75), daysOffsetFromStart: -75, leadTimeDescription: 'T - 2.5 Months (75 days before start)',
+          indianStudentAdvisory: 'Book BLS slot 60–90 days in advance. Proof of €600/month IPREM financial means and zero co-pay medical insurance required.',
+          actionChecklist: ['Book BLS Spain visa appointment', 'Secure Sanitas / Adeslas Sin Copago private health insurance', 'Prepare 6-month stamped bank statement with ITR proofs', 'Submit medical fitness certificate as per International Health Regulations 2005'],
+          externalResourceUrl: 'https://india.blsspainvisa.com/'
+        },
+        {
+          id: 'MS-06', title: 'Departure, Housing & TIE Foreigner Identity Card Booking',
+          description: 'Book flight, secure accommodation in Madrid/Barcelona, and schedule appointment for TIE card.',
+          phase: 'PRE_DEPARTURE', criticality: 'STANDARD_STEP', status: 'UPCOMING',
+          targetDate: offsetDate(-20), daysOffsetFromStart: -20, leadTimeDescription: 'T - 20 Days before start',
+          indianStudentAdvisory: 'Upon arrival in Spain, you have 30 days to register your padrón (empadronamiento) and apply for the Tarjeta de Identidad de Extranjero (TIE).',
+          actionChecklist: ['Book flight to Madrid / Barcelona', 'Secure verified student room / shared flat contract', 'Book Cita Previa for TIE fingerprinting at Oficina de Extranjería'],
+          externalResourceUrl: 'https://sede.administracionespublicas.gob.es/icpplus/'
+        }
+      ];
+    } else if (isPortugal) {
+      alerts = [
+        '🇵🇹 MEA Apostille & Police Clearance: Criminal record certificate (PCC) issued by PSK and academic degrees must be apostilled by MEA India.',
+        '🛂 VFS Portugal D4 Visa Waitlist: National study visa appointment slots at VFS New Delhi/Mumbai should be booked 90–120 days prior to course commencement.',
+        '💶 Proof of Financial Means: Portuguese immigration (AIMA) requires bank proof of 12 months minimum subsistence funds (€820/month national minimum wage).'
+      ];
+      milestones = [
+        {
+          id: 'MS-01', title: 'Language Certification & Academic Transcripts Consolidation',
+          description: 'Complete IELTS Academic / TOEFL test and request complete academic transcripts.',
+          phase: 'TESTS_AND_PREP', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-340), daysOffsetFromStart: -340, leadTimeDescription: 'T - 11 Months (340 days before start)',
+          indianStudentAdvisory: 'Programs at Instituto Superior Técnico and FEUP require IELTS 6.5 or equivalent medium of instruction certification.',
+          actionChecklist: ['Appear for IELTS Academic', 'Collect consolidated marksheets', 'Draft technical Statement of Purpose'],
+          externalResourceUrl: 'https://www.ieltsidpindia.com/'
+        },
+        {
+          id: 'MS-02', title: 'MEA Apostille on Degree Certificates & Police Clearance Certificate',
+          description: 'Submit educational documents and Police Clearance Certificate (PCC) to MEA India for Apostille legalization.',
+          phase: 'CREDENTIAL_VERIFICATION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-280), daysOffsetFromStart: -280, leadTimeDescription: 'T - 9 Months (280 days before start)',
+          indianStudentAdvisory: 'Portuguese consulates require original MEA Apostille sticker on both degrees and clean criminal record PCC.',
+          actionChecklist: ['Book PSK PCC appointment', 'Obtain MEA Apostille on degree certificates', 'Obtain MEA Apostille on PCC'],
+          externalResourceUrl: 'https://www.passportindia.gov.in/'
+        },
+        {
+          id: 'MS-03', title: 'Portuguese University Master Application Submission (FénixEdu)',
+          description: 'Submit master applications via university portal (e.g. ULisboa, UP, Nova IMS).',
+          phase: 'UNIVERSITY_APPLICATIONS', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-200), daysOffsetFromStart: -200, leadTimeDescription: 'T - 6.5 Months (200 days before start)',
+          indianStudentAdvisory: 'Phase 1 international applications close early spring. Early application is critical for student accommodation.',
+          actionChecklist: ['Upload apostilled certificates and syllabus to university portal', 'Pay application fees (€50–€100)', 'Track application ranking and provisional admission list'],
+          externalResourceUrl: 'https://www.ulisboa.pt/en'
+        },
+        {
+          id: 'MS-04', title: 'Acceptance Letter & Proof of Financial Subsistence (€9,840)',
+          description: 'Secure Carta de Aceitação, pay tuition deposit, and assemble 12 months subsistence bank statement.',
+          phase: 'FINANCES_AND_ADMISSION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-130), daysOffsetFromStart: -130, leadTimeDescription: 'T - 4.3 Months (130 days before start)',
+          indianStudentAdvisory: 'AIMA requires bank proof of 12 months minimum subsistence funds (€820/month national minimum wage).',
+          actionChecklist: ['Pay tuition deposit and obtain signed Carta de Aceitação', 'Maintain ₹9–12 Lakh liquid balance in bank account for 3+ months', 'Prepare sponsor affidavit if funded by parents'],
+          externalResourceUrl: 'https://aima.gov.pt/pt'
+        },
+        {
+          id: 'MS-05', title: 'VFS National Study Visa (D4) Filing & Consular Appointment',
+          description: 'Book and attend National Visa D4 submission at VFS Global New Delhi or Mumbai.',
+          phase: 'VISA_AND_EMBASSY', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-80), daysOffsetFromStart: -80, leadTimeDescription: 'T - 2.6 Months (80 days before start)',
+          indianStudentAdvisory: '⚠️ Peak summer VFS appointment queues reach 8–12 weeks. Book visa slot as soon as acceptance letter is issued.',
+          actionChecklist: ['Book VFS Portugal National Visa slot', 'Purchase Schengen student travel insurance (€30,000 coverage)', 'Submit complete dossier with apostilled PCC and bank proofs'],
+          externalResourceUrl: 'https://visa.vfsglobal.com/ind/en/prt'
+        },
+        {
+          id: 'MS-06', title: 'Relocation to Lisbon/Porto & AIMA Residence Permit Booking',
+          description: 'Finalize student accommodation, fly to Portugal, and attend AIMA residence permit interview.',
+          phase: 'PRE_DEPARTURE', criticality: 'STANDARD_STEP', status: 'UPCOMING',
+          targetDate: offsetDate(-20), daysOffsetFromStart: -20, leadTimeDescription: 'T - 20 Days before start',
+          indianStudentAdvisory: 'Your D4 visa contains an AIMA URL/date for your resident permit card interview upon arrival in Portugal.',
+          actionChecklist: ['Book flight to Lisbon / Porto', 'Collect rental contract / accommodation letter', 'Obtain Portuguese NIF (tax number) upon arrival'],
+          externalResourceUrl: 'https://aima.gov.pt/'
+        }
+      ];
+    } else if (isGer) {
+      alerts = [
+        '🇩🇪 APS Certificate Backlog: Indian degree verification at APS New Delhi takes 60–120 days. Uni-Assist and German universities require this certificate before evaluation.',
+        '🛂 German VFS Waitlist: Peak summer (June–August) visa queues in Delhi, Mumbai, Bengaluru, and Chennai stretch to 8–12 weeks. Join waitlist immediately upon admission.'
+      ];
+      milestones = [
+        {
+          id: 'MS-01', title: 'Standardized Language Tests (IELTS / TOEFL & German A1)',
+          description: 'Appear for IELTS Academic (6.5+) or TOEFL iBT (90+) and acquire basic A1 German vocabulary.',
+          phase: 'TESTS_AND_PREP', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-340), daysOffsetFromStart: -340, leadTimeDescription: 'T - 11 Months (340 days before start)',
+          indianStudentAdvisory: 'IELTS/TOEFL scores are required by Uni-Assist. German A1 certification significantly strengthens visa interview performance.',
+          actionChecklist: ['Register for IELTS Academic (minimum band 6.5)', 'Collect official TRF score card', 'Start German A1 Goethe vocabulary'],
+          externalResourceUrl: 'https://www.ieltsidpindia.com/'
+        },
+        {
+          id: 'MS-02', title: 'German APS Certificate Application (Akademische Prüfstelle India)',
+          description: 'Submit physical dossier and pay ₹18,000 for mandatory degree verification at APS New Delhi.',
+          phase: 'CREDENTIAL_VERIFICATION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-300), daysOffsetFromStart: -300, leadTimeDescription: 'T - 10 Months (300 days before start)',
+          indianStudentAdvisory: '⚠️ CRITICAL INDIAN BOTTLENECK: APS India takes 60–120 days. You cannot get a German student visa or final university admission without it!',
+          actionChecklist: ['Register at aps-india.info and pay ₹18,000', 'Collect sealed transcripts from Indian college', 'Provide professor email for verification', 'Courier physical dossier to APS New Delhi'],
+          externalResourceUrl: 'https://www.aps-india.info/'
+        },
+        {
+          id: 'MS-03', title: 'Uni-Assist VPD & Direct University Portal Submissions',
+          description: 'Submit Preliminary Documentation (VPD) via Uni-Assist and apply on university portals.',
+          phase: 'UNIVERSITY_APPLICATIONS', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-210), daysOffsetFromStart: -210, leadTimeDescription: 'T - 7 Months (210 days before start)',
+          indianStudentAdvisory: 'Uni-Assist takes 4–6 weeks for VPD processing. Submit 1 month prior to university deadlines (TUM international deadline is May 31).',
+          actionChecklist: ['Upload transcripts, APS certificate, and CV to Uni-Assist', 'Draft German-format tabular CV (Lebenslauf)', 'Submit Statement of Motivation'],
+          externalResourceUrl: 'https://www.uni-assist.de/en/'
+        },
+        {
+          id: 'MS-04', title: 'Sperrkonto (Blocked Account €11,904) & Statutory Health Insurance',
+          description: 'Open an approved blocked account (Coracle / Expatrio / Fintiba) and deposit €11,904.',
+          phase: 'FINANCES_AND_ADMISSION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-130), daysOffsetFromStart: -130, leadTimeDescription: 'T - 4 Months (130 days before start)',
+          indianStudentAdvisory: 'Outward remittance via Indian bank (Form A2) takes 3–5 days. Sperrbestätigung confirmation document is mandatory for VFS visa appointment.',
+          actionChecklist: ['Open account via Coracle / Expatrio / Fintiba', 'Transfer €11,904 outward remittance', 'Download Sperrbestätigung letter', 'Sign up for TK or Barmer student health insurance'],
+          externalResourceUrl: 'https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/02-sperrkonto'
+        },
+        {
+          id: 'MS-05', title: 'German National Student Visa Appointment Booking (VFS Waitlist)',
+          description: 'Register on German Mission India appointment waitlist and fill online VIDEX application.',
+          phase: 'VISA_AND_EMBASSY', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-120), daysOffsetFromStart: -120, leadTimeDescription: 'T - 4 Months (120 days before start)',
+          indianStudentAdvisory: '⚠️ VFS WAITLIST ALERT: Peak summer waitlists in Delhi, Mumbai, Bengaluru, and Chennai reach 8–12 weeks. Register on waitlist the day you get admitted!',
+          actionChecklist: ['Register on German Mission waitlist portal', 'Fill VIDEX visa form (print 2 copies)', 'Assemble document dossier in exact embassy sequence'],
+          externalResourceUrl: 'https://india.diplo.de/in-en/service/-/1805324'
+        },
+        {
+          id: 'MS-06', title: 'Visa Interview & Biometrics at VFS Global',
+          description: 'Attend biometric capture and visa interview at VFS Global application centre.',
+          phase: 'VISA_AND_EMBASSY', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-75), daysOffsetFromStart: -75, leadTimeDescription: 'T - 2.5 Months (75 days before start)',
+          indianStudentAdvisory: 'Processing takes 4–8 weeks. Hand over original passport, admission letter, APS certificate, and blocked account letter.',
+          actionChecklist: ['Attend biometrics and interview', 'Hand over original passport and dossier', 'Track courier dispatch'],
+          externalResourceUrl: 'https://visa.vfsglobal.com/ind/en/deu'
+        },
+        {
+          id: 'MS-07', title: 'Studentenwerk Housing Application & Flight Booking',
+          description: 'Apply for Studentenwerk student dormitories and book international student flight.',
+          phase: 'PRE_DEPARTURE', criticality: 'STANDARD_STEP', status: 'UPCOMING',
+          targetDate: offsetDate(-25), daysOffsetFromStart: -25, leadTimeDescription: 'T - 25 Days before start',
+          indianStudentAdvisory: 'Student dorms have long waiting lists. Book student flight fare with 40kg+ baggage allowance.',
+          actionChecklist: ['Apply for Studentenwerk dormitories', 'Book student flight ticket', 'Book appointment for City Address Registration (Anmeldung)'],
+          externalResourceUrl: 'https://www.studentenwerke.de/en'
+        }
+      ];
+    } else if (isJp) {
+      alerts = [
+        '🇯🇵 JLPT Biannual Cycle: The JLPT test is ONLY conducted in July and December. For April intake, you must take the July test of the previous year.',
+        '🏛️ Professor Prior Approval (内諾): Japanese graduate admissions require contacting prospective laboratory faculty 8–9 months before entry.'
+      ];
+      milestones = [
+        {
+          id: 'MS-01', title: 'JLPT & English Language Tests (TOEFL / IELTS)',
+          description: 'Take JLPT (N2/N3) during the July or December cycle and sit for TOEFL/IELTS.',
+          phase: 'TESTS_AND_PREP', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-365), daysOffsetFromStart: -365, leadTimeDescription: 'T - 12 Months (365 days before start)',
+          indianStudentAdvisory: 'JLPT results take 2 months. You must take the July exam of the preceding year for April admissions.',
+          actionChecklist: ['Register for JLPT exam', 'Sit for TOEFL iBT (aim for 90+)', 'Obtain certified score cards'],
+          externalResourceUrl: 'https://www.jlpt.jp/e/'
+        },
+        {
+          id: 'MS-02', title: 'Faculty Contact & Laboratory Consent (内諾 - Naidaku)',
+          description: 'Email prospective university professors with your research plan to seek informal supervision consent.',
+          phase: 'CREDENTIAL_VERIFICATION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-270), daysOffsetFromStart: -270, leadTimeDescription: 'T - 9 Months (270 days before start)',
+          indianStudentAdvisory: 'Without informal consent (Naidaku), many Japanese national universities will reject your application at the screening stage.',
+          actionChecklist: ['Draft academic research proposal (Kenkyu Keikakusho)', 'Read target lab\'s recent IEEE / arXiv papers', 'Send formal email following Japanese academic etiquette'],
+          externalResourceUrl: 'https://www.mext.go.jp/en/'
+        },
+        {
+          id: 'MS-03', title: 'University Admissions Filing & MEXT University Recommendation',
+          description: 'Submit formal application forms to graduate school portal and apply for MEXT University Track.',
+          phase: 'UNIVERSITY_APPLICATIONS', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-210), daysOffsetFromStart: -210, leadTimeDescription: 'T - 7 Months (210 days before start)',
+          indianStudentAdvisory: 'MEXT University recommendation track covers full tuition plus ¥144,000/month stipend and roundtrip airfare.',
+          actionChecklist: ['Complete university admission dossier', 'Submit sealed recommendation letters', 'Apply for MEXT university recommendation'],
+          externalResourceUrl: 'https://www.studyinjapan.go.jp/en/'
+        },
+        {
+          id: 'MS-04', title: 'Certificate of Eligibility (COE) Processing via Japanese Immigration',
+          description: 'University applies for your Certificate of Eligibility (COE) with Japanese Immigration Services Agency.',
+          phase: 'FINANCES_AND_ADMISSION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-90), daysOffsetFromStart: -90, leadTimeDescription: 'T - 3 Months (90 days before start)',
+          indianStudentAdvisory: 'COE processing takes 6–8 weeks in Tokyo. Japanese consulates in India cannot issue student visas without an approved COE.',
+          actionChecklist: ['Submit financial guarantee documents to university', 'Submit passport photos matching Japanese specifications', 'Await electronic or physical COE dispatch'],
+          externalResourceUrl: 'https://www.moj.go.jp/isa/'
+        },
+        {
+          id: 'MS-05', title: 'Student Visa Application at VFS Japan India',
+          description: 'Submit COE, passport, and visa application to VFS Japan in Delhi, Mumbai, Chennai, or Kolkata.',
+          phase: 'VISA_AND_EMBASSY', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-45), daysOffsetFromStart: -45, leadTimeDescription: 'T - 1.5 Months (45 days before start)',
+          indianStudentAdvisory: 'Once COE is received, visa turnaround at VFS Japan is typically 5–8 business days.',
+          actionChecklist: ['Submit COE and visa form to VFS Japan', 'Pay visa consular fee', 'Collect passport with Japan College Student visa stamp'],
+          externalResourceUrl: 'https://visa.vfsglobal.com/ind/en/jpn'
+        },
+        {
+          id: 'MS-06', title: 'Flight Booking & Japanese National Health Insurance (NHI)',
+          description: 'Book flight to Tokyo/Osaka and prepare for ward office registration (Juminhyo).',
+          phase: 'PRE_DEPARTURE', criticality: 'STANDARD_STEP', status: 'UPCOMING',
+          targetDate: offsetDate(-15), daysOffsetFromStart: -15, leadTimeDescription: 'T - 15 Days before start',
+          indianStudentAdvisory: 'Register at the local City/Ward office within 14 days of arrival to receive your Residence Card and join NHI.',
+          actionChecklist: ['Book flight to Tokyo (NRT/HND) or Kansai (KIX)', 'Exchange cash into Japanese Yen for initial transit', 'Prepare documents for municipal ward registration'],
+          externalResourceUrl: 'https://www.studyinjapan.go.jp/'
+        }
+      ];
+    } else {
+      // Default: USA / Global
+      alerts = [
+        '🇺🇸 F-1 Visa Appointment Rush: US Embassy slots for Fall in India typically open in batches between May and July. Monitor USVisaScheduling.com daily.',
+        '📜 I-20 & Financial Solvency: Ensure your liquid bank certificate ($60k–$85k) or education loan sanction letter is ready by April to receive your I-20 promptly.'
+      ];
+      milestones = [
+        {
+          id: 'MS-01', title: 'Standardized Exams (GRE General & TOEFL / IELTS)',
+          description: 'Complete GRE General test and TOEFL iBT (100+) or IELTS Academic (7.5+).',
+          phase: 'TESTS_AND_PREP', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-340), daysOffsetFromStart: -340, leadTimeDescription: 'T - 11 Months (340 days before start)',
+          indianStudentAdvisory: 'Aim for GRE Quant 165+ for top US CS graduate schools. High TOEFL speaking score (26+) is crucial for Teaching Assistantships (GTA).',
+          actionChecklist: ['Take GRE exam and send 4 free score reports', 'Complete TOEFL iBT (100+) or IELTS Academic (7.5+)', 'Record ETS registration numbers'],
+          externalResourceUrl: 'https://www.ets.org/gre'
+        },
+        {
+          id: 'MS-02', title: 'Transcript Attestation & WES / ECE Credential Evaluation',
+          description: 'Order university sealed transcripts and initiate WES course-by-course evaluation.',
+          phase: 'CREDENTIAL_VERIFICATION', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-290), daysOffsetFromStart: -290, leadTimeDescription: 'T - 9.5 Months (290 days before start)',
+          indianStudentAdvisory: 'Many US universities require WES/ECE evaluation for 3-year or 4-year Indian bachelor degrees. Takes 4–8 weeks total.',
+          actionChecklist: ['Create WES account and obtain reference number', 'Request home university to send sealed transcripts', 'Verify course-by-course GPA conversion'],
+          externalResourceUrl: 'https://www.wes.org/'
+        },
+        {
+          id: 'MS-03', title: 'University Portal Applications (Early & Priority Deadlines)',
+          description: 'Submit online applications, Statements of Purpose, and upload Letters of Recommendation.',
+          phase: 'UNIVERSITY_APPLICATIONS', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-250), daysOffsetFromStart: -250, leadTimeDescription: 'T - 8 Months (250 days before start)',
+          indianStudentAdvisory: 'Top US CS programs have strict hard deadlines between Dec 1 and Jan 15. Priority deadlines maximize scholarship and TA/RA consideration.',
+          actionChecklist: ['Finalize Statement of Purpose (SOP)', 'Ensure 3 professors submit Letters of Recommendation (LOR)', 'Submit university online forms'],
+          externalResourceUrl: 'https://www.commonapp.org/'
+        },
+        {
+          id: 'MS-04', title: 'Admissions Acceptance & Enrollment Seat Deposit (April 15)',
+          description: 'Accept university admission offer and pay non-refundable enrollment deposit by April 15.',
+          phase: 'FINANCES_AND_ADMISSION', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-135), daysOffsetFromStart: -135, leadTimeDescription: 'T - 4.5 Months (135 days before start)',
+          indianStudentAdvisory: 'April 15 is the National Decision Day (CGS Resolution) across US universities.',
+          actionChecklist: ['Compare admits and departmental funding packages', 'Formally accept admission offer', 'Pay enrollment seat deposit ($500–$2,000)'],
+          externalResourceUrl: 'https://cgsnet.org/'
+        },
+        {
+          id: 'MS-05', title: 'Financial Affidavit & Form I-20 Issuance by University DSO',
+          description: 'Submit liquid financial solvency documents ($60k–$85k) to obtain Form I-20.',
+          phase: 'FINANCES_AND_ADMISSION', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-120), daysOffsetFromStart: -120, leadTimeDescription: 'T - 4 Months (120 days before start)',
+          indianStudentAdvisory: 'University DSO issues Certificate of Eligibility (Form I-20) needed for F-1 visa. Requires bank certificate or loan sanction letter.',
+          actionChecklist: ['Obtain education loan sanction letter / bank balance certificate', 'Complete university Affidavit of Financial Support', 'Receive official signed Form I-20 with SEVIS ID N00...'],
+          externalResourceUrl: 'https://studyinthestates.dhs.gov/students'
+        },
+        {
+          id: 'MS-06', title: 'Pay SEVIS I-901 Fee & Submit Form DS-160',
+          description: 'Pay $350 SEVIS fee and complete online nonimmigrant visa application (DS-160).',
+          phase: 'VISA_AND_EMBASSY', criticality: 'HIGH_PRIORITY', status: 'UPCOMING',
+          targetDate: offsetDate(-100), daysOffsetFromStart: -100, leadTimeDescription: 'T - 3.3 Months (100 days before start)',
+          indianStudentAdvisory: 'Pay SEVIS fee on FMJfee.com. Submit DS-160 for your consular jurisdiction in India (Delhi, Mumbai, Chennai, Hyderabad, Kolkata).',
+          actionChecklist: ['Pay $350 SEVIS I-901 fee and print receipt', 'Complete DS-160 form accurately', 'Save DS-160 confirmation barcode page'],
+          externalResourceUrl: 'https://www.fmjfee.com/'
+        },
+        {
+          id: 'MS-07', title: 'F-1 Visa Slot Booking & Consular Interview (VAC + Embassy)',
+          description: 'Book biometrics (VAC) and Consular visa interview appointments on USVisaScheduling.com.',
+          phase: 'VISA_AND_EMBASSY', criticality: 'CRITICAL_PATH', status: 'UPCOMING',
+          targetDate: offsetDate(-75), daysOffsetFromStart: -75, leadTimeDescription: 'T - 2.5 Months (75 days before start)',
+          indianStudentAdvisory: '⚠️ US VISA APPOINTMENT CRUSH: Student visa slots open in batches May–July. Attend biometric and in-person consular interview.',
+          actionChecklist: ['Book VAC and Consular interview dates', 'Assemble visa folder: I-20, SEVIS receipt, DS-160, financial proofs, transcripts', 'Practice F-1 interview questions explaining non-immigrant intent'],
+          externalResourceUrl: 'https://www.usvisascheduling.com/'
+        },
+        {
+          id: 'MS-08', title: 'Port of Entry Arrival (Within Legal 30-Day SEVP Window)',
+          description: 'Travel to the United States up to 30 days prior to program start date on Form I-20.',
+          phase: 'PRE_DEPARTURE', criticality: 'STANDARD_STEP', status: 'UPCOMING',
+          targetDate: offsetDate(-20), daysOffsetFromStart: -20, leadTimeDescription: 'T - 20 Days before start',
+          indianStudentAdvisory: 'F-1 regulations prohibit entering the US earlier than 30 days before program start. Carry original I-20 in cabin baggage.',
+          actionChecklist: ['Book flight for arrival 2–3 weeks before orientation', 'Carry physical I-20, passport with F-1 visa stamp, financial proofs', 'Complete university immunization and health insurance enrollment'],
+          externalResourceUrl: 'https://www.ice.gov/sevis'
+        }
+      ];
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    let criticalPathCount = 0;
+    let overdueCount = 0;
+    let urgentCount = 0;
+
+    milestones.forEach(m => {
+      if (m.criticality === 'CRITICAL_PATH' || m.criticality === 'CRITICAL') criticalPathCount++;
+      if (m.targetDate < todayStr) {
+        m.status = 'OVERDUE';
+        overdueCount++;
+      } else {
+        const d = new Date(m.targetDate);
+        const diffDays = Math.round((d - new Date()) / (1000 * 60 * 60 * 24));
+        if (diffDays <= 30 && diffDays >= 0) {
+          m.status = 'URGENT';
+          urgentCount++;
+        } else {
+          m.status = 'UPCOMING';
+        }
+      }
+    });
+
+    return {
+      intakeName: currentIntakeId,
+      country: country,
+      targetStartDate: startDateStr,
+      totalMilestones: milestones.length,
+      criticalPathCount: criticalPathCount,
+      overdueCount: overdueCount,
+      urgentCount: urgentCount,
+      summaryAdvisory: `Backwards schedule calculated for ${country} target start on ${startDateStr}. ${overdueCount > 0 ? '⚠️ ' + overdueCount + ' milestone(s) are overdue. ' : ''}${urgentCount > 0 ? '⏳ ' + urgentCount + ' milestone(s) due within 30 days. ' : ''}Follow the ${criticalPathCount} critical path steps to prevent admission cycle deferral.`,
+      criticalAlerts: alerts,
+      milestones: milestones
+    };
+  }
+
+  // Load schedule from backend or fallback
+  async function loadTimeline() {
+    try {
+      const resp = await planTimeline({
+        intakeId: currentIntakeId,
+        targetCountry: currentCountry,
+        targetStartDate: currentStartDate
+      });
+      if (resp && resp.milestones && resp.milestones.length > 0) {
+        timelineSchedule = resp;
+      } else {
+        timelineSchedule = generateFallbackSchedule(currentCountry, currentStartDate);
+      }
+    } catch (err) {
+      console.warn('[Timeline] Backend planTimeline failed, using local generator:', err.message);
+      timelineSchedule = generateFallbackSchedule(currentCountry, currentStartDate);
+    }
+
+    renderTimeline();
+  }
+
+  // Render the entire timeline section
+  function renderTimeline() {
+    if (!timelineSchedule) return;
+
+    // 1. Sync Country Pills
+    syncCountryPills();
+
+    // Sync active intake chip
+    $$('#intakeChipsWrap .intake-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.intake === currentIntakeId);
+    });
+
+    // 2. Sync Target Start Date
+    const dateInput = $('#customStartDateInput');
+    if (dateInput && timelineSchedule.targetStartDate) {
+      dateInput.value = timelineSchedule.targetStartDate;
+      currentStartDate = timelineSchedule.targetStartDate;
+    }
+
+    // 3. Render Advisories and Summary Box
+    const advList = $('#timelineAdvisoriesList');
+    const summaryBox = $('#timelineSummaryAdvisory');
+    const alertsCard = $('#timelineAdvisoriesCard');
+
+    if (summaryBox) {
+      summaryBox.textContent = timelineSchedule.summaryAdvisory || '';
+    }
+
+    if (advList) {
+      const alerts = timelineSchedule.criticalAlerts || timelineSchedule.indianStudentAdvisories || [];
+      if (alerts.length === 0 && !timelineSchedule.summaryAdvisory) {
+        if (alertsCard) alertsCard.style.display = 'none';
+      } else {
+        if (alertsCard) alertsCard.style.display = 'block';
+        advList.innerHTML = alerts.map(a => `<li class="timeline-advisories-item">${escapeHtml(a)}</li>`).join('');
+      }
+    }
+
+    // 4. Render Stats Bar
+    const statsBar = $('#timelineStatsBar');
+    if (statsBar) {
+      const checks = getCheckedItems();
+      const milestones = timelineSchedule.milestones || [];
+      const completedCount = milestones.filter(m => checks[m.id]).length;
+      const totalCount = timelineSchedule.totalMilestones || milestones.length;
+
+      statsBar.innerHTML = `
+        <div class="timeline-stat-box">
+          <div class="timeline-stat-val">${timelineSchedule.targetStartDate || currentStartDate}</div>
+          <div class="timeline-stat-label">Target Program Start</div>
+        </div>
+        <div class="timeline-stat-box">
+          <div class="timeline-stat-val">${totalCount}</div>
+          <div class="timeline-stat-label">Total Milestones</div>
+        </div>
+        <div class="timeline-stat-box">
+          <div class="timeline-stat-val" style="color:var(--clr-danger)">${timelineSchedule.criticalPathCount ?? milestones.filter(m => m.criticality === 'CRITICAL_PATH' || m.criticality === 'CRITICAL').length}</div>
+          <div class="timeline-stat-label">Critical Path Steps</div>
+        </div>
+        <div class="timeline-stat-box">
+          <div class="timeline-stat-val" style="color:${(timelineSchedule.overdueCount || 0) > 0 ? 'var(--clr-danger)' : 'var(--clr-success)'}">${timelineSchedule.overdueCount || 0}</div>
+          <div class="timeline-stat-label">${(timelineSchedule.overdueCount || 0) > 0 ? 'Overdue Alerts' : 'Overdue Steps'}</div>
+        </div>
+        <div class="timeline-stat-box">
+          <div class="timeline-stat-val" style="color:var(--clr-success)">${completedCount} / ${totalCount}</div>
+          <div class="timeline-stat-label">Completed Checklist</div>
+        </div>
+      `;
+    }
+
+    // 5. Group Milestones by Phase and Render Roadmap
+    const roadmap = $('#timelineRoadmap');
+    if (!roadmap) return;
+
+    const checks = getCheckedItems();
+    const milestones = timelineSchedule.milestones || [];
+
+    const grouped = {};
+    milestones.forEach(m => {
+      const p = m.phase || 'TESTS_AND_PREP';
+      if (!grouped[p]) grouped[p] = [];
+      grouped[p].push(m);
+    });
+
+    let html = '';
+    let phaseIndex = 1;
+
+    for (const [phaseKey, mList] of Object.entries(grouped)) {
+      const phaseInfo = PHASE_METADATA[phaseKey] || {
+        title: phaseKey.replace(/_/g, ' '),
+        emoji: '📌',
+        badge: 'Intake Milestone'
+      };
+
+      html += `
+        <div class="timeline-phase-group">
+          <div class="phase-group-header">
+            <span>${phaseInfo.emoji} Phase ${phaseIndex}: ${escapeHtml(phaseInfo.title)}</span>
+            <span class="phase-badge">${mList.length} step${mList.length > 1 ? 's' : ''} • ${phaseInfo.badge}</span>
+          </div>
+          <div class="milestones-flow">
+            ${mList.map(m => {
+              const isChecked = Boolean(checks[m.id]);
+              const isCrit = m.criticality === 'CRITICAL_PATH' || m.criticality === 'CRITICAL';
+              const statusPillClass = m.status === 'OVERDUE' ? 'pill-status-overdue'
+                : m.status === 'URGENT' ? 'pill-status-urgent'
+                : 'pill-status-upcoming';
+
+              const critPill = isCrit
+                ? '<span class="pill-critical">🔴 Critical Path</span>'
+                : '<span class="pill-high">🟠 High Priority</span>';
+
+              const deadlineDate = m.targetDate || m.calculatedDeadline || 'TBD';
+
+              const checklistHtml = (m.actionChecklist && m.actionChecklist.length > 0)
+                ? `<div class="milestone-checklist">
+                    ${m.actionChecklist.map((item, idx) => {
+                      const itemKey = `${m.id}_item_${idx}`;
+                      const itemChecked = Boolean(checks[itemKey]);
+                      return `
+                        <label class="checklist-item ${itemChecked ? 'checked' : ''}">
+                          <input type="checkbox" data-check-key="${itemKey}" data-milestone-id="${m.id}" ${itemChecked ? 'checked' : ''} />
+                          <span>${escapeHtml(item)}</span>
+                        </label>
+                      `;
+                    }).join('')}
+                   </div>`
+                : '';
+
+              const advisory = m.indianStudentAdvisory || m.advisoryNotes;
+              const advisoryHtml = advisory
+                ? `<div class="milestone-advisory-box">
+                    <strong>🇮🇳 Indian Applicant Advisory:</strong> ${escapeHtml(advisory)}
+                   </div>`
+                : '';
+
+              const portalBtn = m.externalResourceUrl
+                ? `<a href="${m.externalResourceUrl}" target="_blank" rel="noopener noreferrer" class="btn-portal">
+                    🌐 Open Official Portal ↗
+                   </a>`
+                : '';
+
+              const gcalUrl = m.googleCalendarUrl || `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.title)}&dates=${deadlineDate.replace(/-/g, '')}/${deadlineDate.replace(/-/g, '')}&details=${encodeURIComponent(m.description || '')}&location=${encodeURIComponent(currentCountry)}`;
+
+              const gcalBtn = `<a href="${gcalUrl}" target="_blank" rel="noopener noreferrer" class="btn-gcal" title="Add to Google Calendar">
+                    📅 Google Calendar ↗
+                   </a>`;
+
+              return `
+                <div class="milestone-item ${isCrit ? 'is-critical-path' : ''} ${isChecked ? 'is-completed' : ''}" id="card-${m.id}" data-id="${m.id}">
+                  <div class="milestone-bullet">${isChecked ? '✓' : isCrit ? '!' : '•'}</div>
+
+                  <div class="milestone-header">
+                    <div>
+                      <span class="milestone-title">${escapeHtml(m.title)}</span>
+                    </div>
+                    <div class="milestone-meta-row">
+                      <span class="milestone-date-chip">📅 ${deadlineDate}</span>
+                      <span class="milestone-lead-chip">${escapeHtml(m.leadTimeDescription || '')}</span>
+                      <div class="milestone-pills">
+                        ${critPill}
+                        <span class="${statusPillClass}">${m.status || 'UPCOMING'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p class="milestone-desc">${escapeHtml(m.description)}</p>
+                  ${advisoryHtml}
+                  ${checklistHtml}
+
+                  <div class="milestone-actions">
+                    <label class="flex items-center gap-xs text-xs text-muted" style="cursor:pointer">
+                      <input type="checkbox" class="milestone-done-toggle" data-milestone-id="${m.id}" ${isChecked ? 'checked' : ''} />
+                      <span style="font-size:0.8rem;color:var(--clr-text)">Mark Milestone Completed</span>
+                    </label>
+                    <div class="flex items-center gap-xs">
+                      ${portalBtn}
+                      ${gcalBtn}
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+      phaseIndex++;
+    }
+
+    roadmap.innerHTML = html;
+  }
+
+  // ── Event Handlers for Timeline Tracker ───────────────────────────────────
+
+  // 1. Intake chip clicks
+  document.addEventListener('click', (e) => {
+    const chip = e.target.closest('.intake-chip');
+    if (!chip) return;
+
+    $$('.intake-chip', $('#intakeChipsWrap')).forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+
+    currentIntakeId = chip.dataset.intake;
+    currentStartDate = chip.dataset.date || currentStartDate;
+    if (chip.dataset.country) {
+      currentCountry = chip.dataset.country;
+    }
+
+    const dateInput = $('#customStartDateInput');
+    if (dateInput) dateInput.value = currentStartDate;
+
+    loadTimeline();
+    showToast('Intake Selected', `Configured for ${chip.querySelector('.intake-chip-name')?.textContent || currentIntakeId}`, 'info');
+  });
+
+  // 2. Country pill clicks
+  document.addEventListener('click', (e) => {
+    const pill = e.target.closest('.country-pill');
+    if (!pill) return;
+
+    $$('#countryPills .country-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+
+    currentCountry = pill.dataset.country;
+    loadTimeline();
+    showToast('Destination Updated', `Loaded visa regulations for ${currentCountry}`, 'info');
+  });
+
+  // 3. Recalculate button & Date input change
+  $('#btnRecalculateTimeline')?.addEventListener('click', () => {
+    const val = $('#customStartDateInput')?.value;
+    if (val) {
+      currentStartDate = val;
+      loadTimeline();
+      showToast('Timeline Recalculated', `Calculated backwards schedule from ${currentStartDate}`, 'success');
+    }
+  });
+
+  $('#customStartDateInput')?.addEventListener('change', (e) => {
+    if (e.target.value) {
+      currentStartDate = e.target.value;
+      loadTimeline();
+    }
+  });
+
+  // 4. Checklist & Milestone Completion Toggle
+  document.addEventListener('change', (e) => {
+    // Sub-item checklist toggle
+    if (e.target.matches('input[data-check-key]')) {
+      const key = e.target.dataset.checkKey;
+      const checked = e.target.checked;
+      setCheckedItem(key, checked);
+      const label = e.target.closest('.checklist-item');
+      if (label) label.classList.toggle('checked', checked);
+      return;
+    }
+
+    // Milestone main completion toggle
+    if (e.target.matches('.milestone-done-toggle')) {
+      const mId = e.target.dataset.milestoneId;
+      const checked = e.target.checked;
+      setCheckedItem(mId, checked);
+
+      const card = $(`#card-${mId}`);
+      if (card) {
+        card.classList.toggle('is-completed', checked);
+        const bullet = card.querySelector('.milestone-bullet');
+        const isCrit = card.classList.contains('is-critical-path');
+        if (bullet) {
+          bullet.textContent = checked ? '✓' : (isCrit ? '!' : '•');
+        }
+      }
+
+      // Refresh stats bar completed counter
+      const checks = getCheckedItems();
+      const milestones = timelineSchedule?.milestones || [];
+      const completedCount = milestones.filter(m => checks[m.id]).length;
+      const totalCount = timelineSchedule?.totalMilestones || milestones.length;
+      const statsBar = $('#timelineStatsBar');
+      if (statsBar) {
+        const lastBox = statsBar.querySelector('.timeline-stat-box:last-child .timeline-stat-val');
+        if (lastBox) lastBox.textContent = `${completedCount} / ${totalCount}`;
+      }
+    }
+  });
+
+  // 5. Calendar Export (.ics)
+  $('#btnExportIcs')?.addEventListener('click', async () => {
+    try {
+      await downloadTimelineIcs({
+        intakeId: currentIntakeId,
+        targetCountry: currentCountry,
+        targetStartDate: currentStartDate
+      }, `ms-admissions-timeline-${currentCountry.toLowerCase()}.ics`);
+      showToast('Calendar Exported', 'Downloaded .ics calendar with all critical milestones.', 'success');
+    } catch (err) {
+      console.warn('Backend ICS download failed, generating client-side fallback:', err);
+      // Client-side fallback generator
+      const ms = timelineSchedule?.milestones || [];
+      let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Antigravity//MS Admissions Matrix Engine//EN',
+        `X-WR-CALNAME:MS Admissions & Visa Timeline (${currentCountry})`
+      ];
+
+      ms.forEach(m => {
+        const d = (m.targetDate || m.calculatedDeadline || '').replace(/-/g, '');
+        if (d.length === 8) {
+          ics.push('BEGIN:VEVENT');
+          ics.push(`UID:${m.id}-${d}@admissions-engine.local`);
+          ics.push(`DTSTART;VALUE=DATE:${d}`);
+          ics.push(`DTEND;VALUE=DATE:${d}`);
+          ics.push(`SUMMARY:[${m.criticality || 'IMPORTANT'}] ${m.title}`);
+          ics.push(`DESCRIPTION:${(m.description || '').replace(/\n/g, ' ')}`);
+          ics.push('STATUS:CONFIRMED');
+          ics.push('END:VEVENT');
+        }
+      });
+      ics.push('END:VCALENDAR');
+
+      const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ms-timeline-${currentCountry.toLowerCase()}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      showToast('Calendar Exported', 'Generated .ics calendar file for import.', 'success');
+    }
+  });
+
+  // ── Initialization ────────────────────────────────────────────────────────
+  async function init() {
+    try {
+      const intakes = await getIntakes();
+      if (Array.isArray(intakes) && intakes.length > 0) {
+        availableIntakes = intakes;
+      }
+    } catch (e) {
+      console.warn('[Timeline] Failed to load intake cycles from API, using defaults:', e);
+    }
+
+    renderIntakeChips();
+    syncCountryPills();
+    await loadTimeline();
+
+    if (qUni) {
+      showToast('University Target', `Calculated backwards admissions & visa schedule for ${qUni}.`, 'info');
+    }
+  }
+
+  init();
+</script>
+
+<script src="js/theme.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/spotlight.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

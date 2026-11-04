@@ -21,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/score")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class ScoringController {
 
     private final ScoringService scoringService;

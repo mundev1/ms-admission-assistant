@@ -14,7 +14,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/alignment")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class FacultyAlignmentController {
 
     private final FacultyAlignmentService alignmentService;
