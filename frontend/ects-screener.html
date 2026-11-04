@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📐 German ECTS Credit Equivalence & Prerequisite Pre-Screener — MS Admissions Engine</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .page-main { padding: 1.75rem 0 4rem; }
+    .applicant-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--clr-bg-alt);
+      border: 1px solid var(--clr-border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      color: var(--clr-white);
+      margin-top: 0.75rem;
+    }
+    .form-control-sm {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-sm);
+      color: var(--clr-white);
+      padding: 0.35rem 0.6rem;
+      font-size: 0.82rem;
+      outline: none;
+    }
+    .form-control-sm:focus {
+      border-color: var(--clr-gold);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="container">
+    <div class="brand">
+      <a href="index.html" style="text-decoration:none;color:inherit">
+        <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+      </a>
+      <div class="brand-subtitle">German ECTS Credit Equivalence &amp; Prerequisite Pre-Screener</div>
+    </div>
+    <nav class="nav-links">
+      <a href="dashboard.html" class="nav-link">📊 Program Matches</a>
+      <a href="scholarships.html" class="nav-link">💰 Scholarship Radar</a>
+      <a href="faculty-critic.html" class="nav-link">🔬 Faculty Critic</a>
+      <a href="timeline.html" class="nav-link">📅 Visa Timeline</a>
+      <a href="ects-screener.html" class="nav-link active">📐 ECTS Screener</a>
+      <a href="index.html" class="btn btn-secondary btn-sm" style="margin-left:0.5rem">✏️ Edit Profile</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-main">
+  <div class="container">
+
+    <!-- Hero / Header Card -->
+    <div class="ects-page-header">
+      <div class="flex items-center justify-between gap-md flex-wrap">
+        <div>
+          <h1 style="font-size:1.75rem;font-weight:900;color:var(--clr-white);display:flex;align-items:center;gap:0.6rem">
+            📐 German ECTS Credit Equivalence &amp; Prerequisite Pre-Screener
+          </h1>
+          <p style="color:var(--clr-text-muted);font-size:0.92rem;max-width:880px;line-height:1.6;margin-top:0.4rem">
+            The <strong>#1 reason Indian students receive formal rejections</strong> from top German public universities (such as TU Munich, RWTH Aachen, or Stuttgart) is <strong>Curriculum Mismatch</strong>—not GPA. Under German state higher education laws, graduate admission is legally consecutive. German faculties strictly enforce prerequisite minimums (e.g. TUM requires strictly 28+ ECTS in Theoretical CS and 18+ ECTS in Mathematics).
+          </p>
+          <div class="applicant-pill-badge" id="applicantBadge">
+            👤 Candidate: <strong id="candName" style="color:var(--clr-gold)">Loading...</strong>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candDegree">B.Tech in Computer Science</span>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candUni" style="color:var(--clr-gold-light)">COER University, Roorkee</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-xs flex-wrap">
+          <button type="button" class="btn btn-secondary btn-sm" id="btnLoadAicte">
+            📋 Load AICTE B.Tech CSE (4-Yr)
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnLoadTier2">
+            📋 Load Common Indian Deficit
+          </button>
+          <button type="button" class="btn btn-outline-gold btn-sm" id="btnExportFormblatt">
+            📥 Export Formblatt Table
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Controls Row: University Target & ECTS Conversion Mode ── -->
+    <div class="card" style="margin-bottom:1.75rem;padding:1.25rem 1.5rem">
+      <div class="flex items-center justify-between gap-md flex-wrap">
+        <div class="flex items-center gap-md flex-wrap" style="flex:1">
+          <div>
+            <label for="selectUniversityPreset" style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:0.35rem">
+              TARGET GERMAN UNIVERSITY &amp; REGULATIONS:
+            </label>
+            <select id="selectUniversityPreset" class="form-control-sm" style="font-weight:700;min-width:280px;padding:0.45rem 0.75rem">
+              <option value="TUM">🇩🇪 TU Munich (TUM) — MSc Informatics (28 ECTS Theo CS, 18 ECTS Math)</option>
+              <option value="RWTH_AACHEN">🇩🇪 RWTH Aachen University — MSc Computer Science (18 ECTS Theo CS, 18 ECTS Math)</option>
+              <option value="STUTTGART">🇩🇪 University of Stuttgart — MSc Computer Science (12 ECTS Theo CS, 18 ECTS Math)</option>
+              <option value="KIT">🇩🇪 Karlsruhe Institute of Technology (KIT) — MSc Informatics (20 ECTS Theo CS, 22 ECTS Math)</option>
+              <option value="TU_BERLIN">🇩🇪 TU Berlin — MSc Computer Science (14 ECTS Theo CS, 18 ECTS Math)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="selectConversionMode" style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:0.35rem">
+              CONVERSION FORMULA:
+            </label>
+            <select id="selectConversionMode" class="form-control-sm" style="min-width:220px;padding:0.45rem 0.75rem">
+              <option value="STANDARD_AICTE">Standard AICTE Ratio (1 Credit ≈ 1.4 ECTS / 240 ECTS Total)</option>
+              <option value="WORKLOAD_HOURS">Workload Hours Formula (25–30 Work Hours / ECTS)</option>
+              <option value="RATIO_1_33">1.33x Direct Ratio (160 Credits = 213 ECTS)</option>
+              <option value="RATIO_1_5">1.50x Direct Ratio (160 Credits = 240 ECTS)</option>
+            </select>
+          </div>
+
+          <div id="workHoursWrapper" style="display:none">
+            <label for="inputWorkHours" style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:0.35rem">
+              HOURS / ECTS:
+            </label>
+            <input type="number" id="inputWorkHours" class="form-control-sm" value="28" min="25" max="30" step="0.5" style="width:75px;text-align:center" />
+          </div>
+        </div>
+
+        <div>
+          <button type="button" class="btn btn-primary" id="btnEvaluateCurriculum" style="display:flex;align-items:center;gap:0.4rem">
+            ⚡ Evaluate Equivalence
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Overall Admission Verdict Card ── -->
+    <div class="ects-verdict-card verdict-eligible" id="verdictCard">
+      <div class="flex items-center justify-between gap-md flex-wrap" style="margin-bottom:0.75rem">
+        <div class="flex items-center gap-sm">
+          <span style="font-size:2rem" id="verdictEmoji">🟢</span>
+          <div>
+            <div style="font-size:0.75rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:var(--clr-text-muted)">GERMAN ACADEMIC CONSECUTIVENESS VERDICT:</div>
+            <h2 style="font-size:1.35rem;font-weight:900;color:var(--clr-white);margin-top:0.1rem" id="verdictTitle">
+              ADMISSION ELIGIBLE (CURRICULUM EQUIVALENCE MET)
+            </h2>
+          </div>
+        </div>
+        <div class="flex items-center gap-md">
+          <div style="text-align:right">
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);text-transform:uppercase">Calculated Bachelor ECTS:</div>
+            <div style="font-size:1.4rem;font-weight:900;color:var(--clr-gold);font-family:var(--font-mono)" id="verdictTotalEcts">120.4 ECTS</div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:0.88rem;color:var(--clr-text);line-height:1.6;margin-bottom:0.6rem" id="verdictSummaryText">
+        Evaluating undergraduate syllabus...
+      </p>
+      <div style="font-size:0.8rem;background:rgba(0,0,0,0.25);padding:0.6rem 0.85rem;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.06);color:#fae19c" id="verdictAuflagenText">
+        German Auflagen Policy: Direct admission without remedial bachelor exams.
+      </div>
+    </div>
+
+    <!-- ── Category ECTS Progress & Deficit Cards ── -->
+    <div style="font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:0.75rem">
+      DEPARTMENTAL PREREQUISITE DOMAIN BREAKDOWN:
+    </div>
+    <div class="ects-categories-grid" id="categoryCardsGrid"></div>
+
+    <!-- ── Critical Deficit Callout Box (Shown only when gaps exist) ── -->
+    <div class="card" id="criticalDeficitCard" style="display:none;background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.35);margin-bottom:2rem">
+      <div style="font-size:0.92rem;font-weight:800;color:#ff8585;display:flex;align-items:center;gap:0.4rem;margin-bottom:0.6rem">
+        <span>⚠️ FORMAL REJECTION DEFICIT BOTTLENECK</span>
+      </div>
+      <p style="font-size:0.84rem;color:var(--clr-text);line-height:1.55;margin-bottom:0.6rem">
+        Under state university admission statutes in Bavaria and Baden-Württemberg, your application will be dismissed at the formal preliminary verification stage (Uni-Assist / Faculty Commission) regardless of high GPA unless these core prerequisite deficits are addressed:
+      </p>
+      <ul style="list-style:disc;padding-left:1.5rem;font-size:0.82rem;color:#fca5a5;line-height:1.6" id="criticalDeficitList"></ul>
+    </div>
+
+    <!-- ── Targeted Bridge Course & MOOC Recommendations ── -->
+    <section id="bridgeCoursesSection" style="margin-bottom:2.5rem">
+      <div style="margin-bottom:1rem">
+        <h3 style="font-size:1.15rem;font-weight:800;color:var(--clr-white);display:flex;align-items:center;gap:0.5rem">
+          🎓 Recommended Accredited Bridge Courses &amp; Recognized MOOCs
+        </h3>
+        <p style="font-size:0.82rem;color:var(--clr-text-muted)">
+          Completing proctored exam certificates (e.g. NPTEL / Swayam from IITs, MIT OCW, or RWTH Online-Brückenkurs) provides formal evidence to overcome prerequisite deficits and obtain admission.
+        </p>
+      </div>
+      <div class="bridge-grid" id="bridgeCoursesGrid"></div>
+    </section>
+
+    <!-- ── Syllabus Credit Mapper Table ── -->
+    <section style="margin-bottom:2.5rem">
+      <div class="flex items-center justify-between gap-md flex-wrap" style="margin-bottom:1rem">
+        <div>
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--clr-white);display:flex;align-items:center;gap:0.5rem">
+            📚 Syllabus Credit Mapper &amp; Completed Subjects
+          </h3>
+          <p style="font-size:0.82rem;color:var(--clr-text-muted)">
+            Enter or edit completed courses from your Indian transcript. ECTS credits update dynamically based on contact hours and credit weighting.
+          </p>
+        </div>
+        <div class="flex items-center gap-xs">
+          <button type="button" class="btn btn-ghost btn-sm" id="btnClearAllCourses" style="color:#ff8585">
+            🗑 Clear All
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Add Course Bar -->
+      <div class="card" style="margin-bottom:1.25rem;padding:1rem 1.25rem;background:var(--clr-bg-alt)">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--clr-gold);margin-bottom:0.5rem">
+          ➕ ADD UNDERGRADUATE SUBJECT:
+        </div>
+        <div class="flex items-center gap-sm flex-wrap">
+          <div style="flex:2;min-width:220px">
+            <input type="text" id="inputNewSubjectName" class="form-control-sm w-full" placeholder="Course Name (e.g. Theory of Computation)" list="commonSubjectsList" />
+            <datalist id="commonSubjectsList">
+              <option value="Discrete Mathematics &amp; Graph Theory" />
+              <option value="Theory of Computation &amp; Automata" />
+              <option value="Design &amp; Analysis of Algorithms" />
+              <option value="Data Structures &amp; Algorithms" />
+              <option value="Compiler Design &amp; Optimization" />
+              <option value="Operating Systems &amp; Concurrency" />
+              <option value="Computer Organization &amp; Architecture" />
+              <option value="Database Management Systems" />
+              <option value="Computer Networks &amp; Protocols" />
+              <option value="Engineering Mathematics I (Calculus &amp; Linear Algebra)" />
+              <option value="Engineering Mathematics II (Multivariable &amp; ODE)" />
+              <option value="Probability, Statistics &amp; Stochastic Processes" />
+              <option value="Software Engineering &amp; Agile" />
+              <option value="Object-Oriented Programming with Java/C++" />
+              <option value="Distributed Systems &amp; Cloud" />
+              <option value="Artificial Intelligence" />
+              <option value="Machine Learning" />
+              <option value="Digital Logic &amp; Computer Design" />
+            </datalist>
+          </div>
+
+          <div style="flex:1.5;min-width:180px">
+            <select id="selectNewCategory" class="form-control-sm w-full">
+              <option value="THEORETICAL_CS">🧠 Theoretical CS (Automata/Algos)</option>
+              <option value="MATHEMATICS">📐 Mathematics (Calculus/Discrete)</option>
+              <option value="PRACTICAL_SYSTEMS_CS">💻 Systems CS (OS/Networks/DBMS)</option>
+              <option value="SOFTWARE_ENGINEERING">⚙️ Software Engineering (OOP/Compiler)</option>
+              <option value="ELECTIVES_OTHER">🌐 Elective / Applied CS</option>
+            </select>
+          </div>
+
+          <div style="width:90px">
+            <input type="number" id="inputNewCredits" class="form-control-sm w-full" placeholder="Credits" value="4.0" step="0.5" min="1" max="20" title="Indian Semester Credits" />
+          </div>
+
+          <div style="width:75px">
+            <input type="text" id="inputNewLtp" class="form-control-sm w-full" placeholder="3-1-0" value="3-1-0" title="Lecture-Tutorial-Practical hours/week" />
+          </div>
+
+          <div>
+            <button type="button" class="btn btn-outline-gold btn-sm" id="btnAddSubject">
+              ➕ Add Subject
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subjects Table -->
+      <div class="ects-table-container">
+        <table class="ects-table">
+          <thead>
+            <tr>
+              <th style="width:35%">Course Name</th>
+              <th style="width:25%">Subject Domain</th>
+              <th style="width:12%;text-align:center">Indian Credits</th>
+              <th style="width:10%;text-align:center">L-T-P</th>
+              <th style="width:12%;text-align:center">Calculated ECTS</th>
+              <th style="width:6%;text-align:center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="subjectsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Formblatt Preview Modal / Section ── -->
+    <section class="card" id="formblattSection" style="margin-top:2rem">
+      <div class="flex items-center justify-between gap-md flex-wrap" style="margin-bottom:0.75rem">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:800;color:var(--clr-white);display:flex;align-items:center;gap:0.4rem">
+            📄 German University Curriculum Analysis Formblatt (Markdown Dossier)
+          </h3>
+          <p style="font-size:0.8rem;color:var(--clr-text-muted)">
+            Attach this formal equivalence dossier to your Uni-Assist or TUMonline application to demonstrate prerequisite compliance.
+          </p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-outline-gold btn-sm" id="btnCopyMarkdown">
+            📋 Copy Markdown
+          </button>
+        </div>
+      </div>
+      <div class="formblatt-box" id="formblattContent">Generating Formblatt analysis...</div>
+    </section>
+
+  </div><!-- .container -->
+</main>
+
+<!-- Toast notification container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module">
+  import {
+    getEctsUniversityPresets,
+    getEctsSampleCurricula,
+    getEctsBridgeCourses,
+    evaluateEctsCurriculum
+  } from './js/api.js';
+
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: 'ℹ️', error: '❌', success: '✅', warning: '⚠️' };
+    const container = $('#toastContainer');
+    if (!container) return;
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Load applicant profile
+  let profile = null;
+  try {
+    const pro = sessionStorage.getItem('applicantData') || sessionStorage.getItem('applicantProfile');
+    if (pro) profile = JSON.parse(pro);
+  } catch (e) { console.error('sessionStorage parse error', e); }
+
+  if (!profile) {
+    profile = {
+      fullName: 'Aarav Sharma',
+      universityName: 'COER University, Roorkee',
+      degree: 'B.Tech',
+      specialization: 'Computer Science'
+    };
+  }
+
+  const elCandName = $('#candName');
+  if (elCandName) elCandName.textContent = profile.fullName || 'Prospective Scholar';
+  const elCandDegree = $('#candDegree');
+  if (elCandDegree) elCandDegree.textContent = `${profile.degree || 'B.Tech'} in ${profile.specialization || 'Computer Science'}`;
+  const elCandUni = $('#candUni');
+  if (elCandUni) elCandUni.textContent = profile.universityName || 'Indian Engineering Institute';
+
+  // Read URL query parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const qUni = urlParams.get('uni');
+
+  // Application State
+  let currentUniversityId = 'TUM';
+  let currentConversionMode = 'STANDARD_AICTE';
+  let currentHoursPerEcts = 28.0;
+  let currentSubjects = [];
+  let universityPresets = [];
+  let sampleCurricula = [];
+  let bridgeCatalog = [];
+  let lastEvaluationResult = null;
+
+  // Local fallback dataset in case backend is offline
+  const LOCAL_PRESETS = [
+    {
+      id: 'TUM',
+      universityName: 'Technical University of Munich (TUM)',
+      programName: 'MSc Informatics / Data Engineering',
+      minTheoreticalCsEcts: 28.0,
+      minMathematicsEcts: 18.0,
+      minPracticalSystemsEcts: 32.0,
+      minSoftwareEngEcts: 14.0,
+      minTotalCsEcts: 120.0,
+      maxAllowableDeficitEcts: 6.0
+    },
+    {
+      id: 'RWTH_AACHEN',
+      universityName: 'RWTH Aachen University',
+      programName: 'MSc Computer Science',
+      minTheoreticalCsEcts: 18.0,
+      minMathematicsEcts: 18.0,
+      minPracticalSystemsEcts: 30.0,
+      minSoftwareEngEcts: 14.0,
+      minTotalCsEcts: 110.0,
+      maxAllowableDeficitEcts: 8.0
+    },
+    {
+      id: 'STUTTGART',
+      universityName: 'University of Stuttgart',
+      programName: 'MSc Computer Science',
+      minTheoreticalCsEcts: 12.0,
+      minMathematicsEcts: 18.0,
+      minPracticalSystemsEcts: 36.0,
+      minSoftwareEngEcts: 12.0,
+      minTotalCsEcts: 100.0,
+      maxAllowableDeficitEcts: 12.0
+    },
+    {
+      id: 'KIT',
+      universityName: 'Karlsruhe Institute of Technology (KIT)',
+      programName: 'MSc Informatics',
+      minTheoreticalCsEcts: 20.0,
+      minMathematicsEcts: 22.0,
+      minPracticalSystemsEcts: 30.0,
+      minSoftwareEngEcts: 12.0,
+      minTotalCsEcts: 110.0,
+      maxAllowableDeficitEcts: 8.0
+    },
+    {
+      id: 'TU_BERLIN',
+      universityName: 'Technical University of Berlin',
+      programName: 'MSc Computer Science',
+      minTheoreticalCsEcts: 14.0,
+      minMathematicsEcts: 18.0,
+      minPracticalSystemsEcts: 34.0,
+      minSoftwareEngEcts: 12.0,
+      minTotalCsEcts: 105.0,
+      maxAllowableDeficitEcts: 10.0
+    }
+  ];
+
+  const LOCAL_AICTE_SUBJECTS = [
+    { id: 'S101', name: 'Engineering Mathematics I (Calculus & Linear Algebra)', category: 'MATHEMATICS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S102', name: 'Programming for Problem Solving with C', category: 'SOFTWARE_ENGINEERING', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S201', name: 'Engineering Mathematics II (Multivariable & ODE)', category: 'MATHEMATICS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S202', name: 'Digital Electronics & Logic Design', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S301', name: 'Discrete Mathematics & Graph Theory', category: 'MATHEMATICS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S302', name: 'Data Structures & Algorithms', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S303', name: 'Object-Oriented Programming (Java/C++)', category: 'SOFTWARE_ENGINEERING', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S304', name: 'Computer Organization & Architecture', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S401', name: 'Design & Analysis of Algorithms', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S402', name: 'Operating Systems & Concurrency', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S403', name: 'Probability, Statistics & Stochastic Processes', category: 'MATHEMATICS', indianCredits: 3.0, lectureHours: 3, tutorialHours: 0, practicalHours: 0 },
+    { id: 'S501', name: 'Theory of Computation & Automata', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S502', name: 'Database Management Systems', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S503', name: 'Computer Networks & Protocols', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S504', name: 'Software Engineering', category: 'SOFTWARE_ENGINEERING', indianCredits: 3.0, lectureHours: 3, tutorialHours: 0, practicalHours: 0 },
+    { id: 'S601', name: 'Compiler Design & Code Optimization', category: 'SOFTWARE_ENGINEERING', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S603', name: 'Complexity Theory & Advanced Automata', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S702', name: 'Distributed Systems & Cloud Infrastructure', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'S703', name: 'Formal Verification & Program Semantics', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'S801', name: 'Final Bachelor Capstone Thesis / Project', category: 'ELECTIVES_OTHER', indianCredits: 8.0, lectureHours: 0, tutorialHours: 0, practicalHours: 16 }
+  ];
+
+  const LOCAL_TIER2_SUBJECTS = [
+    { id: 'T101', name: 'Engineering Mathematics I', category: 'MATHEMATICS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'T102', name: 'Computer Programming in C', category: 'SOFTWARE_ENGINEERING', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'T201', name: 'Engineering Mathematics II', category: 'MATHEMATICS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'T301', name: 'Discrete Structures', category: 'MATHEMATICS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'T302', name: 'Data Structures with C++', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'T303', name: 'Computer Organization', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 0 },
+    { id: 'T401', name: 'Operating Systems', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'T402', name: 'Software Engineering', category: 'SOFTWARE_ENGINEERING', indianCredits: 3.0, lectureHours: 3, tutorialHours: 0, practicalHours: 0 },
+    { id: 'T403', name: 'Database Management Systems', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'T501', name: 'Theory of Automata & Formal Languages', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'T502', name: 'Design & Analysis of Algorithms', category: 'THEORETICAL_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 1, practicalHours: 0 },
+    { id: 'T503', name: 'Computer Networks', category: 'PRACTICAL_SYSTEMS_CS', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'T601', name: 'Compiler Design', category: 'SOFTWARE_ENGINEERING', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'T602', name: 'Web Technology & Full Stack', category: 'SOFTWARE_ENGINEERING', indianCredits: 4.0, lectureHours: 3, tutorialHours: 0, practicalHours: 2 },
+    { id: 'T701', name: 'Cloud Computing', category: 'ELECTIVES_OTHER', indianCredits: 3.0, lectureHours: 3, tutorialHours: 0, practicalHours: 0 },
+    { id: 'T801', name: 'Major Project / Internship', category: 'ELECTIVES_OTHER', indianCredits: 6.0, lectureHours: 0, tutorialHours: 0, practicalHours: 12 }
+  ];
+
+  const LOCAL_BRIDGES = [
+    {
+      id: 'BR-01',
+      category: 'THEORETICAL_CS',
+      title: 'Automata, Computability, and Complexity (MIT 6.045J)',
+      platform: 'MIT OpenCourseWare / edX',
+      estimatedEcts: 6.0,
+      duration: '12 Weeks (Self-Paced)',
+      url: 'https://ocw.mit.edu/courses/6-045j-automata-computability-and-complexity-spring-2011/',
+      recognitionNotes: 'Directly recognized by TUM and RWTH Aachen for Theoretical CS prerequisite fulfillment.',
+      syllabusCoverage: 'Turing machines, Church-Turing thesis, decidability, halting problem, NP-completeness, space complexity.'
+    },
+    {
+      id: 'BR-02',
+      category: 'THEORETICAL_CS',
+      title: 'Theory of Computation by IIT Kanpur (Prof. Raghunath Tewari)',
+      platform: 'NPTEL / Swayam (Govt. of India)',
+      estimatedEcts: 5.0,
+      duration: '8 Weeks (Proctored Exam)',
+      url: 'https://nptel.ac.in/courses/106104148',
+      recognitionNotes: 'NPTEL certificate with proctored exam is widely accepted by German universities and Uni-Assist.',
+      syllabusCoverage: 'DFA/NFA, pumping lemma, context-free grammars, pushdown automata, Turing machines, undecidability.'
+    },
+    {
+      id: 'BR-03',
+      category: 'THEORETICAL_CS',
+      title: 'TUM Vorkurs: Foundations of Theoretical Informatics',
+      platform: 'TUM Open edX / Virtual University of Bavaria (vhb)',
+      estimatedEcts: 6.0,
+      duration: '10 Weeks (Online)',
+      url: 'https://www.in.tum.de/en/in/current-students/master-programs/',
+      recognitionNotes: 'Official preparatory module recognized by TU Munich faculty for bridging bachelor deficits.',
+      syllabusCoverage: 'Discrete structures, formal logic, propositional & predicate calculus, asymptotic notation, complexity classes.'
+    },
+    {
+      id: 'BR-04',
+      category: 'MATHEMATICS',
+      title: 'Discrete Mathematics by IIT Ropar (Prof. Sudarshan Iyengar)',
+      platform: 'NPTEL / Swayam',
+      estimatedEcts: 6.0,
+      duration: '12 Weeks (Proctored Exam)',
+      url: 'https://nptel.ac.in/courses/106106183',
+      recognitionNotes: 'Mandatory if your bachelor program only had general engineering mathematics without separate Discrete Math.',
+      syllabusCoverage: 'Mathematical reasoning, propositional logic, sets, relations, functions, graph theory, combinatorics.'
+    },
+    {
+      id: 'BR-05',
+      category: 'MATHEMATICS',
+      title: 'Linear Algebra (MIT 18.06 by Prof. Gilbert Strang)',
+      platform: 'MIT OpenCourseWare',
+      estimatedEcts: 6.0,
+      duration: '12 Weeks (Self-Paced)',
+      url: 'https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/',
+      recognitionNotes: 'Universal standard for German university mathematics equivalence checks.',
+      syllabusCoverage: 'Vector spaces, eigenvalues, eigenvectors, singular value decomposition (SVD), positive definite matrices.'
+    },
+    {
+      id: 'BR-06',
+      category: 'MATHEMATICS',
+      title: 'Online-Mathematik-Brückenkurs (OMB+)',
+      platform: 'RWTH Aachen & German Universities Consortium',
+      estimatedEcts: 5.0,
+      duration: 'Self-Paced',
+      url: 'https://www.ombplus.de/',
+      recognitionNotes: 'Created specifically by German university mathematics departments for international Master\'s applicants.',
+      syllabusCoverage: 'Differential and integral calculus, vector geometry, linear algebra, complex numbers.'
+    }
+  ];
+
+  // Helper calculation
+  function calculateEctsLocally(subj, mode, hoursPerEcts) {
+    const credits = parseFloat(subj.indianCredits) || 3.0;
+    if (mode === 'WORKLOAD_HOURS') {
+      const l = parseInt(subj.lectureHours) || Math.round(credits);
+      const t = parseInt(subj.tutorialHours) || 0;
+      const p = parseInt(subj.practicalHours) || 0;
+      const totalHours = (l * 30.0) + (t * 30.0) + (p * 20.0);
+      return Math.round((totalHours / hoursPerEcts) * 10) / 10;
+    } else if (mode === 'RATIO_1_33') {
+      return Math.round((credits * 1.3333) * 10) / 10;
+    } else if (mode === 'RATIO_1_5') {
+      return Math.round((credits * 1.5) * 10) / 10;
+    }
+    // STANDARD_AICTE (1.4x)
+    return Math.round((credits * 1.4) * 10) / 10;
+  }
+
+  // Render Table
+  function renderSubjectsTable() {
+    const tbody = $('#subjectsTableBody');
+    if (!tbody) return;
+
+    if (currentSubjects.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center;padding:2rem;color:var(--clr-text-muted)">
+            No subjects added yet. Click <strong>Load AICTE B.Tech CSE</strong> above or use the form to enter completed courses.
+          </td>
+        </tr>`;
+      return;
+    }
+
+    const categoryLabels = {
+      THEORETICAL_CS: '🧠 Theoretical CS',
+      MATHEMATICS: '📐 Mathematics',
+      PRACTICAL_SYSTEMS_CS: '💻 Systems &amp; Practical CS',
+      SOFTWARE_ENGINEERING: '⚙️ Software Engineering',
+      ELECTIVES_OTHER: '🌐 Elective / Applied CS'
+    };
+
+    tbody.innerHTML = currentSubjects.map((s, idx) => {
+      const ects = calculateEctsLocally(s, currentConversionMode, currentHoursPerEcts);
+      const ltp = `${s.lectureHours || 3}-${s.tutorialHours || 0}-${s.practicalHours || 0}`;
+
+      return `
+        <tr data-index="${idx}">
+          <td>
+            <strong style="color:var(--clr-white)">${escapeHtml(s.name)}</strong>
+          </td>
+          <td>
+            <select class="form-control-sm row-category" data-index="${idx}" style="font-size:0.75rem;padding:0.25rem 0.5rem">
+              <option value="THEORETICAL_CS" ${s.category === 'THEORETICAL_CS' ? 'selected' : ''}>🧠 Theoretical CS</option>
+              <option value="MATHEMATICS" ${s.category === 'MATHEMATICS' ? 'selected' : ''}>📐 Mathematics</option>
+              <option value="PRACTICAL_SYSTEMS_CS" ${s.category === 'PRACTICAL_SYSTEMS_CS' ? 'selected' : ''}>💻 Systems &amp; Practical CS</option>
+              <option value="SOFTWARE_ENGINEERING" ${s.category === 'SOFTWARE_ENGINEERING' ? 'selected' : ''}>⚙️ Software Engineering</option>
+              <option value="ELECTIVES_OTHER" ${s.category === 'ELECTIVES_OTHER' ? 'selected' : ''}>🌐 Elective / Applied CS</option>
+            </select>
+          </td>
+          <td style="text-align:center">
+            <input type="number" class="form-control-sm row-credits" data-index="${idx}" value="${s.indianCredits}" step="0.5" min="1" max="20" style="width:60px;text-align:center" />
+          </td>
+          <td style="text-align:center;font-family:var(--font-mono);font-size:0.78rem;color:var(--clr-text-muted)">
+            ${ltp}
+          </td>
+          <td style="text-align:center">
+            <strong style="color:var(--clr-gold);font-family:var(--font-mono);font-size:0.92rem">${ects} ECTS</strong>
+          </td>
+          <td style="text-align:center">
+            <button type="button" class="btn btn-ghost btn-sm btn-del-row" data-index="${idx}" style="color:#ff8585;padding:0.2rem 0.4rem" title="Remove Course">
+              ✕
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Render Evaluation Results
+  function renderEvaluationResults(res) {
+    if (!res) return;
+    lastEvaluationResult = res;
+
+    // 1. Verdict Card
+    const card = $('#verdictCard');
+    const title = $('#verdictTitle');
+    const emoji = $('#verdictEmoji');
+    const totalEcts = $('#verdictTotalEcts');
+    const summary = $('#verdictSummaryText');
+    const auflagen = $('#verdictAuflagenText');
+
+    if (totalEcts) totalEcts.textContent = `${res.totalEarnedEcts} ECTS`;
+    if (summary) summary.textContent = res.executiveSummary || '';
+    if (auflagen) auflagen.textContent = res.auflagenPolicyAdvisory || '';
+
+    if (card) {
+      card.className = 'ects-verdict-card';
+      if (res.overallVerdict === 'ADMISSION_ELIGIBLE') {
+        card.classList.add('verdict-eligible');
+        if (title) title.textContent = 'ADMISSION ELIGIBLE (CURRICULUM EQUIVALENCE MET)';
+        if (emoji) emoji.textContent = '🟢';
+      } else if (res.overallVerdict === 'CONDITIONAL_ADMISSION_RISK') {
+        card.classList.add('verdict-conditional');
+        if (title) title.textContent = 'CONDITIONAL ADMISSION RISK (AUFLAGEN EXPECTED)';
+        if (emoji) emoji.textContent = '🟡';
+      } else {
+        card.classList.add('verdict-rejection');
+        if (title) title.textContent = 'HIGH REJECTION RISK (CURRICULUM MISMATCH)';
+        if (emoji) emoji.textContent = '🚨';
+      }
+    }
+
+    // 2. Category Cards
+    const catGrid = $('#categoryCardsGrid');
+    if (catGrid && res.categoryAnalyses) {
+      const categoriesOrder = ['THEORETICAL_CS', 'MATHEMATICS', 'PRACTICAL_SYSTEMS_CS', 'SOFTWARE_ENGINEERING'];
+      const catMeta = {
+        THEORETICAL_CS: { icon: '🧠', name: 'Theoretical Computer Science', reqNote: 'Strict German threshold' },
+        MATHEMATICS: { icon: '📐', name: 'Higher Mathematics &amp; Discrete', reqNote: 'Calculus, Linear Alg, Discrete' },
+        PRACTICAL_SYSTEMS_CS: { icon: '💻', name: 'Systems &amp; Practical CS', reqNote: 'OS, Arch, Networks, DBMS' },
+        SOFTWARE_ENGINEERING: { icon: '⚙️', name: 'Software Engineering', reqNote: 'OOP, Compilers, SE' }
+      };
+
+      catGrid.innerHTML = categoriesOrder.map(catKey => {
+        const ca = res.categoryAnalyses[catKey];
+        if (!ca) return '';
+        const meta = catMeta[catKey] || { icon: '📌', name: catKey, reqNote: '' };
+
+        const earned = ca.earnedEcts || 0;
+        const required = ca.requiredEcts || 0;
+        const deficit = ca.deficitEcts || 0;
+        const pct = Math.min(100, Math.round(ca.fulfillmentRatio * 100));
+
+        const isSatisfied = ca.status === 'SATISFIED';
+        const isConditional = ca.status === 'CONDITIONAL_GAP';
+        const cardClass = isSatisfied ? 'status-satisfied' : (isConditional ? 'status-conditional' : 'status-critical');
+        const fillClass = isSatisfied ? 'fill-satisfied' : (isConditional ? 'fill-conditional' : 'fill-critical');
+        const badgeText = isSatisfied ? '🟢 PREREQUISITE MET' : (isConditional ? `🟡 MINOR GAP (-${deficit} ECTS)` : `🔴 DEFICIT (-${deficit} ECTS)`);
+
+        return `
+          <div class="ects-cat-card ${cardClass}">
+            <div>
+              <div class="ects-cat-header">
+                <div class="ects-cat-title">${meta.icon} ${meta.name}</div>
+                <span class="badge" style="font-size:0.68rem;padding:0.2rem 0.5rem">${badgeText}</span>
+              </div>
+              <div class="ects-cat-ratio">
+                ${earned} <span>/ ${required} ECTS Req.</span>
+              </div>
+              <div class="ects-progress-bar-bg">
+                <div class="ects-progress-bar-fill ${fillClass}" style="width:${pct}%"></div>
+              </div>
+            </div>
+            <div style="font-size:0.75rem;color:var(--clr-text-muted);margin-top:0.4rem;line-height:1.4">
+              ${escapeHtml(ca.analysisMessage)}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 3. Critical Deficits Callout
+    const defCard = $('#criticalDeficitCard');
+    const defList = $('#criticalDeficitList');
+    const deficits = res.criticalDeficits || [];
+
+    if (defCard && defList) {
+      if (deficits.length > 0) {
+        defCard.style.display = 'block';
+        defList.innerHTML = deficits.map(d => `<li>${escapeHtml(d)}</li>`).join('');
+      } else {
+        defCard.style.display = 'none';
+      }
+    }
+
+    // 4. Bridge Courses
+    const bridgeGrid = $('#bridgeCoursesGrid');
+    if (bridgeGrid) {
+      const bridges = (res.recommendedBridgeCourses && res.recommendedBridgeCourses.length > 0)
+        ? res.recommendedBridgeCourses
+        : bridgeCatalog.slice(0, 3);
+
+      bridgeGrid.innerHTML = bridges.map(b => `
+        <div class="bridge-card">
+          <div>
+            <div class="flex items-center justify-between gap-xs" style="margin-bottom:0.4rem">
+              <span class="badge" style="background:rgba(99,102,241,0.15);color:#a5b4fc;font-size:0.7rem">${escapeHtml(b.platform)}</span>
+              <span style="font-family:var(--font-mono);font-size:0.8rem;color:var(--clr-gold);font-weight:700">~${b.estimatedEcts} ECTS</span>
+            </div>
+            <h4 style="font-size:0.95rem;font-weight:800;color:var(--clr-white);margin-bottom:0.35rem">${escapeHtml(b.title)}</h4>
+            <div style="font-size:0.75rem;color:var(--clr-text-muted);margin-bottom:0.5rem">⏱ Duration: <strong>${escapeHtml(b.duration)}</strong></div>
+            <p style="font-size:0.78rem;color:var(--clr-text);line-height:1.4;margin-bottom:0.5rem">${escapeHtml(b.recognitionNotes)}</p>
+            <div style="font-size:0.74rem;color:var(--clr-text-muted);background:var(--clr-surface);padding:0.4rem 0.6rem;border-radius:var(--radius-sm)">
+              <strong>Topics:</strong> ${escapeHtml(b.syllabusCoverage)}
+            </div>
+          </div>
+          <div style="margin-top:1rem">
+            <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-gold btn-sm w-full" style="display:flex;align-items:center;justify-content:center;gap:0.35rem;text-decoration:none">
+              🌐 View Recognized Syllabus ↗
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 5. Formblatt Box
+    const fb = $('#formblattContent');
+    if (fb) {
+      fb.textContent = res.curriculumTableMarkdown || 'Formblatt analysis table generated.';
+    }
+  }
+
+  // Execute Evaluation via API or Local Fallback
+  async function runEvaluation() {
+    try {
+      const payload = {
+        targetUniversityId: currentUniversityId,
+        conversionMode: currentConversionMode,
+        hoursPerEcts: currentHoursPerEcts,
+        subjects: currentSubjects
+      };
+
+      const result = await evaluateEctsCurriculum(payload);
+      if (result && result.overallVerdict) {
+        renderEvaluationResults(result);
+        showToast('Evaluation Complete', `Assessed against ${result.universityName}`, 'success');
+        return;
+      }
+    } catch (err) {
+      console.warn('[ECTS] Backend evaluation call failed, using client-side fallback:', err);
+    }
+
+    // Local Fallback Evaluation
+    const req = universityPresets.find(p => p.id === currentUniversityId)
+      || LOCAL_PRESETS.find(p => p.id === currentUniversityId)
+      || LOCAL_PRESETS[0];
+
+    const catCredits = { THEORETICAL_CS: 0, MATHEMATICS: 0, PRACTICAL_SYSTEMS_CS: 0, SOFTWARE_ENGINEERING: 0, ELECTIVES_OTHER: 0 };
+    const catIndian = { THEORETICAL_CS: 0, MATHEMATICS: 0, PRACTICAL_SYSTEMS_CS: 0, SOFTWARE_ENGINEERING: 0, ELECTIVES_OTHER: 0 };
+
+    let totalEarned = 0;
+    let totalIndian = 0;
+
+    currentSubjects.forEach(s => {
+      const e = calculateEctsLocally(s, currentConversionMode, currentHoursPerEcts);
+      const c = s.category || 'ELECTIVES_OTHER';
+      catCredits[c] = (catCredits[c] || 0) + e;
+      catIndian[c] = (catIndian[c] || 0) + (parseFloat(s.indianCredits) || 0);
+      totalEarned += e;
+      totalIndian += (parseFloat(s.indianCredits) || 0);
+    });
+
+    totalEarned = Math.round(totalEarned * 10) / 10;
+    totalIndian = Math.round(totalIndian * 10) / 10;
+
+    const round = v => Math.round(v * 10) / 10;
+    const analyses = {};
+    const criticalDeficits = [];
+
+    const theoEarned = round(catCredits.THEORETICAL_CS || 0);
+    const theoReq = req.minTheoreticalCsEcts;
+    const theoDef = round(Math.max(0, theoReq - theoEarned));
+    analyses.THEORETICAL_CS = {
+      category: 'THEORETICAL_CS',
+      earnedIndianCredits: round(catIndian.THEORETICAL_CS || 0),
+      earnedEcts: theoEarned,
+      requiredEcts: theoReq,
+      deficitEcts: theoDef,
+      fulfillmentRatio: theoReq > 0 ? Math.min(1, theoEarned / theoReq) : 1,
+      status: theoDef <= 0 ? 'SATISFIED' : (theoDef <= 4 ? 'CONDITIONAL_GAP' : 'CRITICAL_DEFICIT'),
+      analysisMessage: theoDef <= 0 ? 'Meets prerequisite threshold.' : `Shortfall of ${theoDef} ECTS in Theoretical CS.`
+    };
+    if (theoDef > 0) criticalDeficits.add?.(`Theoretical CS: Shortfall of ${theoDef} ECTS`) || criticalDeficits.push(`Theoretical CS lacks ${theoDef} ECTS`);
+
+    const mathEarned = round(catCredits.MATHEMATICS || 0);
+    const mathReq = req.minMathematicsEcts;
+    const mathDef = round(Math.max(0, mathReq - mathEarned));
+    analyses.MATHEMATICS = {
+      category: 'MATHEMATICS',
+      earnedIndianCredits: round(catIndian.MATHEMATICS || 0),
+      earnedEcts: mathEarned,
+      requiredEcts: mathReq,
+      deficitEcts: mathDef,
+      fulfillmentRatio: mathReq > 0 ? Math.min(1, mathEarned / mathReq) : 1,
+      status: mathDef <= 0 ? 'SATISFIED' : (mathDef <= 4 ? 'CONDITIONAL_GAP' : 'CRITICAL_DEFICIT'),
+      analysisMessage: mathDef <= 0 ? 'Meets prerequisite threshold.' : `Shortfall of ${mathDef} ECTS in Higher Mathematics.`
+    };
+    if (mathDef > 0) criticalDeficits.push(`Higher Mathematics lacks ${mathDef} ECTS`);
+
+    const sysEarned = round(catCredits.PRACTICAL_SYSTEMS_CS || 0);
+    const sysReq = req.minPracticalSystemsEcts;
+    const sysDef = round(Math.max(0, sysReq - sysEarned));
+    analyses.PRACTICAL_SYSTEMS_CS = {
+      category: 'PRACTICAL_SYSTEMS_CS',
+      earnedIndianCredits: round(catIndian.PRACTICAL_SYSTEMS_CS || 0),
+      earnedEcts: sysEarned,
+      requiredEcts: sysReq,
+      deficitEcts: sysDef,
+      fulfillmentRatio: sysReq > 0 ? Math.min(1, sysEarned / sysReq) : 1,
+      status: sysDef <= 0 ? 'SATISFIED' : (sysDef <= 6 ? 'CONDITIONAL_GAP' : 'CRITICAL_DEFICIT'),
+      analysisMessage: sysDef <= 0 ? 'Meets prerequisite threshold.' : `Shortfall of ${sysDef} ECTS in Systems CS.`
+    };
+
+    const seEarned = round(catCredits.SOFTWARE_ENGINEERING || 0);
+    const seReq = req.minSoftwareEngEcts;
+    const seDef = round(Math.max(0, seReq - seEarned));
+    analyses.SOFTWARE_ENGINEERING = {
+      category: 'SOFTWARE_ENGINEERING',
+      earnedIndianCredits: round(catIndian.SOFTWARE_ENGINEERING || 0),
+      earnedEcts: seEarned,
+      requiredEcts: seReq,
+      deficitEcts: seDef,
+      fulfillmentRatio: seReq > 0 ? Math.min(1, seEarned / seReq) : 1,
+      status: seDef <= 0 ? 'SATISFIED' : 'CONDITIONAL_GAP',
+      analysisMessage: seDef <= 0 ? 'Meets prerequisite threshold.' : `Shortfall of ${seDef} ECTS in Software Engineering.`
+    };
+
+    const totalDeficit = round(theoDef + mathDef + sysDef + seDef);
+    let overallVerdict = 'ADMISSION_ELIGIBLE';
+    if (totalDeficit > 0) {
+      overallVerdict = (totalDeficit <= req.maxAllowableDeficitEcts && theoDef <= 4.0)
+        ? 'CONDITIONAL_ADMISSION_RISK'
+        : 'HIGH_REJECTION_RISK';
+    }
+
+    const localResult = {
+      universityId: req.id,
+      universityName: req.universityName,
+      programName: req.programName,
+      totalEarnedIndianCredits: totalIndian,
+      totalEarnedEcts: totalEarned,
+      totalRequiredEcts: req.minTotalCsEcts,
+      overallVerdict,
+      executiveSummary: `Pre-screening evaluation for ${req.universityName}: ${overallVerdict === 'ADMISSION_ELIGIBLE' ? '✅ Full curriculum equivalence met.' : (overallVerdict === 'CONDITIONAL_ADMISSION_RISK' ? `⚠️ Conditional admission possible with ${totalDeficit} ECTS Auflagen bridge courses.` : `🚨 High rejection risk: ${totalDeficit} ECTS deficit exceeds legal consecutive thresholds.`)}`,
+      auflagenPolicyAdvisory: overallVerdict === 'ADMISSION_ELIGIBLE'
+        ? 'Direct admission without remedial bachelor exams.'
+        : `German Auflagen: Faculty may issue up to ${req.maxAllowableDeficitEcts} ECTS of bridge exams.`,
+      categoryAnalyses: analyses,
+      criticalDeficits,
+      recommendedBridgeCourses: LOCAL_BRIDGES,
+      curriculumTableMarkdown: `### German University Curriculum Analysis Formblatt\nTarget: ${req.universityName}\nTotal ECTS: ${totalEarned} ECTS\nVerdict: ${overallVerdict}`
+    };
+
+    renderEvaluationResults(localResult);
+  }
+
+  // ── Event Handlers ────────────────────────────────────────────────────────
+
+  // University Selection change
+  $('#selectUniversityPreset')?.addEventListener('change', (e) => {
+    currentUniversityId = e.target.value;
+    runEvaluation();
+  });
+
+  // Conversion Mode change
+  $('#selectConversionMode')?.addEventListener('change', (e) => {
+    currentConversionMode = e.target.value;
+    const hw = $('#workHoursWrapper');
+    if (hw) hw.style.display = (currentConversionMode === 'WORKLOAD_HOURS') ? 'block' : 'none';
+    renderSubjectsTable();
+    runEvaluation();
+  });
+
+  $('#inputWorkHours')?.addEventListener('change', (e) => {
+    currentHoursPerEcts = parseFloat(e.target.value) || 28.0;
+    renderSubjectsTable();
+    runEvaluation();
+  });
+
+  // Load Curricula Presets
+  $('#btnLoadAicte')?.addEventListener('click', () => {
+    const aicte = sampleCurricula.find(c => c.id === 'AICTE_BTECH_CSE_MODEL')?.subjects || LOCAL_AICTE_SUBJECTS;
+    currentSubjects = JSON.parse(JSON.stringify(aicte));
+    renderSubjectsTable();
+    runEvaluation();
+    showToast('AICTE Model Loaded', 'Imported standard 4-year B.Tech CSE syllabus.', 'info');
+  });
+
+  $('#btnLoadTier2')?.addEventListener('click', () => {
+    const tier2 = sampleCurricula.find(c => c.id === 'TIER_2_3_INDIAN_CSE')?.subjects || LOCAL_TIER2_SUBJECTS;
+    currentSubjects = JSON.parse(JSON.stringify(tier2));
+    renderSubjectsTable();
+    runEvaluation();
+    showToast('Curriculum Loaded', 'Loaded syllabus with common Theoretical CS deficit for testing.', 'warning');
+  });
+
+  // Clear All
+  $('#btnClearAllCourses')?.addEventListener('click', () => {
+    if (confirm('Clear all subjects from the mapper?')) {
+      currentSubjects = [];
+      renderSubjectsTable();
+      runEvaluation();
+    }
+  });
+
+  // Add Subject Form
+  $('#btnAddSubject')?.addEventListener('click', () => {
+    const nameInput = $('#inputNewSubjectName');
+    const catInput = $('#selectNewCategory');
+    const credInput = $('#inputNewCredits');
+    const ltpInput = $('#inputNewLtp');
+
+    const name = nameInput.value.trim();
+    if (!name) {
+      alert('Please enter a course name.');
+      return;
+    }
+
+    const credits = parseFloat(credInput.value) || 4.0;
+    const cat = catInput.value;
+    const ltpParts = (ltpInput.value || '3-1-0').split('-').map(p => parseInt(p.trim()) || 0);
+
+    const newSubj = {
+      id: `S_USER_${Date.now()}`,
+      name,
+      category: cat,
+      indianCredits: credits,
+      lectureHours: ltpParts[0] ?? 3,
+      tutorialHours: ltpParts[1] ?? 0,
+      practicalHours: ltpParts[2] ?? 0
+    };
+
+    currentSubjects.push(newSubj);
+    nameInput.value = '';
+    renderSubjectsTable();
+    runEvaluation();
+    showToast('Subject Added', `Added ${name} (${credits} credits).`, 'success');
+  });
+
+  // Subject table row changes (delegated)
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('.row-category')) {
+      const idx = parseInt(e.target.dataset.index);
+      if (currentSubjects[idx]) {
+        currentSubjects[idx].category = e.target.value;
+        runEvaluation();
+      }
+    } else if (e.target.matches('.row-credits')) {
+      const idx = parseInt(e.target.dataset.index);
+      if (currentSubjects[idx]) {
+        currentSubjects[idx].indianCredits = parseFloat(e.target.value) || 3.0;
+        renderSubjectsTable();
+        runEvaluation();
+      }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.matches('.btn-del-row')) {
+      const idx = parseInt(e.target.dataset.index);
+      currentSubjects.splice(idx, 1);
+      renderSubjectsTable();
+      runEvaluation();
+    }
+  });
+
+  // Copy Formblatt Markdown
+  $('#btnCopyMarkdown')?.addEventListener('click', () => {
+    const text = $('#formblattContent')?.textContent || '';
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Formblatt Copied', 'Markdown curriculum table copied to clipboard.', 'success');
+    }).catch(err => {
+      console.warn('Clipboard copy failed:', err);
+    });
+  });
+
+  $('#btnExportFormblatt')?.addEventListener('click', () => {
+    const section = $('#formblattSection');
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // ── Initialization ────────────────────────────────────────────────────────
+  async function init() {
+    // 1. Fetch presets & curricula from backend
+    try {
+      const [presets, samples, bridges] = await Promise.all([
+        getEctsUniversityPresets().catch(() => LOCAL_PRESETS),
+        getEctsSampleCurricula().catch(() => []),
+        getEctsBridgeCourses().catch(() => LOCAL_BRIDGES)
+      ]);
+
+      universityPresets = (presets && presets.length > 0) ? presets : LOCAL_PRESETS;
+      sampleCurricula = (samples && samples.length > 0) ? samples : [];
+      bridgeCatalog = (bridges && bridges.length > 0) ? bridges : LOCAL_BRIDGES;
+    } catch (e) {
+      console.warn('[ECTS] Initial fetch failed, using local models:', e);
+      universityPresets = LOCAL_PRESETS;
+      bridgeCatalog = LOCAL_BRIDGES;
+    }
+
+    // Populate university selector
+    const selUni = $('#selectUniversityPreset');
+    if (selUni && universityPresets.length > 0) {
+      selUni.innerHTML = universityPresets.map(p => `
+        <option value="${p.id}" ${p.id === currentUniversityId ? 'selected' : ''}>
+          🇩🇪 ${escapeHtml(p.universityName)} — ${escapeHtml(p.programName)}
+        </option>
+      `).join('');
+    }
+
+    // Match query parameter if arrived from German university card
+    if (qUni) {
+      const match = universityPresets.find(p =>
+        p.universityName.toLowerCase().includes(qUni.toLowerCase()) ||
+        qUni.toLowerCase().includes(p.id.toLowerCase())
+      );
+      if (match) {
+        currentUniversityId = match.id;
+        if (selUni) selUni.value = match.id;
+        showToast('University Targeted', `Configured prerequisite pre-screener for ${match.universityName}.`, 'info');
+      }
+    }
+
+    // Default to AICTE Model Curriculum
+    currentSubjects = JSON.parse(JSON.stringify(LOCAL_AICTE_SUBJECTS));
+    renderSubjectsTable();
+    await runEvaluation();
+  }
+
+  init();
+</script>
+
+</body>
+</html>

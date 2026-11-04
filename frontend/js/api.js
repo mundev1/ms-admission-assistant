@@ -365,5 +365,51 @@ export async function evaluateAssistantship(profile, callbacks = {}) {
   );
 }
 
+// ─── German ECTS Credit Equivalence & Pre-Screener Functions ────────────────
+
+/**
+ * Fetch German university prerequisite presets.
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object[]>}
+ */
+export async function getEctsUniversityPresets(callbacks = {}) {
+  return apiFetch(`${API_BASE}/api/ects/presets`, { method: 'GET' }, callbacks);
+}
+
+/**
+ * Fetch standard pre-loaded Indian university curricula (AICTE, Tier-2/3, etc.).
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object[]>}
+ */
+export async function getEctsSampleCurricula(callbacks = {}) {
+  return apiFetch(`${API_BASE}/api/ects/sample-curricula`, { method: 'GET' }, callbacks);
+}
+
+/**
+ * Fetch accredited bridge courses and recognized MOOCs.
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object[]>}
+ */
+export async function getEctsBridgeCourses(callbacks = {}) {
+  return apiFetch(`${API_BASE}/api/ects/bridge-courses`, { method: 'GET' }, callbacks);
+}
+
+/**
+ * Evaluate student curriculum ECTS equivalence and prerequisite deficits.
+ * @param {Object} evaluationRequest
+ * @param {{ onLoading?: (v: boolean) => void }} [callbacks]
+ * @returns {Promise<Object>} EctsEvaluationResult
+ */
+export async function evaluateEctsCurriculum(evaluationRequest, callbacks = {}) {
+  return apiFetch(
+    `${API_BASE}/api/ects/evaluate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(evaluationRequest),
+    },
+    callbacks
+  );
+}
+
 // Export handleApiError so callers can re-use it
 export { handleApiError };

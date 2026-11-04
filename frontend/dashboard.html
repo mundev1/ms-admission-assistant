@@ -199,6 +199,7 @@
       <a href="scholarships.html" class="nav-link">💰 Scholarship Radar</a>
       <a href="faculty-critic.html" class="nav-link">🔬 Faculty Critic</a>
       <a href="timeline.html" class="nav-link">📅 Visa Timeline</a>
+      <a href="ects-screener.html" class="nav-link">📐 ECTS Screener</a>
       <button class="btn btn-ghost btn-sm" id="printBtn" title="Export to PDF" style="margin-left:0.25rem">
         🖨 PDF
       </button>
@@ -310,12 +311,13 @@
         <p style="font-size:0.88rem;color:var(--clr-text-muted);line-height:1.6">
           Deep-dive into dedicated toolsets for
           <a href="scholarships.html" style="color:var(--clr-gold);font-weight:700;text-decoration:underline">💰 financial grants &amp; scholarships</a>,
-          <a href="faculty-critic.html" style="color:var(--clr-gold);font-weight:700;text-decoration:underline">🔬 professor &amp; laboratory alignment</a>, and
-          <a href="timeline.html" style="color:var(--clr-gold);font-weight:700;text-decoration:underline">📅 backwards visa &amp; deadline scheduling</a>.
+          <a href="faculty-critic.html" style="color:var(--clr-gold);font-weight:700;text-decoration:underline">🔬 professor &amp; laboratory alignment</a>,
+          <a href="timeline.html" style="color:var(--clr-gold);font-weight:700;text-decoration:underline">📅 backwards visa &amp; deadline scheduling</a>, and
+          <a href="ects-screener.html" style="color:var(--clr-gold);font-weight:700;text-decoration:underline">📐 German ECTS credit equivalence</a>.
         </p>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.25rem">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.25rem">
         <!-- Suite 1: Scholarship Radar -->
         <a href="scholarships.html" class="launchpad-suite-card" style="border-top:3.5px solid #10b981">
           <div>
@@ -324,7 +326,7 @@
               <span class="coverage-badge badge-full-ride">Up to $100k+ Awards</span>
             </div>
             <h3 class="launchpad-card-title">
-              <span>Global Scholarship &amp; Assistantship Radar</span>
+              <span>Global Scholarship Radar</span>
               <span style="font-size:1rem;color:var(--clr-gold)">↗</span>
             </h3>
             <p style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.55;margin-top:0.4rem">
@@ -378,6 +380,28 @@
           <div style="margin-top:1.25rem">
             <span class="btn btn-outline-gold btn-sm w-full" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;pointer-events:none">
               Open Visa &amp; Deadline Tracker →
+            </span>
+          </div>
+        </a>
+
+        <!-- Suite 4: German ECTS Pre-Screener -->
+        <a href="ects-screener.html" class="launchpad-suite-card" style="border-top:3.5px solid #ef4444">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+              <span style="font-size:1.85rem">📐</span>
+              <span class="coverage-badge" style="background:rgba(239,68,68,0.2);color:#ff8585;border:1px solid rgba(239,68,68,0.4)">Curriculum Pre-Screener</span>
+            </div>
+            <h3 class="launchpad-card-title">
+              <span>German ECTS Credit Screener</span>
+              <span style="font-size:1rem;color:var(--clr-gold)">↗</span>
+            </h3>
+            <p style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.55;margin-top:0.4rem">
+              Prevent the #1 cause of rejection at <strong style="color:var(--clr-gold-light)">TU Munich</strong>, <strong style="color:var(--clr-gold-light)">RWTH Aachen</strong>, and <strong style="color:var(--clr-gold-light)">Stuttgart</strong>. Convert Indian college credits to ECTS, flag Theoretical CS deficits, and get remedial MOOCs.
+            </p>
+          </div>
+          <div style="margin-top:1.25rem">
+            <span class="btn btn-outline-gold btn-sm w-full" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;pointer-events:none">
+              Screen ECTS Equivalence &amp; Deficits →
             </span>
           </div>
         </a>
@@ -1046,6 +1070,9 @@
           <a href="timeline.html?country=${targetCountryParam}&uni=${targetUniParam}" class="quick-link-chip" title="Plan backwards visa timeline for ${prog.universityName}">
             📅 Visa Timeline ↗
           </a>
+          ${((prog.country && (prog.country.toLowerCase().includes('germany') || prog.country.toLowerCase().includes('deutschland'))) || prog.region === 'EU')
+            ? `<a href="ects-screener.html?uni=${targetUniParam}" class="quick-link-chip" style="border-color:rgba(239,68,68,0.4);color:#fca5a5" title="Pre-screen German ECTS credit equivalence for ${prog.universityName}">📐 ECTS Check ↗</a>`
+            : ''}
         </div>
       </div>`;
   }
@@ -1387,6 +1414,14 @@
           💰 Explore Scholarships &amp; Assistantships for ${prog.universityName} →
         </a>
       </div>
+
+      <!-- Program-Specific German ECTS Pre-Screener Action -->
+      ${((prog.country && (prog.country.toLowerCase().includes('germany') || prog.country.toLowerCase().includes('deutschland'))) || prog.region === 'EU') ? `
+      <div class="sidebar-section" style="margin-top:0.5rem">
+        <a href="ects-screener.html?uni=${encodeURIComponent(prog.universityName)}" class="btn btn-sm w-full" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;text-decoration:none;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#fca5a5">
+          📐 Pre-Screen ECTS Credits &amp; Prerequisites for ${prog.universityName} →
+        </a>
+      </div>` : ''}
 
       <!-- Program ID -->
       <p class="text-xs text-muted" style="margin-top:1rem">Program ID: #${prog.programId}</p>
