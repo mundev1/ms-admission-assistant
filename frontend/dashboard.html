@@ -188,14 +188,24 @@
 
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
 <header class="app-header">
-  <div class="container">
-    <div class="brand">
-      <a href="index.html" style="text-decoration:none;color:inherit">
-        <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
-      </a>
-      <div class="brand-subtitle">Compatibility Results Dashboard</div>
+  <div class="container header-container">
+    <div class="header-brand-group">
+      <button type="button" class="nav-menu-btn" id="navMenuBtn" aria-label="Open Navigation Menu" aria-expanded="false" title="Menu (Features &amp; Navigation)">
+        <span class="hamburger-icon" aria-hidden="true">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </span>
+        <span class="nav-menu-label">Menu</span>
+      </button>
+      <div class="brand">
+        <a href="index.html" style="text-decoration:none;color:inherit">
+          <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+        </a>
+        <div class="brand-subtitle">Compatibility Results Dashboard</div>
+      </div>
     </div>
-    <nav class="nav-links">
+    <div class="header-actions">
       <button type="button" class="spotlight-header-btn" id="spotlightTriggerBtn" aria-label="Open Global Search" title="Quick Search (⌘K / Ctrl+K)">
         <span class="spotlight-btn-icon">🔍</span>
         <span class="spotlight-btn-label">Quick Search...</span>
@@ -205,16 +215,11 @@
         <span class="theme-toggle-icon">☀️</span>
         <span class="theme-toggle-label">Light</span>
       </button>
-      <a href="dashboard.html" class="nav-link active">📊 Program Matches</a>
-      <a href="scholarships.html" class="nav-link">💰 Scholarship Radar</a>
-      <a href="faculty-critic.html" class="nav-link">🔬 Faculty Critic</a>
-      <a href="timeline.html" class="nav-link">📅 Visa Timeline</a>
-      <a href="ects-screener.html" class="nav-link">📐 ECTS Screener</a>
-      <button class="btn btn-ghost btn-sm" id="printBtn" title="Export to PDF" style="margin-left:0.25rem">
+      <button class="btn btn-ghost btn-sm" id="printBtn" title="Export to PDF">
         🖨 PDF
       </button>
-      <a href="index.html" class="btn btn-secondary btn-sm" style="margin-left:0.25rem">✏️ Edit Profile</a>
-    </nav>
+      <a href="index.html" class="btn btn-secondary btn-sm">✏️ Edit Profile</a>
+    </div>
   </div>
 </header>
 
@@ -1474,6 +1479,7 @@
 </script>
 
 <script src="js/theme.js"></script>
+<script src="js/navigation.js"></script>
 <script src="js/spotlight.js"></script>
 </body>
 </html>

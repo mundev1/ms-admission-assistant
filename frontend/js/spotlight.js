@@ -575,6 +575,15 @@
 
   const SPOTLIGHT_ACTIONS = [
     {
+      id: 'act-toggle-sidebar',
+      type: 'ACTION',
+      title: '☰ Toggle Sidebar Menu (3 Lines)',
+      subtitle: 'Open or close the side navigation drawer with all 6 modules',
+      icon: '☰',
+      badge: 'Menu',
+      keywords: ['sidebar', 'menu', 'navigation', 'drawer', 'hamburger', '3 lines', 'modules', 'pages']
+    },
+    {
       id: 'act-toggle-theme',
       type: 'ACTION',
       title: '🌓 Toggle Black & White Theme',
@@ -977,6 +986,16 @@
   function executeItem(item) {
     if (!item) return;
     closeSpotlight();
+
+    if (item.id === 'act-toggle-sidebar') {
+      if (window.MS_NavDrawer) {
+        window.MS_NavDrawer.toggle();
+      } else {
+        const btn = document.getElementById('navMenuBtn');
+        if (btn) btn.click();
+      }
+      return;
+    }
 
     if (item.id === 'act-toggle-theme') {
       if (window.MS_Theme) {
