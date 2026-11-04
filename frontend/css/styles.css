@@ -3123,7 +3123,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(22, 41, 66, 0.7);
+  background: rgba(22, 41, 66, 0.75);
   border: 1px solid var(--clr-border);
   padding: 0.38rem 0.8rem;
   border-radius: 99px;
@@ -3134,18 +3134,34 @@ input[type="range"]::-webkit-slider-thumb:hover {
   font-weight: 600;
   transition: all 0.2s ease;
   outline: none;
+  user-select: none;
+  position: relative;
 }
 
 .spotlight-header-btn:hover {
   background: var(--clr-surface-2);
   border-color: var(--clr-gold);
   color: var(--clr-white);
-  box-shadow: 0 0 12px rgba(244, 197, 66, 0.2);
+  box-shadow: 0 0 14px rgba(244, 197, 66, 0.25);
+  transform: translateY(-1px);
+}
+
+.spotlight-header-btn:active {
+  transform: translateY(0);
 }
 
 .spotlight-btn-icon {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--clr-gold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.spotlight-header-btn:hover .spotlight-btn-icon {
+  transform: scale(1.15);
 }
 
 .spotlight-btn-label {

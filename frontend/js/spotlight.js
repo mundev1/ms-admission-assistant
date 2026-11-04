@@ -693,7 +693,14 @@
   }
 
   function injectHeaderTrigger() {
-    if (document.getElementById('spotlightTriggerBtn')) return;
+    const existing = document.getElementById('spotlightTriggerBtn');
+    if (existing) {
+      existing.onclick = (e) => {
+        e.preventDefault();
+        openSpotlight();
+      };
+      return;
+    }
 
     const nav = document.querySelector('.app-header .nav-links');
     const headerContainer = document.querySelector('.app-header .container');
@@ -1053,8 +1060,17 @@
       }
     });
 
-    // Delegate clicks inside Spotlight
+    // Delegate clicks inside Spotlight & Header triggers
     document.addEventListener('click', (e) => {
+      // 0. Search icon or trigger button click in header
+      const trigger = e.target.closest('#spotlightTriggerBtn, .spotlight-header-btn, .spotlight-btn-icon, [data-action="open-spotlight"]');
+      if (trigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        openSpotlight();
+        return;
+      }
+
       // 1. Click overlay backdrop to close
       if (e.target.id === 'spotlightModal') {
         closeSpotlight();
