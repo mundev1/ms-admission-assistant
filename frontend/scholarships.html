@@ -48,6 +48,11 @@
       <div class="brand-subtitle">Global Scholarship &amp; Assistantship Radar</div>
     </div>
     <nav class="nav-links">
+      <button type="button" class="spotlight-header-btn" id="spotlightTriggerBtn" aria-label="Open Global Search" title="Quick Search (⌘K / Ctrl+K)">
+        <span class="spotlight-btn-icon">🔍</span>
+        <span class="spotlight-btn-label">Quick Search...</span>
+        <kbd class="spotlight-btn-kbd">⌘K</kbd>
+      </button>
       <a href="dashboard.html" class="nav-link">📊 Program Matches</a>
       <a href="scholarships.html" class="nav-link active">💰 Scholarship Radar</a>
       <a href="faculty-critic.html" class="nav-link">🔬 Faculty Critic</a>
@@ -257,6 +262,7 @@
   const qCountry = (urlParams.get('country') || '').toLowerCase();
   const qRegion = (urlParams.get('region') || '').toUpperCase();
   const qUni = urlParams.get('uni');
+  const qKeyword = (urlParams.get('q') || '').toLowerCase();
 
   let currentRadarRegion = 'ALL';
   if (qRegion === 'US' || qCountry.includes('usa') || qCountry.includes('uk') || qCountry.includes('canada')) {
@@ -747,6 +753,14 @@
       matches = matches.filter(m => (m.opportunity?.coverageType || '').toUpperCase() === currentRadarCoverage);
     }
 
+    // Filter by Query Keyword if provided
+    if (qKeyword) {
+      matches = matches.filter(m => {
+        const text = `${m.opportunity?.name} ${m.opportunity?.organization} ${m.opportunity?.country} ${m.opportunity?.awardSummary} ${(m.opportunity?.keyTips || []).join(' ')}`.toLowerCase();
+        return text.includes(qKeyword);
+      });
+    }
+
     if (matches.length === 0) {
       grid.innerHTML = `
         <div style="grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--clr-text-muted)">
@@ -869,8 +883,11 @@
 
   if (qUni) {
     showToast('University Scholarships', `Filtered scholarships aligned with ${qUni}.`, 'info');
+  } else if (qKeyword) {
+    showToast('Scholarship Filter', `Filtered scholarships matching "${urlParams.get('q')}".`, 'info');
   }
 </script>
 
+<script src="js/spotlight.js"></script>
 </body>
 </html>

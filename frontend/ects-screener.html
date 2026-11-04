@@ -45,6 +45,11 @@
       <div class="brand-subtitle">German ECTS Credit Equivalence &amp; Prerequisite Pre-Screener</div>
     </div>
     <nav class="nav-links">
+      <button type="button" class="spotlight-header-btn" id="spotlightTriggerBtn" aria-label="Open Global Search" title="Quick Search (⌘K / Ctrl+K)">
+        <span class="spotlight-btn-icon">🔍</span>
+        <span class="spotlight-btn-label">Quick Search...</span>
+        <kbd class="spotlight-btn-kbd">⌘K</kbd>
+      </button>
       <a href="dashboard.html" class="nav-link">📊 Program Matches</a>
       <a href="scholarships.html" class="nav-link">💰 Scholarship Radar</a>
       <a href="faculty-critic.html" class="nav-link">🔬 Faculty Critic</a>
@@ -1068,8 +1073,15 @@
       }
     }
 
-    // Default to AICTE Model Curriculum
-    currentSubjects = JSON.parse(JSON.stringify(LOCAL_AICTE_SUBJECTS));
+    // Default or URL-specified Curricula Model
+    const qLoad = urlParams.get('load');
+    if (qLoad === 'tier2') {
+      const tier2 = sampleCurricula.find(c => c.id === 'TIER_2_3_INDIAN_CSE')?.subjects || LOCAL_TIER2_SUBJECTS;
+      currentSubjects = JSON.parse(JSON.stringify(tier2));
+      showToast('Deficit Model Loaded', 'Loaded syllabus with common Theoretical CS deficit.', 'warning');
+    } else {
+      currentSubjects = JSON.parse(JSON.stringify(LOCAL_AICTE_SUBJECTS));
+    }
     renderSubjectsTable();
     await runEvaluation();
   }
@@ -1077,5 +1089,6 @@
   init();
 </script>
 
+<script src="js/spotlight.js"></script>
 </body>
 </html>
