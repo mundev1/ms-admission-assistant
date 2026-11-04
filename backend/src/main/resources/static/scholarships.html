@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💰 Global Scholarship & Assistantship Radar — MS Admissions Engine</title>
+  <script>const t=localStorage.getItem('ms-admissions-theme')||'dark';document.documentElement.setAttribute('data-theme',t);</script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .page-main { padding: 1.75rem 0 4rem; }
+    .scholarship-page-header {
+      background: linear-gradient(135deg, var(--clr-surface) 0%, var(--clr-surface-2) 100%);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    .scholarship-page-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #10b981, var(--clr-gold), #6366f1);
+    }
+    .applicant-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--clr-bg-alt);
+      border: 1px solid var(--clr-border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      color: var(--clr-white);
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="container header-container">
+    <div class="header-brand-group">
+      <button type="button" class="nav-menu-btn" id="navMenuBtn" aria-label="Open Navigation Menu" aria-expanded="false" title="Menu (Features &amp; Navigation)">
+        <span class="hamburger-icon" aria-hidden="true">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </span>
+        <span class="nav-menu-label">Menu</span>
+      </button>
+      <div class="brand">
+        <a href="index.html" style="text-decoration:none;color:inherit">
+          <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+        </a>
+        <div class="brand-subtitle">Global Scholarship &amp; Assistantship Radar</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="spotlight-header-btn" id="spotlightTriggerBtn" aria-label="Open Global Search" title="Quick Search (⌘K / Ctrl+K)">
+        <span class="spotlight-btn-icon">🔍</span>
+        <span class="spotlight-btn-label">Quick Search...</span>
+        <kbd class="spotlight-btn-kbd">⌘K</kbd>
+      </button>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Black and White Theme" title="Toggle Theme (Dark / Light)">
+        <span class="theme-toggle-icon">☀️</span>
+        <span class="theme-toggle-label">Light</span>
+      </button>
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">📊 Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<main class="page-main">
+  <div class="container">
+
+    <!-- Hero / Header Card -->
+    <div class="scholarship-page-header">
+      <div class="flex items-center justify-between gap-md flex-wrap">
+        <div>
+          <h1 style="font-size:1.75rem;font-weight:900;color:var(--clr-white);display:flex;align-items:center;gap:0.6rem">
+            💰 Global Scholarship &amp; Assistantship Radar
+          </h1>
+          <p style="color:var(--clr-text-muted);font-size:0.92rem;max-width:850px;line-height:1.6;margin-top:0.4rem">
+            Auto-matches your academic standing, GPA, and regional preferences with premier international grants: Germany (DAAD EPOS, Helmut-Schmidt, Deutschlandstipendium), Japan (MEXT Embassy &amp; University recommendations, JASSO), US &amp; UK (Fulbright-Nehru, Inlaks Shivdasani, Graduate TA/RA fee remission), and Europe (Erasmus Mundus EMJM full-ride).
+          </p>
+          <div class="applicant-pill-badge" id="applicantBadge">
+            👤 Candidate: <strong id="candName" style="color:var(--clr-gold)">Loading...</strong>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candDegree">B.Tech in Computer Science</span>
+            <span style="color:var(--clr-text-muted)">|</span>
+            <span id="candUni" style="color:var(--clr-gold-light)">COER University, Roorkee</span>
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn btn-outline-gold" id="btnRefreshRadar">
+            ⚡ Refresh Radar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Main Scholarship Radar Section ── -->
+    <section class="scholarship-radar-section" id="scholarshipRadarSection" style="margin-top:0">
+      <!-- Radar KPI Metrics Strip -->
+      <div class="radar-kpi-grid">
+        <div class="radar-kpi-card">
+          <span class="radar-kpi-label">Eligible Award Value</span>
+          <div class="radar-kpi-value val-emerald" id="radarKpiTotalValue">$0</div>
+          <span class="radar-kpi-sub">Combined potential tuition + stipend funding</span>
+        </div>
+        <div class="radar-kpi-card">
+          <span class="radar-kpi-label">Direct Matches</span>
+          <div class="radar-kpi-value val-gold" id="radarKpiQualified">0</div>
+          <span class="radar-kpi-sub">Meets or exceeds 100% of core criteria</span>
+        </div>
+        <div class="radar-kpi-card">
+          <span class="radar-kpi-label">Full-Ride Opportunities</span>
+          <div class="radar-kpi-value val-indigo" id="radarKpiFullRide">0</div>
+          <span class="radar-kpi-sub">Tuition exemption + monthly living stipend</span>
+        </div>
+        <div class="radar-kpi-card">
+          <span class="radar-kpi-label">US/UK Assistantships</span>
+          <div class="radar-kpi-value val-cyan" id="radarKpiAssistantship">Evaluating...</div>
+          <span class="radar-kpi-sub">TA / RA 100% fee remission status</span>
+        </div>
+      </div>
+
+      <!-- Radar Controls Bar -->
+      <div class="radar-controls-bar">
+        <div class="flex items-center gap-sm flex-wrap">
+          <span style="font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.5px">Region:</span>
+          <div class="radar-filter-pills" id="radarRegionPills">
+            <button type="button" class="radar-filter-pill active" data-region="ALL">🌍 All Regions</button>
+            <button type="button" class="radar-filter-pill" data-region="GERMANY">🇩🇪 Germany (DAAD)</button>
+            <button type="button" class="radar-filter-pill" data-region="JAPAN">🇯🇵 Japan (MEXT / JASSO)</button>
+            <button type="button" class="radar-filter-pill" data-region="US_UK">🇺🇸/🇬🇧 US &amp; UK (Fulbright / TA/RA)</button>
+            <button type="button" class="radar-filter-pill" data-region="EUROPE">🇪🇺 Europe (Erasmus Mundus)</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-sm flex-wrap">
+          <label for="radarCoverageFilter" style="font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.5px">Coverage:</label>
+          <select id="radarCoverageFilter" class="sort-select">
+            <option value="ALL">All Funding Types</option>
+            <option value="FULL_RIDE">Full-Ride (Tuition + Stipend)</option>
+            <option value="ASSISTANTSHIP">Graduate Assistantship (TA/RA)</option>
+            <option value="MONTHLY_STIPEND">Monthly Stipends Only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Strategic Roadmap Box for Indian Candidates -->
+      <div class="radar-advisory-box" id="radarAdvisoryBox">
+        <div class="radar-advisory-title">
+          <span>🎯 Strategic Indian Student Funding Roadmap</span>
+        </div>
+        <ul class="radar-advisory-list" id="radarAdvisoryList">
+          <li>Evaluating your academic profile against international government and foundation deadlines...</li>
+        </ul>
+      </div>
+
+      <!-- US & UK Graduate Assistantship (TA/RA) Fee Remission Card -->
+      <div class="assistantship-feature-card" id="assistantshipCard">
+        <div class="assistantship-header">
+          <h3>🎓 US &amp; UK Graduate Teaching / Research Assistantship (TA/RA) Matrix</h3>
+          <p>Unlike standard external scholarships, Graduate Assistantships (20 hours/week) grant <strong>100% full tuition remission</strong> and a bi-weekly departmental salary. Evaluated based on your GRE Quantitative score, spoken English certification, and research output.</p>
+        </div>
+
+        <div class="assistantship-breakdown-grid" id="assistantshipMetricsGrid">
+          <div class="assistantship-metric-item">
+            <div class="metric-title">Tuition Remission Waiver</div>
+            <div class="metric-val" id="assistantshipTuitionRemission">$38,500/yr</div>
+          </div>
+          <div class="assistantship-metric-item">
+            <div class="metric-title">Monthly Living Stipend</div>
+            <div class="metric-val" id="assistantshipMonthlyStipend">$2,450/mo</div>
+          </div>
+          <div class="assistantship-metric-item">
+            <div class="metric-title">Total Annual Package Value</div>
+            <div class="metric-val" style="color:var(--clr-gold)" id="assistantshipTotalPackage">$60,550/yr</div>
+          </div>
+          <div class="assistantship-metric-item">
+            <div class="metric-title">Weekly Appointment</div>
+            <div class="metric-val" style="color:var(--clr-success)">20 hrs/week (50% FTE)</div>
+          </div>
+        </div>
+
+        <div class="assistantship-checklist" id="assistantshipChecklist"></div>
+      </div>
+
+      <!-- Matching Scholarship Cards Grid -->
+      <div class="scholarships-grid" id="scholarshipsGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--clr-text-muted)">
+          Scanning international scholarship databases...
+        </div>
+      </div>
+    </section>
+
+  </div><!-- .container -->
+</main>
+
+<!-- Toast notification container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module">
+  import { scanScholarshipRadar, getScholarshipOpportunities, evaluateAssistantship } from './js/api.js';
+
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: 'ℹ️', error: '❌', success: '✅', warning: '⚠️' };
+    const container = $('#toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Load applicant profile
+  let profile = null;
+  try {
+    const pro = sessionStorage.getItem('applicantData') || sessionStorage.getItem('applicantProfile');
+    if (pro) profile = JSON.parse(pro);
+  } catch (e) { console.error('sessionStorage parse error', e); }
+
+  if (!profile) {
+    profile = {
+      fullName: 'Aarav Sharma',
+      universityName: 'COER University, Roorkee',
+      degree: 'B.Tech',
+      specialization: 'Computer Science',
+      cgpa10pt: 8.5,
+      greQuant: 166,
+      greVerbal: 156,
+      toeflScore: 104,
+      ieltsScore: 7.5,
+      jlptLevel: 'N3',
+      thesisCompleted: true,
+      publicationsCount: 1,
+      internshipMonths: 18,
+      annualBudgetUsd: 30000,
+      liquidSavingsUsd: 20000
+    };
+  }
+
+  $('#candName').textContent = profile.fullName || 'Prospective Scholar';
+  $('#candDegree').textContent = `${profile.degree || 'B.Tech'} in ${profile.specialization || 'Computer Science'}`;
+  $('#candUni').textContent = profile.universityName || 'Indian Engineering Institute';
+
+  // Read URL query parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const qCountry = (urlParams.get('country') || '').toLowerCase();
+  const qRegion = (urlParams.get('region') || '').toUpperCase();
+  const qUni = urlParams.get('uni');
+  const qKeyword = (urlParams.get('q') || '').toLowerCase();
+
+  let currentRadarRegion = 'ALL';
+  if (qRegion === 'US' || qCountry.includes('usa') || qCountry.includes('uk') || qCountry.includes('canada')) {
+    currentRadarRegion = 'US_UK';
+  } else if (qCountry.includes('germany')) {
+    currentRadarRegion = 'GERMANY';
+  } else if (qCountry.includes('japan')) {
+    currentRadarRegion = 'JAPAN';
+  } else if (qRegion === 'EU' || qCountry.includes('spain') || qCountry.includes('portugal') || qCountry.includes('italy') || qCountry.includes('france') || qCountry.includes('switzerland')) {
+    currentRadarRegion = 'EUROPE';
+  }
+
+  let currentRadarCoverage = 'ALL';
+  let currentRadarResult = null;
+
+  function scholarshipCountryFlag(country, region) {
+    const c = (country || '').toLowerCase();
+    if (c.includes('germany') || c.includes('deutschland')) return '🇩🇪';
+    if (c.includes('japan')) return '🇯🇵';
+    if (c.includes('usa') || c.includes('united states')) return '🇺🇸';
+    if (c.includes('uk') || c.includes('united kingdom')) return '🇬🇧';
+    if (c.includes('switzerland')) return '🇨🇭';
+    if (c.includes('italy')) return '🇮🇹';
+    if (c.includes('france')) return '🇫🇷';
+    if (c.includes('portugal')) return '🇵🇹';
+    if (c.includes('spain')) return '🇪🇸';
+    if (c.includes('europe')) return '🇪🇺';
+    if (region === 'GERMANY') return '🇩🇪';
+    if (region === 'JAPAN') return '🇯🇵';
+    if (region === 'US_UK') return '🇺🇸';
+    if (region === 'EUROPE') return '🇪🇺';
+    return '🌍';
+  }
+
+  function getCoverageBadgeClass(coverageType) {
+    switch (coverageType) {
+      case 'FULL_RIDE': return 'badge-full-ride';
+      case 'ASSISTANTSHIP': return 'badge-assistantship';
+      default: return 'badge-stipend';
+    }
+  }
+
+  function getCoverageLabel(coverageType) {
+    switch (coverageType) {
+      case 'FULL_RIDE': return 'Full-Ride Grant';
+      case 'ASSISTANTSHIP': return 'Departmental TA/RA';
+      case 'TUITION_PLUS_STIPEND': return 'Tuition + Stipend';
+      case 'MONTHLY_STIPEND': return 'Monthly Stipend';
+      case 'TUITION_WAIVER': return 'Tuition Waiver';
+      default: return 'Scholarship';
+    }
+  }
+
+  // Local fallback generator for resilient offline usage
+  function buildLocalScholarshipRadar(prof) {
+    const cgpa = prof?.cgpa10pt ?? prof?.cgpa ?? 8.5;
+    const workMonths = prof?.internshipMonths ?? 18;
+    const greQ = prof?.greQuant ?? 166;
+    const toefl = prof?.toeflScore ?? prof?.toefl ?? 104;
+    const ielts = prof?.ieltsScore ?? prof?.ielts ?? 7.5;
+    const thesis = prof?.thesisCompleted ?? prof?.bachelorThesis ?? true;
+    const pubs = prof?.publicationsCount ?? prof?.publications ?? 1;
+
+    const taEligible = (cgpa >= 8.0) && (greQ >= 162) && (toefl >= 100 || ielts >= 7.5);
+    const raEligible = (cgpa >= 8.0) && (thesis || pubs >= 1);
+
+    const assistantship = {
+      taEligible,
+      raEligible,
+      estimatedTuitionRemissionUsd: 38500,
+      estimatedMonthlyStipendUsd: 2450,
+      estimatedAnnualStipendUsd: 22050,
+      estimatedTotalPackageUsd: 60550,
+      weeklyWorkHours: 20,
+      speakingExamStatus: (toefl >= 100 || ielts >= 7.5) ? 'QUALIFIED' : 'SPEAKING_TEST_RECOMMENDED',
+      researchReadinessStatus: (thesis || pubs >= 1) ? 'RESEARCH_READY' : 'CAPSTONE_REQUIRED',
+      prerequisitesMet: [
+        `GPA Benchmark: CGPA ${cgpa.toFixed(2)} qualifies for departmental appointment consideration`,
+        (toefl >= 100 || ielts >= 7.5) ? 'Spoken English: TOEFL/IELTS satisfies university GTA spoken instruction standard' : 'English Test on record',
+        (thesis || pubs >= 1) ? `Research Track: Documented ${thesis ? 'Bachelor Thesis' : 'Publication'} strengthens RA appointment odds` : 'Undergraduate technical training'
+      ],
+      prerequisitesPending: [
+        (greQ >= 164) ? 'Quantitative standard satisfied' : `GRE Quant target is 164+ (current: ${greQ})`,
+        (workMonths >= 12) ? 'Industry experience verified' : 'Additional internships recommended'
+      ],
+      actionSteps: [
+        'Contact prospective university Graduate Program Directors (GPD) 3 months prior to arrival',
+        'Highlight teaching competencies in Data Structures, Algorithms, or Systems programming',
+        'Inquire with faculty regarding funded RA research grants during your first admission offer window'
+      ]
+    };
+
+    const localOpportunities = [
+      {
+        id: 'ERASMUS_MUNDUS_EMJM',
+        name: 'Erasmus Mundus Joint Masters (EMJM) Full-Ride Scholarship',
+        organization: 'European Commission (European Union)',
+        country: 'Europe (Multi-Country)',
+        region: 'EUROPE',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 52000,
+        awardSummary: '100% Full Tuition Coverage for 24 months + €1,400/month living allowance + €3,000/yr travel grant + health insurance',
+        minCgpa: 8.0,
+        minWorkExperienceMonths: 0,
+        requiresThesis: true,
+        applicationDeadline: 'October – January (annually)',
+        portalUrl: 'https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en',
+        keyTips: ['Allows studying across 2+ distinct EU nations with joint MSc degrees', 'Indian applicants consistently rank #1 globally in EMJM awards received']
+      },
+      {
+        id: 'DAAD_EPOS',
+        name: 'DAAD EPOS (Development-Related Postgraduate Courses)',
+        organization: 'German Academic Exchange Service (DAAD)',
+        country: 'Germany',
+        region: 'GERMANY',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 32500,
+        awardSummary: '€934/month living stipend + return airfare + comprehensive health insurance + €460/yr study grant',
+        minCgpa: 7.5,
+        minWorkExperienceMonths: 24,
+        requiresThesis: false,
+        applicationDeadline: 'August – October (annually)',
+        portalUrl: 'https://www.daad.de/en/information-services-for-higher-education-institutions/further-programmes/epos/',
+        keyTips: ['Mandatory minimum 2 years (24 months) professional experience after bachelor completion', 'India is on the DAC/ODA recipient list and fully eligible']
+      },
+      {
+        id: 'DAAD_HELMUT_SCHMIDT',
+        name: 'DAAD Helmut-Schmidt-Programme (Public Policy & Good Governance)',
+        organization: 'German Academic Exchange Service (DAAD)',
+        country: 'Germany',
+        region: 'GERMANY',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 31000,
+        awardSummary: 'Full tuition waiver + €934/month stipend + health insurance + travel subsidies + 6-month preparatory German language course',
+        minCgpa: 7.5,
+        minWorkExperienceMonths: 6,
+        requiresThesis: false,
+        applicationDeadline: 'June 1 – July 31 (annually)',
+        portalUrl: 'https://www.daad.de/en/information-services-for-higher-education-institutions/further-programmes/helmut-schmidt-programme/',
+        keyTips: ['Strong fit for CS applicants targeting digital governance, AI ethics, and data privacy policy', '6-month German language prep included prior to study']
+      },
+      {
+        id: 'DAAD_STUDY_SCHOLARSHIP',
+        name: 'DAAD Master Studies Scholarship for All Academic Disciplines',
+        organization: 'German Academic Exchange Service (DAAD)',
+        country: 'Germany',
+        region: 'GERMANY',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 30000,
+        awardSummary: '€934/month living stipend for 10–24 months + travel subsidy + health insurance + €460/yr study grant',
+        minCgpa: 8.5,
+        minWorkExperienceMonths: 0,
+        requiresThesis: true,
+        applicationDeadline: 'October – November (annually)',
+        portalUrl: 'https://www.daad.in/en/find-funding/scholarship-database/',
+        keyTips: ['Apply through DAAD Regional Branch Office New Delhi', 'High academic distinction required; attach bachelor thesis summary']
+      },
+      {
+        id: 'DEUTSCHLANDSTIPENDIUM',
+        name: 'Deutschlandstipendium (German National Merit Scholarship)',
+        organization: 'Federal Ministry of Education (BMBF) & University Sponsors',
+        country: 'Germany',
+        region: 'GERMANY',
+        coverageType: 'MONTHLY_STIPEND',
+        financialValueUsd: 4000,
+        awardSummary: '€300/month tax-free cash stipend for at least two semesters, granted regardless of personal income',
+        minCgpa: 8.0,
+        minWorkExperienceMonths: 0,
+        requiresThesis: false,
+        applicationDeadline: 'June – September (set by each university)',
+        portalUrl: 'https://www.deutschlandstipendium.de/deutschlandstipendium/en/',
+        keyTips: ['Co-funded 50% by federal government and 50% by German corporate leaders (Siemens, BMW, SAP)', 'Can be held concurrently with blocked account funds']
+      },
+      {
+        id: 'MEXT_EMBASSY',
+        name: 'MEXT Japanese Government Scholarship (Embassy Recommendation)',
+        organization: 'Ministry of Education, Culture, Sports, Science & Tech (MEXT, Japan)',
+        country: 'Japan',
+        region: 'JAPAN',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 46000,
+        awardSummary: '100% Full Tuition Exemption + ¥144,000–¥147,000/month living stipend + Round-trip international flights from India to Japan',
+        minCgpa: 8.2,
+        minWorkExperienceMonths: 0,
+        requiresThesis: true,
+        applicationDeadline: 'April – May (annually via Embassy of Japan in New Delhi)',
+        portalUrl: 'https://www.in.emb-japan.go.jp/itpr_en/education_study_in_japan.html',
+        keyTips: ['Primary screening handled at the Embassy in New Delhi, followed by supervisor Naidaku requests', 'Includes 6 months of intensive Japanese language immersion']
+      },
+      {
+        id: 'MEXT_UNIVERSITY',
+        name: 'MEXT Japanese Government Scholarship (University Recommendation)',
+        organization: 'Ministry of Education, Culture, Sports, Science & Tech (MEXT, Japan)',
+        country: 'Japan',
+        region: 'JAPAN',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 45000,
+        awardSummary: '100% Full Tuition Waiver + ¥144,000/month living stipend + Round-trip international airfare',
+        minCgpa: 8.0,
+        minWorkExperienceMonths: 0,
+        requiresThesis: true,
+        applicationDeadline: 'November – January (annually)',
+        portalUrl: 'https://www.studyinjapan.go.jp/en/planning/scholarships/mext-scholarships/',
+        keyTips: ['Nomination submitted directly by the Japanese prospective research supervisor/lab to MEXT', 'Secure professor informal consent (Naidaku) before December']
+      },
+      {
+        id: 'JASSO_HONORS',
+        name: 'JASSO Monbukagakusho Honors Scholarship for Privately-Financed Students',
+        organization: 'Japan Student Services Organization (JASSO)',
+        country: 'Japan',
+        region: 'JAPAN',
+        coverageType: 'MONTHLY_STIPEND',
+        financialValueUsd: 4200,
+        awardSummary: '¥48,000/month study grant for 12 months for enrolled privately-financed graduate students',
+        minCgpa: 7.0,
+        minWorkExperienceMonths: 0,
+        requiresThesis: false,
+        applicationDeadline: 'April – May / October – November (upon enrollment)',
+        portalUrl: 'https://www.jasso.go.jp/en/ryugaku/scholarships/study_j/scholarships/index.html',
+        keyTips: ['Accessible GPA threshold (approx 7.0/10)', 'Applied directly through your admitted university international student office']
+      },
+      {
+        id: 'FULBRIGHT_NEHRU',
+        name: "Fulbright-Nehru Master's Fellowships",
+        organization: 'United States-India Educational Foundation (USIEF)',
+        country: 'USA',
+        region: 'US_UK',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 90000,
+        awardSummary: '100% J-1 Visa tuition coverage + monthly living stipend + round-trip flights from India + health accident coverage',
+        minCgpa: 7.0,
+        minWorkExperienceMonths: 36,
+        requiresThesis: false,
+        applicationDeadline: 'Mid-May (annually, 15 months prior to US intake)',
+        portalUrl: 'https://www.usief.org.in/Fulbright-Nehru-Fellowships.aspx',
+        keyTips: ['Requires minimum 3 years (36 months) of full-time professional experience', 'Mandatory 2-year home country residency return requirement']
+      },
+      {
+        id: 'INLAKS_SHIVDASANI',
+        name: 'Inlaks Shivdasani Foundation Scholarships',
+        organization: 'Inlaks Shivdasani Foundation',
+        country: 'USA, UK & Europe',
+        region: 'US_UK',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 100000,
+        awardSummary: 'Up to $100,000 USD covering full tuition fees, university living expenses, one-way flight, and health insurance',
+        minCgpa: 8.5,
+        minWorkExperienceMonths: 0,
+        requiresThesis: true,
+        applicationDeadline: 'March 15 – March 30 (annually)',
+        portalUrl: 'https://www.inlaksfoundation.org/scholarships/',
+        keyTips: ['Targeted at Indian students admitted to top-tier universities (MIT, Stanford, Oxford, Cambridge, ETH)', 'Personal interviews conducted in New Delhi and Mumbai']
+      },
+      {
+        id: 'US_UK_GRADUATE_TARA',
+        name: 'Graduate Teaching & Research Assistantship (TA/RA) Fee Remission',
+        organization: 'US & UK University Academic Departments',
+        country: 'USA & UK',
+        region: 'US_UK',
+        coverageType: 'ASSISTANTSHIP',
+        financialValueUsd: 60550,
+        awardSummary: '100% Tuition Waiver ($25,000–$55,000/yr) + Monthly living stipend ($1,800–$3,500/mo for 20 hrs/week) + Health insurance',
+        minCgpa: 8.0,
+        minWorkExperienceMonths: 0,
+        requiresThesis: true,
+        applicationDeadline: 'December – February (concurrent with admissions)',
+        portalUrl: 'https://gradschool.edu/funding/assistantships',
+        keyTips: ['20 hours/week appointment provides 100% full tuition remission', 'Spoken English standard (TOEFL Speaking >= 26 or IELTS Speaking >= 8.0) critical for TA']
+      },
+      {
+        id: 'ETH_ESOP',
+        name: 'ETH Excellence Scholarship & Opportunity Programme (ESOP)',
+        organization: 'ETH Zurich Foundation',
+        country: 'Switzerland',
+        region: 'EUROPE',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 54000,
+        awardSummary: 'Full study fee waiver + CHF 12,000/semester living & study grant (CHF 48,000 total) + faculty mentoring',
+        minCgpa: 9.0,
+        minWorkExperienceMonths: 0,
+        requiresThesis: true,
+        applicationDeadline: 'November 1 – December 15 (annually)',
+        portalUrl: 'https://ethz.ch/students/en/studies/financial/scholarships/excellencescholarship.html',
+        keyTips: ['Requires Grade A (top 10% of class, CGPA >= 9.0) and Bachelor thesis', 'Pre-proposal for Master thesis required with application']
+      },
+      {
+        id: 'ITALY_DSU',
+        name: 'Italian Regional DSU Scholarship (Diritto allo Studio Universitario)',
+        organization: 'Regional Governments of Lombardy / Piedmont / Lazio (Italy)',
+        country: 'Italy',
+        region: 'EUROPE',
+        coverageType: 'FULL_RIDE',
+        financialValueUsd: 20000,
+        awardSummary: '100% Tuition Fee Waiver + Free Campus Canteen Meals + up to €7,200/yr direct cash living stipend',
+        minCgpa: 6.5,
+        minWorkExperienceMonths: 0,
+        requiresThesis: false,
+        applicationDeadline: 'July – September (annually)',
+        portalUrl: 'https://www.polimi.it/en/international-prospective-students/fees-and-scholarships/dsu-scholarships',
+        keyTips: ['Based on family income certification (ISEEE Parificato under €25,000/yr)', 'Highly accessible for Indian students admitted to Politecnico di Milano and Sapienza']
+      }
+    ];
+
+    const allMatches = localOpportunities.map(opp => {
+      let score = 70.0;
+      const satisfied = [];
+      const unmet = [];
+      const advice = [...opp.keyTips];
+
+      if (cgpa >= opp.minCgpa) {
+        satisfied.push(`Academic Merit: CGPA ${cgpa.toFixed(2)} meets minimum requirement (>= ${opp.minCgpa.toFixed(1)})`);
+        score += 20.0;
+      } else {
+        const gap = opp.minCgpa - cgpa;
+        unmet.push(`CGPA: Current ${cgpa.toFixed(2)} vs benchmark ${opp.minCgpa.toFixed(1)} (gap: ${gap.toFixed(2)})`);
+        score -= 15.0;
+      }
+
+      if (opp.minWorkExperienceMonths > 0) {
+        if (workMonths >= opp.minWorkExperienceMonths) {
+          satisfied.push(`Professional Experience: ${workMonths} months verified (>= ${opp.minWorkExperienceMonths} months required)`);
+          score += 10.0;
+        } else {
+          unmet.push(`Work Experience: ${workMonths} months completed vs ${opp.minWorkExperienceMonths} months required (shortfall: ${opp.minWorkExperienceMonths - workMonths}m)`);
+          score -= 20.0;
+        }
+      }
+
+      if (opp.requiresThesis) {
+        if (thesis || pubs >= 1) {
+          satisfied.push(`Research Capability: ${thesis ? 'Bachelor Thesis' : 'Publications'} verified`);
+        } else {
+          unmet.push('Research Track: Documented thesis or published research paper required');
+          score -= 10.0;
+        }
+      }
+
+      score = Math.min(100, Math.max(20, Math.round(score)));
+
+      let status = 'COMPETITIVE_WITH_GAP';
+      let label = 'Competitive (Remedial Gaps)';
+      if (score >= 85 && unmet.length === 0) {
+        status = 'DIRECT_MATCH';
+        label = 'Direct Match & High Eligibility';
+      } else if (score >= 70) {
+        status = 'STRONG_CANDIDATE';
+        label = 'Strong Candidate — High Odds';
+      } else if (score < 50) {
+        status = 'NOT_ELIGIBLE';
+        label = 'Prerequisites Not Met';
+      }
+
+      return {
+        opportunity: opp,
+        matchScore: score,
+        eligibilityStatus: status,
+        statusLabel: label,
+        estimatedAwardValueUsd: opp.financialValueUsd,
+        satisfiedRequirements: satisfied,
+        unmetRequirements: unmet,
+        actionableAdvice: advice
+      };
+    });
+
+    const directMatches = allMatches.filter(m => m.eligibilityStatus === 'DIRECT_MATCH');
+    const strongCandidates = allMatches.filter(m => m.eligibilityStatus === 'STRONG_CANDIDATE');
+    const fullRides = allMatches.filter(m => m.opportunity.coverageType === 'FULL_RIDE' && m.matchScore >= 65);
+
+    let totalVal = directMatches.reduce((acc, m) => acc + m.opportunity.financialValueUsd, 0) +
+                   strongCandidates.reduce((acc, m) => acc + (m.opportunity.financialValueUsd * 0.75), 0);
+
+    return {
+      applicantName: prof?.fullName || 'Prospective Scholar',
+      totalEligibleScholarshipValueUsd: Math.round(totalVal),
+      totalQualifiedAwards: directMatches.length,
+      totalStrongCandidateAwards: strongCandidates.length,
+      totalAwardsEvaluated: allMatches.length,
+      fullRideCount: fullRides.length,
+      allMatches,
+      assistantshipEvaluation: assistantship,
+      strategicRecommendations: [
+        `Direct Qualification: You are competitive for ${directMatches.length} premier international awards. Prioritize early portal deadlines.`,
+        'Germany DAAD Strategy: DAAD scholarship portals close in October/November, well before individual German university master portals. Deutschlandstipendium (€300/mo) applications open after university enrollment.',
+        'Japan MEXT Strategy: Target the Embassy Recommendation Track via the Embassy of Japan in New Delhi (opens April), or reach out to target professors for University Recommendation (Naidaku) before December.',
+        `US & UK Assistantship Leverage: Your academic metrics qualify for Departmental TA/RA fee remission worth an estimated $${Number(assistantship.estimatedTotalPackageUsd).toLocaleString()} total annual package.`,
+        'Europe Erasmus Mundus (EMJM): India is among the top-awarded partner countries globally. Apply to up to 3 Erasmus Mundus consortia between October and January for full-ride €1,400/month funding across 2+ EU nations.'
+      ]
+    };
+  }
+
+  async function loadScholarshipRadar() {
+    const radarReq = {
+      profile: {
+        fullName: profile?.fullName || 'Applicant',
+        cgpa10pt: profile?.cgpa10pt ?? profile?.cgpa ?? 8.5,
+        universityName: profile?.universityName || 'COER University, Roorkee',
+        degree: profile?.degree || 'B.Tech',
+        specialization: profile?.specialization || 'Computer Science',
+        greQuant: profile?.greQuant ?? 166,
+        greVerbal: profile?.greVerbal ?? 156,
+        greAw: profile?.greAW ?? profile?.greAw ?? 4.0,
+        toeflScore: profile?.toefl ?? profile?.toeflScore ?? 104,
+        ieltsScore: profile?.ielts ?? profile?.ieltsScore ?? 7.5,
+        jlptLevel: profile?.jlptLevel ?? 'N3',
+        thesisCompleted: profile?.thesisCompleted ?? profile?.bachelorThesis ?? true,
+        publicationsCount: profile?.publicationsCount ?? profile?.publications ?? 1,
+        internshipMonths: profile?.internshipMonths ?? 18,
+        annualBudgetUsd: profile?.annualBudgetUsd ?? profile?.annualBudget ?? 30000,
+        liquidSavingsUsd: profile?.liquidSavingsUsd ?? profile?.liquidSavings ?? 20000,
+        fundingPreference: profile?.fundingPreference ?? 'PARTIAL_SCHOLARSHIP'
+      },
+      targetRegion: currentRadarRegion,
+      minCoverageType: currentRadarCoverage
+    };
+
+    try {
+      const resp = await scanScholarshipRadar(radarReq);
+      if (resp && resp.allMatches && resp.allMatches.length > 0) {
+        currentRadarResult = resp;
+      } else {
+        currentRadarResult = buildLocalScholarshipRadar(profile);
+      }
+    } catch (err) {
+      console.warn('[ScholarshipRadar] Backend call failed, using local generator:', err.message);
+      currentRadarResult = buildLocalScholarshipRadar(profile);
+    }
+
+    renderScholarshipRadar(currentRadarResult);
+  }
+
+  function renderScholarshipRadar(data) {
+    if (!data) return;
+
+    // 1. KPI Strip
+    $('#radarKpiTotalValue').textContent = `$${Number(data.totalEligibleScholarshipValueUsd || 0).toLocaleString()}`;
+    $('#radarKpiQualified').textContent = `${data.totalQualifiedAwards || 0} Direct Match${data.totalQualifiedAwards === 1 ? '' : 'es'}`;
+    $('#radarKpiFullRide').textContent = `${data.fullRideCount || 0} Full-Ride Grant${data.fullRideCount === 1 ? '' : 's'}`;
+
+    const asst = data.assistantshipEvaluation;
+    if (asst && (asst.taEligible || asst.raEligible)) {
+      $('#radarKpiAssistantship').textContent = `Qualified ($${Math.round(asst.estimatedTotalPackageUsd / 1000)}k/yr)`;
+      $('#radarKpiAssistantship').className = 'radar-kpi-value val-cyan';
+    } else {
+      $('#radarKpiAssistantship').textContent = 'Prerequisites Needed';
+      $('#radarKpiAssistantship').className = 'radar-kpi-value val-gold';
+    }
+
+    // 2. Strategic Advisory Roadmap
+    const recs = data.strategicRecommendations || [];
+    $('#radarAdvisoryList').innerHTML = recs.map(r => `<li>${escapeHtml(r)}</li>`).join('');
+
+    // 3. Assistantship (TA/RA) Fee Remission Card
+    if (asst) {
+      $('#assistantshipTuitionRemission').textContent = `$${Number(asst.estimatedTuitionRemissionUsd || 38500).toLocaleString()}/yr`;
+      $('#assistantshipMonthlyStipend').textContent = `$${Number(asst.estimatedMonthlyStipendUsd || 2450).toLocaleString()}/mo`;
+      $('#assistantshipTotalPackage').textContent = `$${Number(asst.estimatedTotalPackageUsd || 60550).toLocaleString()}/yr`;
+
+      const checklistHtml = [];
+      (asst.prerequisitesMet || []).forEach(item => {
+        checklistHtml.push(`<div class="assistantship-check-pill met">✓ ${escapeHtml(item)}</div>`);
+      });
+      (asst.prerequisitesPending || []).forEach(item => {
+        checklistHtml.push(`<div class="assistantship-check-pill pending">⚠️ ${escapeHtml(item)}</div>`);
+      });
+      $('#assistantshipChecklist').innerHTML = checklistHtml.join('');
+    }
+
+    // 4. Scholarship Opportunities Grid
+    const grid = $('#scholarshipsGrid');
+    if (!grid) return;
+
+    let matches = data.allMatches || [];
+
+    // Filter by Region
+    if (currentRadarRegion !== 'ALL') {
+      matches = matches.filter(m => {
+        const r = (m.opportunity?.region || '').toUpperCase();
+        if (currentRadarRegion === 'GERMANY') return r === 'GERMANY';
+        if (currentRadarRegion === 'JAPAN') return r === 'JAPAN';
+        if (currentRadarRegion === 'US_UK') return r === 'US_UK' || r.includes('US');
+        if (currentRadarRegion === 'EUROPE') return r === 'EUROPE' || r === 'GERMANY';
+        return true;
+      });
+    }
+
+    // Filter by Coverage Type
+    if (currentRadarCoverage !== 'ALL') {
+      matches = matches.filter(m => (m.opportunity?.coverageType || '').toUpperCase() === currentRadarCoverage);
+    }
+
+    // Filter by Query Keyword if provided
+    if (qKeyword) {
+      matches = matches.filter(m => {
+        const text = `${m.opportunity?.name} ${m.opportunity?.organization} ${m.opportunity?.country} ${m.opportunity?.awardSummary} ${(m.opportunity?.keyTips || []).join(' ')}`.toLowerCase();
+        return text.includes(qKeyword);
+      });
+    }
+
+    if (matches.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--clr-text-muted)">
+          <div style="font-size:2rem;margin-bottom:0.5rem">🔍</div>
+          <div style="font-size:1rem;font-weight:700;color:var(--clr-white)">No matching scholarships for selected filter criteria</div>
+          <div style="font-size:0.82rem;margin-top:0.35rem">Try switching to "🌍 All Regions" or "All Funding Types" to explore all opportunities.</div>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = matches.map(m => {
+      const opp = m.opportunity;
+      const score = Math.round(m.matchScore || 0);
+      const flag = scholarshipCountryFlag(opp.country, opp.region);
+      const badgeClass = getCoverageBadgeClass(opp.coverageType);
+      const coverageLabel = getCoverageLabel(opp.coverageType);
+
+      let tagClass = 'tag-gap';
+      let fillClass = 'fill-orange';
+      if (score >= 85 && (m.unmetRequirements || []).length === 0) {
+        tagClass = 'tag-direct';
+        fillClass = 'fill-emerald';
+      } else if (score >= 70) {
+        tagClass = 'tag-strong';
+        fillClass = 'fill-amber';
+      }
+
+      const satisfiedList = (m.satisfiedRequirements || []).slice(0, 3).map(s =>
+        `<li class="scholarship-req-item satisfied">${escapeHtml(s)}</li>`
+      ).join('');
+
+      const unmetList = (m.unmetRequirements || []).slice(0, 2).map(u =>
+        `<li class="scholarship-req-item unmet">${escapeHtml(u)}</li>`
+      ).join('');
+
+      return `
+        <div class="scholarship-card ${tagClass === 'tag-direct' ? 'status-direct-match' : ''}">
+          <div>
+            <div class="scholarship-card-top">
+              <div class="scholarship-card-identity">
+                <span class="scholarship-flag">${flag}</span>
+                <div>
+                  <div class="scholarship-name">${escapeHtml(opp.name)}</div>
+                  <div class="scholarship-org">${escapeHtml(opp.organization)}</div>
+                </div>
+              </div>
+              <span class="coverage-badge ${badgeClass}">${escapeHtml(coverageLabel)}</span>
+            </div>
+
+            <div class="scholarship-score-bar-wrap">
+              <div class="scholarship-score-header">
+                <span class="scholarship-score-label">Compatibility: <strong>${score}%</strong></span>
+                <span class="scholarship-status-tag ${tagClass}">${escapeHtml(m.statusLabel || 'Evaluated')}</span>
+              </div>
+              <div class="scholarship-progress-track">
+                <div class="scholarship-progress-fill ${fillClass}" style="width:${score}%"></div>
+              </div>
+            </div>
+
+            <div class="scholarship-award-box">
+              <div class="scholarship-award-title">
+                <span>🏆 Award Package</span>
+                ${opp.financialValueUsd ? `<span style="margin-left:auto;color:var(--clr-white);font-weight:800">~$${Number(opp.financialValueUsd).toLocaleString()} USD Value</span>` : ''}
+              </div>
+              <div class="scholarship-award-summary">${escapeHtml(opp.awardSummary)}</div>
+            </div>
+
+            <ul class="scholarship-reqs-list">
+              ${satisfiedList}
+              ${unmetList}
+            </ul>
+          </div>
+
+          <div class="scholarship-card-footer">
+            <div class="scholarship-deadline-text">
+              📅 Deadline: <strong>${escapeHtml(opp.applicationDeadline || 'Annually')}</strong>
+            </div>
+            ${opp.portalUrl ? `
+              <a href="${escapeHtml(opp.portalUrl)}" target="_blank" rel="noopener noreferrer" class="btn-portal-link" title="Open Official Portal">
+                Apply / Info ↗
+              </a>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── Event Handlers ────────────────────────────────────────────────────────
+
+  $('#btnRefreshRadar')?.addEventListener('click', () => {
+    loadScholarshipRadar();
+    showToast('Radar Refreshed', 'Re-evaluated all global scholarship matrices against your profile.', 'success');
+  });
+
+  $('#radarRegionPills')?.addEventListener('click', (e) => {
+    const pill = e.target.closest('.radar-filter-pill');
+    if (!pill) return;
+
+    $$('.radar-filter-pill', $('#radarRegionPills')).forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+
+    currentRadarRegion = pill.dataset.region || 'ALL';
+    renderScholarshipRadar(currentRadarResult);
+  });
+
+  $('#radarCoverageFilter')?.addEventListener('change', (e) => {
+    currentRadarCoverage = e.target.value || 'ALL';
+    renderScholarshipRadar(currentRadarResult);
+  });
+
+  // Pre-activate pill if loaded from URL parameter
+  $$('.radar-filter-pill', $('#radarRegionPills')).forEach(p => {
+    p.classList.toggle('active', p.dataset.region === currentRadarRegion);
+  });
+
+  // Initialize
+  loadScholarshipRadar();
+
+  if (qUni) {
+    showToast('University Scholarships', `Filtered scholarships aligned with ${qUni}.`, 'info');
+  } else if (qKeyword) {
+    showToast('Scholarship Filter', `Filtered scholarships matching "${urlParams.get('q')}".`, 'info');
+  }
+</script>
+
+<script src="js/theme.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/spotlight.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

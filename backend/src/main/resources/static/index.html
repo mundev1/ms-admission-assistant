@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎓 MS Admissions Matrix Engine</title>
+  <script>const t=localStorage.getItem('ms-admissions-theme')||'dark';document.documentElement.setAttribute('data-theme',t);</script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* ── Page-specific overrides ─────────────────────────────── */
+    .page-main {
+      padding: 2rem 0 4rem;
+    }
+
+    .form-wrapper {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      color: var(--clr-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      color: var(--clr-text-muted);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: var(--clr-border);
+      border-radius: 99px;
+      margin: 1.5rem 0 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--clr-gold-dark), var(--clr-gold));
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .section-card {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      padding: 1.5rem;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      bottom: 1.5rem;
+      z-index: 50;
+    }
+
+    .form-actions .btn-primary {
+      min-width: 210px;
+    }
+
+    .gpa-display {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .gpa-conversions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 27, 42, 0.88);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .loading-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .loading-overlay h3 {
+      color: var(--clr-gold);
+      font-size: 1.25rem;
+    }
+
+    .loading-overlay p {
+      font-size: 0.9rem;
+      color: var(--clr-text-muted);
+    }
+
+    .spinner-lg {
+      width: 56px; height: 56px;
+      border: 4px solid var(--clr-border);
+      border-top-color: var(--clr-gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Section number badge */
+    .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px; height: 24px;
+      background: var(--clr-gold);
+      color: var(--clr-bg);
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="container header-container">
+    <div class="header-brand-group">
+      <button type="button" class="nav-menu-btn" id="navMenuBtn" aria-label="Open Navigation Menu" aria-expanded="false" title="Menu (Features &amp; Navigation)">
+        <span class="hamburger-icon" aria-hidden="true">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </span>
+        <span class="nav-menu-label">Menu</span>
+      </button>
+      <div class="brand">
+        <a href="index.html" style="text-decoration:none;color:inherit">
+          <div class="brand-title">🎓 MS Admissions Matrix Engine</div>
+        </a>
+        <div class="brand-subtitle">Cross-Border Compatibility Calculator</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="spotlight-header-btn" id="spotlightTriggerBtn" aria-label="Open Global Search" title="Quick Search (⌘K / Ctrl+K)">
+        <span class="spotlight-btn-icon">🔍</span>
+        <span class="spotlight-btn-label">Quick Search...</span>
+        <kbd class="spotlight-btn-kbd">⌘K</kbd>
+      </button>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Black and White Theme" title="Toggle Theme (Dark / Light)">
+        <span class="theme-toggle-icon">☀️</span>
+        <span class="theme-toggle-label">Light</span>
+      </button>
+      <span class="text-sm text-muted" id="formProgress" style="margin-left:0.35rem">0% complete</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── Loading overlay ──────────────────────────────────────────────────── -->
+<div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-label="Loading">
+  <div class="spinner-lg"></div>
+  <h3>Calculating Compatibility…</h3>
+  <p id="loadingMsg">Saving applicant profile</p>
+</div>
+
+<!-- ── Toast container ──────────────────────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ── Main ─────────────────────────────────────────────────────────────── -->
+<main class="page-main">
+  <div class="container">
+    <div class="form-wrapper">
+
+      <!-- Hero -->
+      <div class="hero">
+        <h1>🎓 MS Admissions Matrix Engine</h1>
+        <p>Fill in your academic profile and discover which graduate programs you're compatible with across the US, Europe, and Japan.</p>
+        <div class="progress-bar-wrap">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <form id="admissionsForm" novalidate autocomplete="off">
+
+        <!-- ── 1. Personal Info ───────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">👤</div>
+            <div>
+              <div class="card-title">Personal Information</div>
+              <div class="card-subtitle">Your basic contact details</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">1</span>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="fullName">Full Name <span class="required">*</span></label>
+              <input type="text" id="fullName" name="fullName" class="form-control"
+                     placeholder="e.g. Priya Sharma" autocomplete="name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="email" class="form-control"
+                     placeholder="priya@example.com" autocomplete="email" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 2. Academic Record ─────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">📚</div>
+            <div>
+              <div class="card-title">Academic Record</div>
+              <div class="card-subtitle">Undergraduate degree details</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">2</span>
+          </div>
+
+          <div class="grid-2">
+            <!-- CGPA -->
+            <div class="form-group col-span-2">
+              <label class="form-label" for="cgpaNum">CGPA <span class="required">*</span>
+                <span class="hint">(on a 10-point scale)</span>
+              </label>
+              <div class="form-slider-wrap">
+                <input type="range" id="cgpaSlider" name="cgpaSlider"
+                       min="0" max="10" step="0.1" value="8.0" />
+                <input type="number" id="cgpaNum" name="cgpa" class="form-control"
+                       min="0" max="10" step="0.1" value="8.0" required />
+              </div>
+              <div class="gpa-display">
+                <div class="gpa-conversions" id="gpaConversions">
+                  <span class="conversion-hint">🇺🇸 <span class="val" id="us4pt">3.20</span> / 4.0</span>
+                  <span class="conversion-hint">🇯🇵 <span class="val" id="jp4pt">3.00</span> / 4.0</span>
+                  <span class="conversion-hint">🇪🇺 ECTS <span class="val" id="ectsGrade">B</span> — <span class="val" id="ectsLabel">Very Good</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AICTE Engineering Colleges / Universities Dropdown -->
+            <div class="form-group">
+              <label class="form-label" for="universityName">Indian Engineering College / University <span class="required">*</span></label>
+              <div class="select-search-wrap">
+                <input type="text" id="uniSearchFilter" class="form-control"
+                       style="margin-bottom:0.4rem;font-size:0.83rem;padding:0.45rem 0.75rem"
+                       placeholder="🔍 Quick filter AICTE colleges (e.g. COER, Roorkee, IIT, NIT, Pune, BITS)..." />
+                <select id="universityName" name="universityName" class="form-control" required>
+                  <option value="" disabled selected>Select your College / University</option>
+
+                  <optgroup label="🌟 Featured &amp; Uttarakhand / Roorkee (AICTE &amp; State Universities)">
+                    <option value="COER University, Roorkee">COER University, Roorkee (College of Engineering Roorkee)</option>
+                    <option value="Indian Institute of Technology (IIT) Roorkee">Indian Institute of Technology (IIT) Roorkee</option>
+                    <option value="Graphic Era (Deemed to be University), Dehradun">Graphic Era (Deemed to be University), Dehradun</option>
+                    <option value="Graphic Era Hill University, Dehradun">Graphic Era Hill University, Dehradun</option>
+                    <option value="DIT University, Dehradun">DIT University, Dehradun</option>
+                    <option value="Govind Ballabh Pant University of Agriculture &amp; Technology (GBPUAT), Pantnagar">Govind Ballabh Pant University of Agriculture &amp; Technology (GBPUAT), Pantnagar</option>
+                    <option value="Veer Madho Singh Bhandari Uttarakhand Technical University (UTU), Dehradun">Veer Madho Singh Bhandari Uttarakhand Technical University (UTU), Dehradun</option>
+                    <option value="Quantum University, Roorkee">Quantum University, Roorkee</option>
+                    <option value="Roorkee College of Engineering (RCE), Roorkee">Roorkee College of Engineering (RCE), Roorkee</option>
+                    <option value="Gurukula Kangri Vishwavidyalaya, Haridwar">Gurukula Kangri Vishwavidyalaya, Haridwar</option>
+                    <option value="National Institute of Technology (NIT) Uttarakhand, Srinagar Garhwal">National Institute of Technology (NIT) Uttarakhand, Srinagar Garhwal</option>
+                    <option value="THDC Institute of Hydropower Engineering and Technology, Tehri">THDC Institute of Hydropower Engineering and Technology, Tehri</option>
+                    <option value="Bipin Tripathi Kumaon Institute of Technology (BTKIT), Dwarahat">Bipin Tripathi Kumaon Institute of Technology (BTKIT), Dwarahat</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ Indian Institutes of Technology (IITs)">
+                    <option value="IIT Bombay">IIT Bombay (Powai, Mumbai)</option>
+                    <option value="IIT Delhi">IIT Delhi (Hauz Khas, New Delhi)</option>
+                    <option value="IIT Madras">IIT Madras (Chennai)</option>
+                    <option value="IIT Kanpur">IIT Kanpur</option>
+                    <option value="IIT Kharagpur">IIT Kharagpur</option>
+                    <option value="IIT Guwahati">IIT Guwahati</option>
+                    <option value="IIT Hyderabad">IIT Hyderabad</option>
+                    <option value="IIT (BHU) Varanasi">IIT (BHU) Varanasi</option>
+                    <option value="IIT Indore">IIT Indore</option>
+                    <option value="IIT (ISM) Dhanbad">IIT (ISM) Dhanbad</option>
+                    <option value="IIT Gandhinagar">IIT Gandhinagar</option>
+                    <option value="IIT Ropar">IIT Ropar</option>
+                    <option value="IIT Patna">IIT Patna</option>
+                    <option value="IIT Bhubaneswar">IIT Bhubaneswar</option>
+                    <option value="IIT Mandi">IIT Mandi</option>
+                    <option value="IIT Jodhpur">IIT Jodhpur</option>
+                    <option value="IIT Tirupati">IIT Tirupati</option>
+                    <option value="IIT Palakkad">IIT Palakkad</option>
+                    <option value="IIT Goa">IIT Goa</option>
+                    <option value="IIT Dharwad">IIT Dharwad</option>
+                    <option value="IIT Bhilai">IIT Bhilai</option>
+                    <option value="IIT Jammu">IIT Jammu</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ National Institutes of Technology (NITs)">
+                    <option value="NIT Tiruchirappalli (NITT)">NIT Tiruchirappalli (NITT)</option>
+                    <option value="NIT Karnataka (NITK Surathkal)">NIT Karnataka (NITK Surathkal)</option>
+                    <option value="NIT Warangal">NIT Warangal</option>
+                    <option value="NIT Rourkela">NIT Rourkela</option>
+                    <option value="NIT Calicut">NIT Calicut</option>
+                    <option value="Visvesvaraya National Institute of Technology (VNIT), Nagpur">Visvesvaraya National Institute of Technology (VNIT), Nagpur</option>
+                    <option value="Malaviya National Institute of Technology (MNIT), Jaipur">Malaviya National Institute of Technology (MNIT), Jaipur</option>
+                    <option value="Motilal Nehru National Institute of Technology (MNNIT), Allahabad">Motilal Nehru National Institute of Technology (MNNIT), Allahabad</option>
+                    <option value="Maulana Azad National Institute of Technology (MANIT), Bhopal">Maulana Azad National Institute of Technology (MANIT), Bhopal</option>
+                    <option value="Sardar Vallabhbhai National Institute of Technology (SVNIT), Surat">Sardar Vallabhbhai National Institute of Technology (SVNIT), Surat</option>
+                    <option value="NIT Kurukshetra">NIT Kurukshetra</option>
+                    <option value="NIT Durgapur">NIT Durgapur</option>
+                    <option value="NIT Silchar">NIT Silchar</option>
+                    <option value="Dr. B.R. Ambedkar National Institute of Technology (NITJ), Jalandhar">Dr. B.R. Ambedkar National Institute of Technology (NITJ), Jalandhar</option>
+                    <option value="NIT Hamirpur">NIT Hamirpur</option>
+                    <option value="NIT Meghalaya">NIT Meghalaya</option>
+                    <option value="NIT Patna">NIT Patna</option>
+                    <option value="NIT Raipur">NIT Raipur</option>
+                    <option value="NIT Srinagar">NIT Srinagar</option>
+                    <option value="NIT Jamshedpur">NIT Jamshedpur</option>
+                    <option value="NIT Goa">NIT Goa</option>
+                    <option value="NIT Puducherry">NIT Puducherry</option>
+                    <option value="NIT Agartala">NIT Agartala</option>
+                    <option value="NIT Andhra Pradesh">NIT Andhra Pradesh</option>
+                    <option value="NIT Manipur">NIT Manipur</option>
+                    <option value="NIT Mizoram">NIT Mizoram</option>
+                    <option value="NIT Nagaland">NIT Nagaland</option>
+                    <option value="NIT Sikkim">NIT Sikkim</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ Indian Institutes of Information Technology (IIITs)">
+                    <option value="IIIT Hyderabad">International Institute of Information Technology (IIIT) Hyderabad</option>
+                    <option value="IIIT Bangalore">International Institute of Information Technology (IIIT) Bangalore</option>
+                    <option value="IIIT Delhi (Indraprastha Institute of IT)">IIIT Delhi (Indraprastha Institute of Information Technology)</option>
+                    <option value="IIIT Allahabad">Indian Institute of Information Technology (IIIT) Allahabad</option>
+                    <option value="ABV-IIITM Gwalior">ABV - Indian Institute of Information Technology &amp; Management, Gwalior</option>
+                    <option value="PDPM IIITDM Jabalpur">PDPM IIITDM Jabalpur</option>
+                    <option value="IIITDM Kancheepuram">Indian Institute of Information Technology, Design &amp; Manufacturing, Kancheepuram</option>
+                    <option value="IIIT Lucknow">Indian Institute of Information Technology (IIIT) Lucknow</option>
+                    <option value="IIIT Pune">Indian Institute of Information Technology (IIIT) Pune</option>
+                    <option value="IIIT Vadodara">Indian Institute of Information Technology (IIIT) Vadodara</option>
+                    <option value="IIIT Sri City">Indian Institute of Information Technology (IIIT) Sri City</option>
+                    <option value="IIIT Guwahati">Indian Institute of Information Technology (IIIT) Guwahati</option>
+                    <option value="IIIT Kota">Indian Institute of Information Technology (IIIT) Kota</option>
+                    <option value="IIIT Surat">Indian Institute of Information Technology (IIIT) Surat</option>
+                    <option value="IIIT Bhopal">Indian Institute of Information Technology (IIIT) Bhopal</option>
+                    <option value="IIIT Nagpur">Indian Institute of Information Technology (IIIT) Nagpur</option>
+                    <option value="IIIT Dharwad">Indian Institute of Information Technology (IIIT) Dharwad</option>
+                    <option value="IIIT Ranchi">Indian Institute of Information Technology (IIIT) Ranchi</option>
+                    <option value="IIIT Kalyani">Indian Institute of Information Technology (IIIT) Kalyani</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ Premier Deemed &amp; Autonomous Institutes">
+                    <option value="Indian Institute of Science (IISc), Bangalore">Indian Institute of Science (IISc), Bangalore</option>
+                    <option value="BITS Pilani (Pilani Campus)">BITS Pilani (Pilani Campus)</option>
+                    <option value="BITS Pilani (Goa Campus)">BITS Pilani (K.K. Birla Goa Campus)</option>
+                    <option value="BITS Pilani (Hyderabad Campus)">BITS Pilani (Hyderabad Campus)</option>
+                    <option value="Delhi Technological University (DTU)">Delhi Technological University (DTU, formerly DCE)</option>
+                    <option value="Netaji Subhas University of Technology (NSUT), New Delhi">Netaji Subhas University of Technology (NSUT), New Delhi</option>
+                    <option value="COEP Technological University (College of Engineering Pune)">COEP Technological University (College of Engineering Pune)</option>
+                    <option value="Veermata Jijabai Technological Institute (VJTI), Mumbai">Veermata Jijabai Technological Institute (VJTI), Mumbai</option>
+                    <option value="Jadavpur University, Kolkata">Jadavpur University (Faculty of Engineering &amp; Technology), Kolkata</option>
+                    <option value="College of Engineering Guindy (CEG), Anna University">College of Engineering Guindy (CEG), Anna University, Chennai</option>
+                    <option value="Madras Institute of Technology (MIT), Anna University">Madras Institute of Technology (MIT), Anna University, Chennai</option>
+                    <option value="PSG College of Technology, Coimbatore">PSG College of Technology, Coimbatore</option>
+                    <option value="R.V. College of Engineering (RVCE), Bangalore">R.V. College of Engineering (RVCE), Bangalore</option>
+                    <option value="B.M.S. College of Engineering (BMSCE), Bangalore">B.M.S. College of Engineering (BMSCE), Bangalore</option>
+                    <option value="M.S. Ramaiah Institute of Technology (MSRIT), Bangalore">M.S. Ramaiah Institute of Technology (MSRIT), Bangalore</option>
+                    <option value="PES University, Bangalore">PES University, Bangalore</option>
+                    <option value="Thapar Institute of Engineering &amp; Technology, Patiala">Thapar Institute of Engineering &amp; Technology, Patiala</option>
+                    <option value="Manipal Institute of Technology (MIT), Manipal">Manipal Institute of Technology (MIT), MAHE, Manipal</option>
+                    <option value="Vellore Institute of Technology (VIT), Vellore">Vellore Institute of Technology (VIT), Vellore</option>
+                    <option value="Vellore Institute of Technology (VIT), Chennai">Vellore Institute of Technology (VIT), Chennai</option>
+                    <option value="SRM Institute of Science and Technology, Kattankulathur">SRM Institute of Science and Technology, Kattankulathur</option>
+                    <option value="Amrita School of Engineering, Coimbatore">Amrita School of Engineering, Amrita Vishwa Vidyapeetham</option>
+                    <option value="SASTRA Deemed University, Thanjavur">SASTRA Deemed University, Thanjavur</option>
+                    <option value="Jamia Millia Islamia (Faculty of Engineering), New Delhi">Jamia Millia Islamia (Faculty of Engineering), New Delhi</option>
+                    <option value="Zakir Husain College of Engineering &amp; Technology, AMU">Zakir Husain College of Engineering &amp; Technology, AMU Aligarh</option>
+                    <option value="Punjab Engineering College (PEC), Chandigarh">Punjab Engineering College (PEC), Chandigarh</option>
+                    <option value="Harcourt Butler Technical University (HBTU), Kanpur">Harcourt Butler Technical University (HBTU), Kanpur</option>
+                    <option value="Madan Mohan Malaviya University of Technology (MMMUT), Gorakhpur">Madan Mohan Malaviya University of Technology (MMMUT), Gorakhpur</option>
+                    <option value="Birla Institute of Technology (BIT), Mesra, Ranchi">Birla Institute of Technology (BIT), Mesra, Ranchi</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ AICTE Affiliated Colleges — North India (UP, Delhi-NCR, Haryana, Punjab, Rajasthan)">
+                    <option value="Dr. A.P.J. Abdul Kalam Technical University (AKTU), Lucknow">Dr. A.P.J. Abdul Kalam Technical University (AKTU / UPTU), Lucknow</option>
+                    <option value="JSS Academy of Technical Education, Noida">JSS Academy of Technical Education, Noida</option>
+                    <option value="Ajay Kumar Garg Engineering College (AKGEC), Ghaziabad">Ajay Kumar Garg Engineering College (AKGEC), Ghaziabad</option>
+                    <option value="KIET Group of Institutions, Ghaziabad">KIET Group of Institutions, Ghaziabad</option>
+                    <option value="Galgotias College of Engineering &amp; Technology, Greater Noida">Galgotias College of Engineering &amp; Technology, Greater Noida</option>
+                    <option value="Galgotias University, Greater Noida">Galgotias University, Greater Noida</option>
+                    <option value="ABES Engineering College, Ghaziabad">ABES Engineering College, Ghaziabad</option>
+                    <option value="Bennett University, Greater Noida">Bennett University, Greater Noida</option>
+                    <option value="Sharda University, Greater Noida">Sharda University, Greater Noida</option>
+                    <option value="Amity School of Engineering &amp; Technology, Noida">Amity School of Engineering &amp; Technology, Noida</option>
+                    <option value="GL Bajaj Institute of Technology &amp; Management, Greater Noida">GL Bajaj Institute of Technology &amp; Management, Greater Noida</option>
+                    <option value="Noida Institute of Engineering &amp; Technology (NIET), Greater Noida">Noida Institute of Engineering &amp; Technology (NIET), Greater Noida</option>
+                    <option value="Maharaja Agrasen Institute of Technology (MAIT), Delhi">Maharaja Agrasen Institute of Technology (MAIT), Delhi (GGSIPU)</option>
+                    <option value="Maharaja Surajmal Institute of Technology (MSIT), Delhi">Maharaja Surajmal Institute of Technology (MSIT), Delhi (GGSIPU)</option>
+                    <option value="Bharati Vidyapeeth's College of Engineering (BVCOE), New Delhi">Bharati Vidyapeeth's College of Engineering (BVCOE), New Delhi</option>
+                    <option value="University School of Information, Comm &amp; Tech (USICT), Delhi">University School of Information, Comm &amp; Tech (USICT), Delhi</option>
+                    <option value="Indira Gandhi Delhi Technical University for Women (IGDTUW), Delhi">Indira Gandhi Delhi Technical University for Women (IGDTUW), Delhi</option>
+                    <option value="J.C. Bose University of Science and Technology (YMCA), Faridabad">J.C. Bose University of Science and Technology (YMCA), Faridabad</option>
+                    <option value="Deenbandhu Chhotu Ram University of Science &amp; Tech (DCRUST), Murthal">Deenbandhu Chhotu Ram University of Science &amp; Tech (DCRUST), Murthal</option>
+                    <option value="UIET, Panjab University, Chandigarh">University Institute of Engineering and Technology (UIET), Panjab University</option>
+                    <option value="Chitkara University, Rajpura, Punjab">Chitkara University, Rajpura, Punjab</option>
+                    <option value="Lovely Professional University (LPU), Phagwara, Punjab">Lovely Professional University (LPU), Phagwara, Punjab</option>
+                    <option value="The LNM Institute of Information Technology (LNMIIT), Jaipur">The LNM Institute of Information Technology (LNMIIT), Jaipur</option>
+                    <option value="Swami Keshvanand Institute of Technology (SKIT), Jaipur">Swami Keshvanand Institute of Technology (SKIT), Jaipur</option>
+                    <option value="Rajasthan Technical University (RTU), Kota">Rajasthan Technical University (RTU), Kota</option>
+                    <option value="Manipal University Jaipur (MUJ), Jaipur">Manipal University Jaipur (MUJ), Jaipur</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ AICTE Affiliated Colleges — West India (Maharashtra, Gujarat, MP)">
+                    <option value="Pune Institute of Computer Technology (PICT), Pune">Pune Institute of Computer Technology (PICT), Pune</option>
+                    <option value="MIT World Peace University (MIT-WPU), Pune">MIT World Peace University (MIT-WPU), Pune</option>
+                    <option value="Pimpri Chinchwad College of Engineering (PCCOE), Pune">Pimpri Chinchwad College of Engineering (PCCOE), Pune</option>
+                    <option value="Vishwakarma Institute of Technology (VIT), Pune">Vishwakarma Institute of Technology (VIT), Pune</option>
+                    <option value="MKSSS's Cummins College of Engineering for Women, Pune">MKSSS's Cummins College of Engineering for Women, Pune</option>
+                    <option value="Sardar Patel Institute of Technology (SPIT), Mumbai">Sardar Patel Institute of Technology (SPIT), Mumbai</option>
+                    <option value="Dwarkadas J. Sanghvi College of Engineering (DJSCE), Mumbai">Dwarkadas J. Sanghvi College of Engineering (DJSCE), Mumbai</option>
+                    <option value="Thadomal Shahani Engineering College (TSEC), Mumbai">Thadomal Shahani Engineering College (TSEC), Mumbai</option>
+                    <option value="Vivekanand Education Society's Institute of Tech (VESIT), Mumbai">Vivekanand Education Society's Institute of Technology (VESIT), Mumbai</option>
+                    <option value="K.J. Somaiya College of Engineering, Mumbai">K.J. Somaiya College of Engineering, Mumbai</option>
+                    <option value="Walchand College of Engineering, Sangli">Walchand College of Engineering, Sangli</option>
+                    <option value="Government College of Engineering, Karad">Government College of Engineering, Karad</option>
+                    <option value="Government College of Engineering, Amravati">Government College of Engineering, Amravati</option>
+                    <option value="Government College of Engineering, Aurangabad">Government College of Engineering, Aurangabad</option>
+                    <option value="Savitribai Phule Pune University (SPPU), Pune">Savitribai Phule Pune University (SPPU), Pune</option>
+                    <option value="University of Mumbai (Department of Technology), Mumbai">University of Mumbai (Department of Technology), Mumbai</option>
+                    <option value="DA-IICT Gandhinagar">Dhirubhai Ambani Institute of ICT (DA-IICT), Gandhinagar</option>
+                    <option value="Nirma University (Institute of Technology), Ahmedabad">Nirma University (Institute of Technology), Ahmedabad</option>
+                    <option value="L.D. College of Engineering, Ahmedabad">L.D. College of Engineering, Ahmedabad</option>
+                    <option value="Birla Vishvakarma Mahavidyalaya (BVM), Anand">Birla Vishvakarma Mahavidyalaya (BVM), Anand</option>
+                    <option value="Pandit Deendayal Energy University (PDEU), Gandhinagar">Pandit Deendayal Energy University (PDEU), Gandhinagar</option>
+                    <option value="Gujarat Technological University (GTU), Ahmedabad">Gujarat Technological University (GTU), Ahmedabad</option>
+                    <option value="Goa College of Engineering, Farmagudi">Goa College of Engineering, Farmagudi, Goa</option>
+                    <option value="Shri Govindram Seksaria Institute of Tech &amp; Science (SGSITS), Indore">Shri Govindram Seksaria Institute of Tech &amp; Science (SGSITS), Indore</option>
+                    <option value="Institute of Engineering &amp; Technology (IET-DAVV), Indore">Institute of Engineering &amp; Technology (IET-DAVV), Indore</option>
+                    <option value="Madhav Institute of Technology &amp; Science (MITS), Gwalior">Madhav Institute of Technology &amp; Science (MITS), Gwalior</option>
+                    <option value="Rajiv Gandhi Proudyogiki Vishwavidyalaya (RGPV), Bhopal">Rajiv Gandhi Proudyogiki Vishwavidyalaya (RGPV), Bhopal</option>
+                    <option value="Lakshmi Narain College of Technology (LNCT), Bhopal">Lakshmi Narain College of Technology (LNCT), Bhopal</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ AICTE Affiliated Colleges — South India (Karnataka, Tamil Nadu, Telangana, AP, Kerala)">
+                    <option value="Visvesvaraya Technological University (VTU), Belagavi">Visvesvaraya Technological University (VTU), Belagavi</option>
+                    <option value="Dayananda Sagar College of Engineering (DSCE), Bangalore">Dayananda Sagar College of Engineering (DSCE), Bangalore</option>
+                    <option value="Bangalore Institute of Technology (BIT), Bangalore">Bangalore Institute of Technology (BIT), Bangalore</option>
+                    <option value="Siddaganga Institute of Technology (SIT), Tumkur">Siddaganga Institute of Technology (SIT), Tumkur</option>
+                    <option value="The National Institute of Engineering (NIE), Mysore">The National Institute of Engineering (NIE), Mysore</option>
+                    <option value="Sri Jayachamarajendra College of Engineering (SJCE), Mysore">Sri Jayachamarajendra College of Engineering (SJCE), Mysore</option>
+                    <option value="B.V.B. College of Engineering &amp; Technology (KLE Tech), Hubballi">B.V.B. College of Engineering &amp; Technology (KLE Tech), Hubballi</option>
+                    <option value="BMS Institute of Technology &amp; Management, Bangalore">BMS Institute of Technology &amp; Management, Bangalore</option>
+                    <option value="Sir M. Visvesvaraya Institute of Technology, Bangalore">Sir M. Visvesvaraya Institute of Technology, Bangalore</option>
+                    <option value="New Horizon College of Engineering (NHCE), Bangalore">New Horizon College of Engineering (NHCE), Bangalore</option>
+                    <option value="SSN College of Engineering, Kalavakkam, Chennai">SSN College of Engineering, Kalavakkam, Chennai</option>
+                    <option value="Coimbatore Institute of Technology (CIT), Coimbatore">Coimbatore Institute of Technology (CIT), Coimbatore</option>
+                    <option value="Thiagarajar College of Engineering (TCE), Madurai">Thiagarajar College of Engineering (TCE), Madurai</option>
+                    <option value="Sri Krishna College of Engineering &amp; Technology (SKCET), Coimbatore">Sri Krishna College of Engineering &amp; Technology (SKCET), Coimbatore</option>
+                    <option value="Kumaraguru College of Technology (KCT), Coimbatore">Kumaraguru College of Technology (KCT), Coimbatore</option>
+                    <option value="Sona College of Technology, Salem">Sona College of Technology, Salem</option>
+                    <option value="Rajalakshmi Engineering College (REC), Chennai">Rajalakshmi Engineering College (REC), Chennai</option>
+                    <option value="St. Joseph's College of Engineering, Chennai">St. Joseph's College of Engineering, Chennai</option>
+                    <option value="Chaitanya Bharathi Institute of Technology (CBIT), Hyderabad">Chaitanya Bharathi Institute of Technology (CBIT), Hyderabad</option>
+                    <option value="VNR Vignana Jyothi Institute of Engineering &amp; Tech, Hyderabad">VNR Vignana Jyothi Institute of Engineering &amp; Technology, Hyderabad</option>
+                    <option value="Vasavi College of Engineering, Hyderabad">Vasavi College of Engineering, Hyderabad</option>
+                    <option value="Gokaraju Rangaraju Institute of Engg &amp; Tech (GRIET), Hyderabad">Gokaraju Rangaraju Institute of Engineering &amp; Technology, Hyderabad</option>
+                    <option value="CVR College of Engineering, Hyderabad">CVR College of Engineering, Hyderabad</option>
+                    <option value="BVRIT Hyderabad College of Engineering for Women, Hyderabad">BVRIT Hyderabad College of Engineering for Women, Hyderabad</option>
+                    <option value="University College of Engineering, Osmania University, Hyderabad">University College of Engineering, Osmania University, Hyderabad</option>
+                    <option value="JNTUH University College of Engineering, Hyderabad">JNTUH University College of Engineering, Hyderabad</option>
+                    <option value="AU College of Engineering, Andhra University, Visakhapatnam">AU College of Engineering, Andhra University, Visakhapatnam</option>
+                    <option value="Gayatri Vidya Parishad College of Engineering (GVPCE), Visakhapatnam">Gayatri Vidya Parishad College of Engineering (GVPCE), Visakhapatnam</option>
+                    <option value="VR Siddhartha Engineering College (VRSEC), Vijayawada">VR Siddhartha Engineering College (VRSEC), Vijayawada</option>
+                    <option value="College of Engineering Trivandrum (CET), Thiruvananthapuram">College of Engineering Trivandrum (CET), Thiruvananthapuram</option>
+                    <option value="TKM College of Engineering, Kollam">TKM College of Engineering, Kollam</option>
+                    <option value="Government Engineering College (GEC), Thrissur">Government Engineering College (GEC), Thrissur</option>
+                    <option value="Govt Model Engineering College (MEC), Kochi">Govt Model Engineering College (MEC), Kochi</option>
+                    <option value="Federal Institute of Science and Technology (FISAT), Angamaly">Federal Institute of Science and Technology (FISAT), Angamaly</option>
+                    <option value="Rajagiri School of Engineering &amp; Technology (RSET), Kochi">Rajagiri School of Engineering &amp; Technology (RSET), Kochi</option>
+                    <option value="APJ Abdul Kalam Technological University (KTU), Kerala">APJ Abdul Kalam Technological University (KTU), Kerala</option>
+                  </optgroup>
+
+                  <optgroup label="🏛️ AICTE Affiliated Colleges — East &amp; North-East India">
+                    <option value="Maulana Abul Kalam Azad University of Tech (MAKAUT), Kolkata">Maulana Abul Kalam Azad University of Technology (MAKAUT), Kolkata</option>
+                    <option value="Heritage Institute of Technology, Kolkata">Heritage Institute of Technology, Kolkata</option>
+                    <option value="Institute of Engineering &amp; Management (IEM), Kolkata">Institute of Engineering &amp; Management (IEM), Kolkata</option>
+                    <option value="Techno Main Salt Lake, Kolkata">Techno Main Salt Lake, Kolkata</option>
+                    <option value="Haldia Institute of Technology, Haldia">Haldia Institute of Technology, Haldia</option>
+                    <option value="Jalpaiguri Government Engineering College, Jalpaiguri">Jalpaiguri Government Engineering College, Jalpaiguri</option>
+                    <option value="Kalyani Government Engineering College, Kalyani">Kalyani Government Engineering College, Kalyani</option>
+                    <option value="Odisha University of Technology and Research (OUTR), Bhubaneswar">Odisha University of Technology and Research (OUTR), Bhubaneswar</option>
+                    <option value="Veer Surendra Sai University of Technology (VSSUT), Burla">Veer Surendra Sai University of Technology (VSSUT), Burla</option>
+                    <option value="Silicon Institute of Technology (SiliconTech), Bhubaneswar">Silicon Institute of Technology (SiliconTech), Bhubaneswar</option>
+                    <option value="C.V. Raman Global University, Bhubaneswar">C.V. Raman Global University, Bhubaneswar</option>
+                    <option value="Muzaffarpur Institute of Technology (MIT), Muzaffarpur">Muzaffarpur Institute of Technology (MIT), Muzaffarpur</option>
+                    <option value="Bhagalpur College of Engineering (BCE), Bhagalpur">Bhagalpur College of Engineering (BCE), Bhagalpur</option>
+                    <option value="Birsa Institute of Technology (BIT Sindri), Dhanbad">Birsa Institute of Technology (BIT Sindri), Dhanbad</option>
+                    <option value="Assam Engineering College (AEC), Guwahati">Assam Engineering College (AEC), Guwahati</option>
+                    <option value="Jorhat Engineering College (JEC), Jorhat">Jorhat Engineering College (JEC), Jorhat</option>
+                  </optgroup>
+
+                  <optgroup label="🌐 Other Approved Institutions">
+                    <option value="Other AICTE Approved Engineering College / State Technical University">Other AICTE Approved Engineering College / State Technical University</option>
+                  </optgroup>
+                </select>
+              </div>
+              <span class="text-xs text-muted" id="uniMatchCount" style="margin-top:0.25rem;display:block">
+                All India Council for Technical Education (AICTE) &amp; UGC affiliated
+              </span>
+            </div>
+
+            <!-- Course / Degree Dropdown -->
+            <div class="form-group">
+              <label class="form-label" for="degree">Course / Degree Program <span class="required">*</span></label>
+              <select id="degree" name="degree" class="form-control" required>
+                <option value="" disabled selected>Select Course / Degree</option>
+                <option value="B.Tech" selected>B.Tech (Bachelor of Technology)</option>
+                <option value="B.E.">B.E. (Bachelor of Engineering)</option>
+                <option value="B.Sc">B.Sc (Bachelor of Science)</option>
+                <option value="BCA">BCA (Bachelor of Computer Applications)</option>
+                <option value="B.S.">B.S. (Bachelor of Science - 4 Year)</option>
+                <option value="Dual Degree">Dual Degree (Integrated B.Tech + M.Tech)</option>
+              </select>
+              <span class="text-xs text-muted" style="margin-top:0.25rem;display:block">
+                Select your undergraduate course (B.Tech, B.Sc, BCA, etc.)
+              </span>
+            </div>
+
+            <!-- Specialization / Branch Dropdown (Dynamically Tailored to Course) -->
+            <div class="form-group">
+              <label class="form-label" for="specialization">Specialization / Branch <span class="required">*</span></label>
+              <select id="specialization" name="specialization" class="form-control" required>
+                <option value="" disabled>Select Specialization / Branch</option>
+                <option value="CSE" selected>Computer Science &amp; Engineering (CSE)</option>
+                <option value="AIML">Artificial Intelligence &amp; Machine Learning (AIML)</option>
+                <option value="IT">Information Technology (IT)</option>
+                <option value="CYBER_SECURITY">Cyber Security &amp; Information Assurance</option>
+                <option value="DATA_SCIENCE">Data Science &amp; Analytics</option>
+                <option value="ECE">Electronics &amp; Communication (ECE)</option>
+                <option value="SOFTWARE_ENG">Software Engineering</option>
+              </select>
+              <span class="text-xs text-muted" id="specHint" style="margin-top:0.25rem;display:block">
+                Select among CSE, AIML, IT, Cyber Security, or Data Science
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="graduationYear">Graduation Year <span class="required">*</span></label>
+              <input type="number" id="graduationYear" name="graduationYear" class="form-control"
+                     min="1990" max="2030" placeholder="e.g. 2024" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 3. GRE / GMAT ─────────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">📝</div>
+            <div>
+              <div class="card-title">GRE / GMAT Scores</div>
+              <div class="card-subtitle">Standardized test results</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">3</span>
+          </div>
+          <div class="grid-2">
+            <!-- GRE Verbal -->
+            <div class="form-group">
+              <label class="form-label" for="greVerbal">GRE Verbal
+                <span class="hint">(130 – 170)</span>
+              </label>
+              <input type="number" id="greVerbal" name="greVerbal" class="form-control"
+                     min="130" max="170" placeholder="e.g. 158" />
+              <span class="percentile-badge" id="greVPerc"></span>
+            </div>
+
+            <!-- GRE Quant -->
+            <div class="form-group">
+              <label class="form-label" for="greQuant">GRE Quantitative
+                <span class="hint">(130 – 170)</span>
+              </label>
+              <input type="number" id="greQuant" name="greQuant" class="form-control"
+                     min="130" max="170" placeholder="e.g. 165" />
+              <span class="percentile-badge" id="greQPerc"></span>
+            </div>
+
+            <!-- GRE AW -->
+            <div class="form-group">
+              <label class="form-label" for="greAW">GRE Analytical Writing
+                <span class="hint">(0 – 6, step 0.5)</span>
+              </label>
+              <input type="number" id="greAW" name="greAW" class="form-control"
+                     min="0" max="6" step="0.5" placeholder="e.g. 4.0" />
+              <span class="percentile-badge" id="greAWPerc"></span>
+            </div>
+
+            <!-- GMAT -->
+            <div class="form-group">
+              <label class="form-label" for="gmat">GMAT Score
+                <span class="hint">(optional, 200 – 800)</span>
+              </label>
+              <input type="number" id="gmat" name="gmat" class="form-control"
+                     min="200" max="800" placeholder="Optional" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 4. Language Proficiency ────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🌐</div>
+            <div>
+              <div class="card-title">Language Proficiency</div>
+              <div class="card-subtitle">English &amp; other language tests</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">4</span>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="toefl">TOEFL iBT Score
+                <span class="hint">(0 – 120)</span>
+              </label>
+              <input type="number" id="toefl" name="toefl" class="form-control"
+                     min="0" max="120" placeholder="e.g. 105" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ielts">IELTS Score
+                <span class="hint">(0 – 9, step 0.5)</span>
+              </label>
+              <input type="number" id="ielts" name="ielts" class="form-control"
+                     min="0" max="9" step="0.5" placeholder="e.g. 7.5" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="jlptLevel">JLPT Level
+                <span class="hint">(for Japan programs)</span>
+              </label>
+              <select id="jlptLevel" name="jlptLevel" class="form-control">
+                <option value="None" selected>No JLPT</option>
+                <option value="N5">N5 — Beginner</option>
+                <option value="N4">N4 — Basic</option>
+                <option value="N3">N3 — Intermediate</option>
+                <option value="N2">N2 — Business Proficiency</option>
+                <option value="N1">N1 — Native-level</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 5. European Profile ────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🇪🇺</div>
+            <div>
+              <div class="card-title">European Profile</div>
+              <div class="card-subtitle">ECTS credits and Bachelor's thesis (for EU programs)</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">5</span>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="ectsCreditsSlider">ECTS Credits in CS
+                <span class="hint">(0 – 300)</span>
+              </label>
+              <div class="form-slider-wrap">
+                <input type="range" id="ectsCreditsSlider" min="0" max="300" step="1" value="180" />
+                <input type="number" id="ectsCredits" name="ectsCredits" class="form-control"
+                       min="0" max="300" value="180" placeholder="e.g. 180" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Bachelor's Thesis Completed</label>
+              <div class="toggle-wrap">
+                <label class="toggle" for="bachelorThesis">
+                  <input type="checkbox" id="bachelorThesis" name="bachelorThesis" />
+                  <div class="toggle-track"></div>
+                  <div class="toggle-thumb"></div>
+                </label>
+                <label class="toggle-label" for="bachelorThesis" id="thesisLabel">Not completed</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 6. Research Profile ────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🔬</div>
+            <div>
+              <div class="card-title">Research Profile</div>
+              <div class="card-subtitle">Research experience and publications</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">6</span>
+          </div>
+          <div class="grid-2">
+            <!-- Research Score slider -->
+            <div class="form-group col-span-2">
+              <label class="form-label" for="researchScoreNum">Research Score
+                <span class="hint">(self-rated 0 – 100)</span>
+              </label>
+              <div class="form-slider-wrap">
+                <input type="range" id="researchScoreSlider" min="0" max="100" step="1" value="60" />
+                <input type="number" id="researchScoreNum" name="researchScore" class="form-control"
+                       min="0" max="100" value="60" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="internshipMonths">Internship Experience
+                <span class="hint">(total months)</span>
+              </label>
+              <input type="number" id="internshipMonths" name="internshipMonths" class="form-control"
+                     min="0" max="48" placeholder="e.g. 6" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="publications">Publications Count</label>
+              <input type="number" id="publications" name="publications" class="form-control"
+                     min="0" max="50" placeholder="e.g. 2" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 7. Financial & Visa Goals ─────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">💰</div>
+            <div>
+              <div class="card-title">Financial Profile &amp; Visa Goals</div>
+              <div class="card-subtitle">Annual budget, liquid savings/escrow, and career residency plans</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">7</span>
+          </div>
+          <div class="grid-2">
+            <!-- Annual Budget -->
+            <div class="form-group">
+              <label class="form-label" for="annualBudgetUsd">Annual Budget (Tuition + Living)
+                <span class="hint">(USD $, e.g. $35,000)</span>
+              </label>
+              <input type="number" id="annualBudgetUsd" name="annualBudgetUsd" class="form-control"
+                     min="0" max="200000" step="1000" placeholder="e.g. 35000" value="35000" />
+            </div>
+
+            <!-- Liquid Savings / Blocked Account -->
+            <div class="form-group">
+              <label class="form-label" for="liquidSavingsUsd">Liquid Savings / Visa Escrow
+                <span class="hint">(USD $, for blocked accounts / proof)</span>
+              </label>
+              <input type="number" id="liquidSavingsUsd" name="liquidSavingsUsd" class="form-control"
+                     min="0" max="300000" step="1000" placeholder="e.g. 25000" value="25000" />
+            </div>
+
+            <!-- Funding Preference -->
+            <div class="form-group">
+              <label class="form-label" for="fundingPreference">Funding Strategy</label>
+              <select id="fundingPreference" name="fundingPreference" class="form-control">
+                <option value="PARTIAL_SCHOLARSHIP" selected>Seeking Partial Scholarship / Assistantship</option>
+                <option value="FULL_RIDE">Seeking Full-Ride Fellowship (MEXT / DAAD / Fulbright)</option>
+                <option value="SELF_FUNDED">Fully Self-Funded / Family Supported</option>
+                <option value="LOAN">Planning for International Student Loan (Prodigy / MPOWER)</option>
+              </select>
+            </div>
+
+            <!-- Post-Study Work Priority -->
+            <div class="form-group">
+              <label class="form-label" for="postStudyWorkPriority">Post-Study Work Visa Priority</label>
+              <select id="postStudyWorkPriority" name="postStudyWorkPriority" class="form-control">
+                <option value="HIGH" selected>High (Want 2–3 yrs post-grad work visa &amp; PR pathway)</option>
+                <option value="MODERATE">Moderate (1–2 yrs international experience)</option>
+                <option value="NONE">None / Low (Returning to home country immediately)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 8. Target Region ───────────────────────────────────────── -->
+        <div class="card section-card">
+          <div class="card-header">
+            <div class="card-icon">🌍</div>
+            <div>
+              <div class="card-title">Target Region</div>
+              <div class="card-subtitle">Choose where you want to apply</div>
+            </div>
+            <span class="section-num" style="margin-left:auto">8</span>
+          </div>
+          <div class="radio-group">
+            <div class="radio-pill">
+              <input type="radio" id="regionUS" name="targetRegion" value="US" />
+              <label for="regionUS">🇺🇸 United States</label>
+            </div>
+            <div class="radio-pill">
+              <input type="radio" id="regionEU" name="targetRegion" value="EU" />
+              <label for="regionEU">🇪🇺 Europe</label>
+            </div>
+            <div class="radio-pill">
+              <input type="radio" id="regionJP" name="targetRegion" value="JP" />
+              <label for="regionJP">🇯🇵 Japan</label>
+            </div>
+            <div class="radio-pill">
+              <input type="radio" id="regionALL" name="targetRegion" value="ALL" checked />
+              <label for="regionALL">🌐 All Regions</label>
+            </div>
+          </div>
+          <p class="text-sm text-muted mt-md" id="regionHint">
+            Selecting "All Regions" will calculate compatibility scores for programs across the US, Europe, and Japan.
+          </p>
+        </div>
+
+        <!-- ── Form Actions ───────────────────────────────────────────── -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="clearFormBtn">
+            ✕ Clear Form
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+            <span class="btn-text">🚀 Calculate Compatibility</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import {
+    cgpaToUS4pt, cgpaToJapanese4pt, cgpaToEctsGrade,
+    greToPercentile
+  } from './js/normalizer.js';
+  import { runScoringPipeline } from './js/api.js';
+
+  // ── Helpers ──────────────────────────────────────────────────────────
+
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: 'ℹ️', error: '❌', success: '✅', warning: '⚠️' };
+    const container = $('#toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `
+      <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function setLoading(visible, msg = 'Processing…') {
+    const overlay = $('#loadingOverlay');
+    $('#loadingMsg').textContent = msg;
+    overlay.classList.toggle('visible', visible);
+    $('#submitBtn').classList.toggle('loading', visible);
+    $('#submitBtn').disabled = visible;
+  }
+
+  // ── Synced slider + number input ──────────────────────────────────────
+
+  function syncSlider(sliderId, numId, onChange) {
+    const slider = $(`#${sliderId}`);
+    const num    = $(`#${numId}`);
+    if (!slider || !num) return;
+
+    const update = (val) => {
+      slider.value = val;
+      num.value    = val;
+      onChange?.(val);
+    };
+
+    slider.addEventListener('input', () => update(slider.value));
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      const min = parseFloat(num.min);
+      const max = parseFloat(num.max);
+      if (!isNaN(min) && v < min) v = min;
+      if (!isNaN(max) && v > max) v = max;
+      update(v);
+    });
+
+    update(slider.value);
+  }
+
+  // ── GPA conversions ───────────────────────────────────────────────────
+
+  function updateGpaConversions(val) {
+    const cgpa = parseFloat(val) || 0;
+    const us   = cgpaToUS4pt(cgpa);
+    const jp   = cgpaToJapanese4pt(cgpa);
+    const eu   = cgpaToEctsGrade(cgpa);
+
+    $('#us4pt').textContent    = us.toFixed(2);
+    $('#jp4pt').textContent    = jp.toFixed(2);
+    $('#ectsGrade').textContent = eu.letter;
+    $('#ectsLabel').textContent = eu.label;
+  }
+
+  syncSlider('cgpaSlider', 'cgpaNum', updateGpaConversions);
+  syncSlider('ectsCreditsSlider', 'ectsCredits');
+  syncSlider('researchScoreSlider', 'researchScoreNum');
+
+  // ── GRE Percentile badges ─────────────────────────────────────────────
+
+  function updatePercentile(inputId, badgeId, type) {
+    const input = $(`#${inputId}`);
+    const badge = $(`#${badgeId}`);
+    if (!input || !badge) return;
+
+    const update = () => {
+      const val = parseFloat(input.value);
+      if (isNaN(val)) { badge.textContent = ''; return; }
+      const { percentile, label } = greToPercentile(val, type);
+      badge.textContent = `~${percentile}th percentile — ${label}`;
+      badge.className = 'percentile-badge';
+      if (percentile >= 75)      badge.classList.add('good');
+      else if (percentile >= 40) badge.classList.add('mid');
+      else                       badge.classList.add('low');
+    };
+
+    input.addEventListener('input', update);
+    update();
+  }
+
+  updatePercentile('greVerbal', 'greVPerc', 'V');
+  updatePercentile('greQuant',  'greQPerc', 'Q');
+  updatePercentile('greAW',     'greAWPerc', 'AW');
+
+  // ── Toggle label ──────────────────────────────────────────────────────
+
+  $('#bachelorThesis').addEventListener('change', function () {
+    $('#thesisLabel').textContent = this.checked ? 'Completed ✓' : 'Not completed';
+  });
+
+  // ── Region hint ───────────────────────────────────────────────────────
+
+  const regionHints = {
+    US:  '🇺🇸 Scores will be normalized to US 4.0 GPA scale. GRE scores are weighted heavily.',
+    EU:  '🇪🇺 ECTS credits and Bachelor\'s thesis matter significantly for European programs.',
+    JP:  '🇯🇵 JLPT level and research alignment are critical for Japanese university admissions.',
+    ALL: '🌐 Calculating compatibility across US, Europe, and Japan — full cross-border analysis.',
+  };
+
+  $$('input[name="targetRegion"]').forEach(r => {
+    r.addEventListener('change', () => {
+      $('#regionHint').textContent = regionHints[r.value] || '';
+    });
+  });
+
+  // ── Indian Engineering Colleges / AICTE Live Search Filter ───────────────
+  const uniFilterInput = $('#uniSearchFilter');
+  const uniSelect      = $('#universityName');
+
+  if (uniFilterInput && uniSelect) {
+    const optgroups = Array.from(uniSelect.querySelectorAll('optgroup'));
+
+    uniFilterInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      let matchCount = 0;
+
+      if (!q) {
+        optgroups.forEach(g => {
+          g.style.display = '';
+          Array.from(g.children).forEach(o => { o.style.display = ''; });
+        });
+        $('#uniMatchCount').textContent = 'All India Council for Technical Education (AICTE) & UGC affiliated';
+        return;
+      }
+
+      optgroups.forEach(g => {
+        let groupHasMatch = false;
+        Array.from(g.children).forEach(o => {
+          const text = o.textContent.toLowerCase();
+          const val  = o.value.toLowerCase();
+          const matches = text.includes(q) || val.includes(q);
+          o.style.display = matches ? '' : 'none';
+          if (matches) {
+            groupHasMatch = true;
+            matchCount++;
+          }
+        });
+        g.style.display = groupHasMatch ? '' : 'none';
+      });
+
+      // If user typed and currently selected option is hidden, select first visible
+      const currentSelected = uniSelect.selectedOptions[0];
+      if (matchCount > 0 && (!currentSelected || currentSelected.style.display === 'none')) {
+        const firstVisible = Array.from(uniSelect.options).find(o => o.value && o.style.display !== 'none');
+        if (firstVisible) {
+          uniSelect.value = firstVisible.value;
+          updateProgress();
+        }
+      }
+
+      $('#uniMatchCount').innerHTML = matchCount > 0
+        ? `Found <strong>${matchCount}</strong> matching AICTE institute(s)`
+        : `<span style="color:var(--clr-gold)">No exact match found. You can select "Other AICTE Approved Engineering College".</span>`;
+    });
+  }
+
+  // ── Course & Dynamic Specialization / Branch Controller ──────────────────
+  const SPECIALIZATIONS_BY_COURSE = {
+    'B.Tech': [
+      { value: 'CSE', label: 'Computer Science & Engineering (CSE)' },
+      { value: 'AIML', label: 'Artificial Intelligence & Machine Learning (CSE - AIML)' },
+      { value: 'IT', label: 'Information Technology (IT)' },
+      { value: 'CYBER_SECURITY', label: 'Cyber Security & Information Assurance' },
+      { value: 'DATA_SCIENCE', label: 'Data Science & Analytics (CSE - Data Science)' },
+      { value: 'ECE', label: 'Electronics & Communication Engineering (ECE)' },
+      { value: 'SOFTWARE_ENG', label: 'Software Engineering' }
+    ],
+    'B.E.': [
+      { value: 'CSE', label: 'Computer Science & Engineering (CSE)' },
+      { value: 'AIML', label: 'Artificial Intelligence & Machine Learning' },
+      { value: 'IT', label: 'Information Technology (IT)' },
+      { value: 'CYBER_SECURITY', label: 'Cyber Security & Network Defense' },
+      { value: 'DATA_SCIENCE', label: 'Data Science & Big Data' },
+      { value: 'ECE', label: 'Electronics & Communication (ECE)' }
+    ],
+    'B.Sc': [
+      { value: 'CSE', label: 'B.Sc in Computer Science (CS)' },
+      { value: 'AIML', label: 'B.Sc in Artificial Intelligence & Machine Learning' },
+      { value: 'IT', label: 'B.Sc in Information Technology (IT)' },
+      { value: 'CYBER_SECURITY', label: 'B.Sc in Cyber Security & Information Security' },
+      { value: 'DATA_SCIENCE', label: 'B.Sc in Data Science & Applied Statistics' },
+      { value: 'MATHEMATICS_CS', label: 'B.Sc in Mathematics & Computing' }
+    ],
+    'BCA': [
+      { value: 'CSE', label: 'BCA in Computer Science & Software Dev' },
+      { value: 'AIML', label: 'BCA in Artificial Intelligence & Machine Learning' },
+      { value: 'IT', label: 'BCA in Information Technology' },
+      { value: 'CYBER_SECURITY', label: 'BCA in Cyber Security & Cloud Tech' },
+      { value: 'DATA_SCIENCE', label: 'BCA in Data Science & Big Data Analytics' },
+      { value: 'GENERAL_BCA', label: 'BCA General (Computer Applications)' }
+    ],
+    'B.S.': [
+      { value: 'CSE', label: 'B.S. in Computer Science' },
+      { value: 'AIML', label: 'B.S. in Artificial Intelligence & ML' },
+      { value: 'IT', label: 'B.S. in Information Technology' },
+      { value: 'CYBER_SECURITY', label: 'B.S. in Cyber Security' },
+      { value: 'DATA_SCIENCE', label: 'B.S. in Data Science' }
+    ],
+    'Dual Degree': [
+      { value: 'CSE', label: 'Integrated B.Tech + M.Tech in Computer Science (CSE)' },
+      { value: 'AIML', label: 'Integrated B.Tech + M.Tech in Artificial Intelligence (AIML)' },
+      { value: 'IT', label: 'Integrated B.Tech + M.Tech in Information Technology' },
+      { value: 'CYBER_SECURITY', label: 'Integrated B.Tech + M.Tech in Cyber Security' },
+      { value: 'DATA_SCIENCE', label: 'Integrated B.Tech + M.Tech in Data Science' }
+    ]
+  };
+
+  function updateSpecializationDropdown(course) {
+    const specSelect = $('#specialization');
+    if (!specSelect) return;
+
+    const currentVal = specSelect.value;
+    const branches = SPECIALIZATIONS_BY_COURSE[course] || SPECIALIZATIONS_BY_COURSE['B.Tech'];
+
+    specSelect.innerHTML = `
+      <option value="" disabled ${!currentVal ? 'selected' : ''}>Select Specialization / Branch</option>
+      ${branches.map(b => `
+        <option value="${b.value}" ${b.value === currentVal ? 'selected' : ''}>
+          ${b.label}
+        </option>
+      `).join('')}
+    `;
+
+    // Keep value if it exists in the new list, otherwise default to first branch
+    if (currentVal && branches.some(b => b.value === currentVal)) {
+      specSelect.value = currentVal;
+    } else {
+      specSelect.value = branches[0]?.value || '';
+    }
+
+    const hint = $('#specHint');
+    if (hint) {
+      hint.textContent = `Showing specializations for ${course || 'selected course'} (CSE, AIML, IT, Cyber Security, Data Science)`;
+    }
+
+    updateProgress();
+  }
+
+  $('#degree')?.addEventListener('change', (e) => {
+    updateSpecializationDropdown(e.target.value);
+  });
+
+  // ── Form progress ─────────────────────────────────────────────────────
+
+  const requiredFields = ['fullName', 'email', 'cgpaNum', 'universityName', 'degree', 'specialization', 'graduationYear'];
+
+  function updateProgress() {
+    const filled = requiredFields.filter(id => {
+      const el = $(`#${id}`);
+      return el && el.value.trim() !== '' && el.value !== '0';
+    }).length;
+    const pct = Math.round((filled / requiredFields.length) * 100);
+    $('#progressFill').style.width = `${pct}%`;
+    $('#formProgress').textContent = `${pct}% complete`;
+  }
+
+  document.addEventListener('input', updateProgress);
+  document.addEventListener('change', updateProgress);
+
+  // ── Form validation ───────────────────────────────────────────────────
+
+  function validateForm() {
+    let valid = true;
+
+    // Clear previous errors
+    $$('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    $$('.form-error').forEach(el => el.remove());
+
+    const addError = (fieldId, msg) => {
+      const el = $(`#${fieldId}`);
+      if (!el) return;
+      el.classList.add('is-invalid');
+      const err = document.createElement('span');
+      err.className = 'form-error';
+      err.textContent = msg;
+      el.parentNode.appendChild(err);
+      valid = false;
+    };
+
+    const fullName = $('#fullName').value.trim();
+    if (!fullName) addError('fullName', 'Full name is required.');
+
+    const email = $('#email').value.trim();
+    if (!email) addError('email', 'Email is required.');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) addError('email', 'Enter a valid email address.');
+
+    const cgpa = parseFloat($('#cgpaNum').value);
+    if (isNaN(cgpa) || cgpa < 0 || cgpa > 10) addError('cgpaNum', 'CGPA must be between 0 and 10.');
+
+    const uni = $('#universityName').value.trim();
+    if (!uni) addError('universityName', 'Please select your Indian engineering college or university.');
+
+    const degree = $('#degree').value.trim();
+    if (!degree) addError('degree', 'Please select your undergraduate course (B.Tech, B.Sc, BCA, etc.).');
+
+    const spec = $('#specialization').value;
+    if (!spec) addError('specialization', 'Please select your specialization branch (CSE, AIML, IT, Cyber Security, etc.).');
+
+    const gradYear = parseInt($('#graduationYear').value, 10);
+    if (isNaN(gradYear) || gradYear < 1990 || gradYear > 2030)
+      addError('graduationYear', 'Enter a valid graduation year (1990–2030).');
+
+    // GRE range checks (optional but if provided, validate)
+    const gv = $('#greVerbal').value;
+    if (gv && (parseFloat(gv) < 130 || parseFloat(gv) > 170))
+      addError('greVerbal', 'GRE Verbal must be between 130 and 170.');
+
+    const gq = $('#greQuant').value;
+    if (gq && (parseFloat(gq) < 130 || parseFloat(gq) > 170))
+      addError('greQuant', 'GRE Quant must be between 130 and 170.');
+
+    const gaw = $('#greAW').value;
+    if (gaw && (parseFloat(gaw) < 0 || parseFloat(gaw) > 6))
+      addError('greAW', 'GRE AW must be between 0 and 6.');
+
+    const toefl = $('#toefl').value;
+    if (toefl && (parseFloat(toefl) < 0 || parseFloat(toefl) > 120))
+      addError('toefl', 'TOEFL must be between 0 and 120.');
+
+    const ielts = $('#ielts').value;
+    if (ielts && (parseFloat(ielts) < 0 || parseFloat(ielts) > 9))
+      addError('ielts', 'IELTS must be between 0 and 9.');
+
+    const region = $('input[name="targetRegion"]:checked');
+    if (!region) { showToast('Region Required', 'Please select a target region.', 'warning'); valid = false; }
+
+    if (!valid) {
+      // Scroll to first error
+      const firstErr = $('.form-control.is-invalid');
+      firstErr?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    return valid;
+  }
+
+  // ── Collect form data ─────────────────────────────────────────────────
+
+  function collectFormData() {
+    const num = id => { const v = $(`#${id}`).value; return v === '' ? null : parseFloat(v); };
+    const str = id => $(`#${id}`).value.trim();
+    const int = id => { const v = $(`#${id}`).value; return v === '' ? null : parseInt(v, 10); };
+    const bool = id => $(`#${id}`).checked;
+
+    const c = num('cgpaNum');
+    return {
+      fullName:          str('fullName'),
+      email:             str('email'),
+      cgpa:              c,
+      cgpa10pt:          c,
+      universityName:    str('universityName'),
+      degree:            str('degree'),
+      specialization:    str('specialization'),
+      graduationYear:    int('graduationYear'),
+      greVerbal:         num('greVerbal'),
+      greQuant:          num('greQuant'),
+      greAW:             num('greAW'),
+      greAw:             num('greAW'),
+      gmat:              num('gmat'),
+      toefl:             num('toefl'),
+      toeflScore:        num('toefl'),
+      ielts:             num('ielts'),
+      ieltsScore:        num('ielts'),
+      jlptLevel:         str('jlptLevel'),
+      ectsCredits:       num('ectsCredits'),
+      ectsCreditsCs:     num('ectsCredits'),
+      bachelorThesis:    bool('bachelorThesis'),
+      thesisCompleted:   bool('bachelorThesis'),
+      researchScore:     num('researchScoreNum'),
+      internshipMonths:       num('internshipMonths'),
+      publications:           int('publications'),
+      publicationsCount:      int('publications'),
+      annualBudgetUsd:        num('annualBudgetUsd') ?? 35000,
+      annualBudget:           num('annualBudgetUsd') ?? 35000,
+      liquidSavingsUsd:       num('liquidSavingsUsd') ?? 25000,
+      liquidSavings:          num('liquidSavingsUsd') ?? 25000,
+      fundingPreference:      str('fundingPreference') || 'PARTIAL_SCHOLARSHIP',
+      postStudyWorkPriority:  str('postStudyWorkPriority') || 'HIGH',
+      targetRegion:           $('input[name="targetRegion"]:checked')?.value || 'ALL',
+    };
+  }
+
+  // ── Clear form ────────────────────────────────────────────────────────
+
+  $('#clearFormBtn').addEventListener('click', () => {
+    if (!confirm('Clear all form data?')) return;
+    document.getElementById('admissionsForm').reset();
+    updateGpaConversions(0);
+    $$('.percentile-badge').forEach(b => { b.textContent = ''; b.className = 'percentile-badge'; });
+    $$('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    $$('.form-error').forEach(el => el.remove());
+    $('#thesisLabel').textContent = 'Not completed';
+    updateProgress();
+    showToast('Form Cleared', 'All fields have been reset.', 'info');
+  });
+
+  // ── Submit handler ────────────────────────────────────────────────────
+
+  document.getElementById('admissionsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const profile = collectFormData();
+    sessionStorage.setItem('applicantProfile', JSON.stringify(profile));
+
+    const region = profile.targetRegion;
+
+    setLoading(true, 'Saving applicant profile…');
+
+    let apiError = null;
+
+    try {
+      setLoading(true, 'Saving applicant profile…');
+      const { applicant, results } = await runScoringPipeline(profile, region, {
+        onLoading: (v) => {
+          if (v) setLoading(true, 'Scoring against programs…');
+        },
+        onError: (err) => { apiError = err; },
+      });
+
+      if (results && results.length > 0) {
+        sessionStorage.setItem('scoringResults', JSON.stringify(results));
+        sessionStorage.setItem('applicantData', JSON.stringify(applicant || profile));
+      } else {
+        // Backend unavailable — store profile only; dashboard will use mock
+        sessionStorage.setItem('scoringResults', JSON.stringify([]));
+        sessionStorage.setItem('applicantData', JSON.stringify(profile));
+        if (apiError) {
+          showToast(
+            'Backend Unavailable',
+            'Using demo results on the dashboard. Start the Spring Boot server for live data.',
+            'warning'
+          );
+        }
+      }
+    } catch (err) {
+      console.error('[Submit]', err);
+      sessionStorage.setItem('scoringResults', JSON.stringify([]));
+      sessionStorage.setItem('applicantData', JSON.stringify(profile));
+      showToast('Error', err.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+
+    // Navigate to dashboard after a short delay so toast is visible
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+  });
+
+  // ── Initialize ────────────────────────────────────────────────────────
+  updateSpecializationDropdown($('#degree')?.value || 'B.Tech');
+  updateProgress();
+</script>
+
+<script src="js/theme.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/spotlight.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
