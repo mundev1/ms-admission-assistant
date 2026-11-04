@@ -190,10 +190,6 @@
           <div class="drawer-nav-group">
             <div class="drawer-group-title">Documentation &amp; Source</div>
             <div class="drawer-links-list">
-              <a href="https://app.notion.com/p/40de904a35e681bca291c532dfa1ce59?pvs=204" target="_blank" rel="noopener noreferrer" class="drawer-link-row">
-                <span class="drawer-link-text">📖 Notion Architecture Spec</span>
-                <span class="drawer-ext-icon">↗</span>
-              </a>
               <a href="https://github.com/mundev1/ms-admission-assistant" target="_blank" rel="noopener noreferrer" class="drawer-link-row">
                 <span class="drawer-link-text">🐙 GitHub Repository</span>
                 <span class="drawer-ext-icon">↗</span>

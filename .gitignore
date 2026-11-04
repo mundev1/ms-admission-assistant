@@ -39,14 +39,20 @@ yarn-error.log*
 *.tmp
 *.bak
 
-# Environment & Secrets
+# Environment & Secret files
 .env
 .env.*
 !.env.example
-*.pem
 *.key
+*.pem
+*.keystore
+*.p12
+*.pfx
 credentials.json
+secrets.json
 
-# Platform CLIs
+# Cloud & Deployment local metadata
+.vercel
 .vercel/
+.railway
 .railway/
