@@ -37,6 +37,15 @@ public class WebConfig {
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
+
+            @Override
+            public void addViewControllers(org.springframework.web.servlet.config.annotation.ViewControllerRegistry registry) {
+                registry.addViewController("/dashboard").setViewName("forward:/dashboard.html");
+                registry.addViewController("/ects-screener").setViewName("forward:/ects-screener.html");
+                registry.addViewController("/scholarships").setViewName("forward:/scholarships.html");
+                registry.addViewController("/faculty-critic").setViewName("forward:/faculty-critic.html");
+                registry.addViewController("/timeline").setViewName("forward:/timeline.html");
+            }
         };
     }
 }
