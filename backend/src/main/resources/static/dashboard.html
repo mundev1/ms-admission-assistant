@@ -457,9 +457,213 @@
     }
     .demo-banner strong { color: var(--clr-gold); }
 
+    /* ── Sync to Notion & Sheets Modal ───────────────────────── */
+    .sync-scope-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding: 0.75rem 1rem;
+      background: var(--clr-bg-alt);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-md);
+      flex-wrap: wrap;
+    }
+
+    .sync-scope-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--clr-gold);
+    }
+
+    .sync-scope-radios {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .sync-scope-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.85rem;
+      background: var(--clr-surface);
+      border: 1.5px solid var(--clr-border);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .sync-scope-pill:hover {
+      border-color: var(--clr-gold);
+    }
+
+    .sync-scope-pill input[type="radio"] {
+      accent-color: var(--clr-gold);
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .sync-scope-pill.active {
+      border-color: var(--clr-gold);
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--clr-gold-light);
+    }
+
+    .sync-channels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .sync-channel-card {
+      background: var(--clr-bg-alt);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .sync-channel-card:hover {
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .sync-channel-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sync-channel-icon {
+      font-size: 1.75rem;
+      line-height: 1;
+    }
+
+    .sync-channel-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--clr-white);
+    }
+
+    .sync-channel-sub {
+      font-size: 0.75rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .sync-channel-desc {
+      font-size: 0.82rem;
+      color: var(--clr-text-muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .sync-channel-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+
+    .sync-hint {
+      font-size: 0.74rem;
+      color: var(--clr-text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 2px solid var(--clr-gold);
+      padding: 0.4rem 0.65rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      line-height: 1.45;
+    }
+
+    .sync-hint kbd {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--clr-border);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.72rem;
+    }
+
+    .sync-preview-wrapper {
+      border-top: 1px solid var(--clr-border);
+      padding-top: 1.25rem;
+    }
+
+    .sync-preview-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .sync-preview-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--clr-white);
+    }
+
+    .sync-preview-sub {
+      font-size: 0.75rem;
+      color: var(--clr-text-muted);
+    }
+
+    .sync-preview-table-container {
+      max-height: 240px;
+      overflow: auto;
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-sm);
+      background: var(--clr-bg-alt);
+    }
+
+    .sync-preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      text-align: left;
+    }
+
+    .sync-preview-table th {
+      position: sticky;
+      top: 0;
+      background: var(--clr-surface-2);
+      color: var(--clr-white);
+      padding: 0.45rem 0.65rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--clr-border);
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    .sync-preview-table td {
+      padding: 0.45rem 0.65rem;
+      border-bottom: 1px solid var(--clr-border-subtle);
+      white-space: nowrap;
+      color: var(--clr-text);
+    }
+
+    .sync-preview-table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
     @media (max-width: 768px) {
       .controls-bar { flex-direction: column; align-items: flex-start; }
       .controls-right { width: 100%; }
+      .sync-channels-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -496,6 +700,9 @@
       </button>
       <button class="btn btn-ghost btn-sm" id="printBtn" title="Export to PDF">
         🖨 PDF
+      </button>
+      <button type="button" class="btn btn-outline-gold btn-sm" id="btnHeaderSync" title="Sync Shortlist to Notion or Google Sheets">
+        📊 Sync to Sheets/Notion
       </button>
       <a href="index.html" class="btn btn-secondary btn-sm">✏️ Edit Profile</a>
     </div>
@@ -538,6 +745,9 @@
       <button type="button" class="btn btn-ghost btn-sm" id="clearCompareBtn" title="Unpin all programs">
         Clear All
       </button>
+      <button type="button" class="btn btn-outline-gold btn-sm" id="btnTraySync" title="Sync pinned programs to Google Sheets or Notion">
+        📊 Sync / Export
+      </button>
       <button type="button" class="btn btn-primary btn-sm btn-compare-now" id="openCompareModalBtn" disabled>
         <span>⚖️ Compare Now</span>
         <span class="compare-action-badge" id="compareActionBadge">0</span>
@@ -560,6 +770,7 @@
         </div>
       </div>
       <div class="compare-modal-header-actions">
+        <button type="button" class="btn btn-outline-gold btn-sm" id="btnCompareModalSync" title="Export shortlisted programs to Notion or Google Sheets">📊 Sync / Export</button>
         <button type="button" class="btn btn-ghost btn-sm" id="printCompareBtn" title="Export / Print Comparison">🖨 Print View</button>
         <button type="button" class="compare-modal-close" id="closeCompareModalBtn" aria-label="Close comparison view">✕</button>
       </div>
@@ -567,6 +778,132 @@
 
     <div class="compare-modal-body" id="compareModalBody">
       <!-- Side-by-side comparison columns generated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- ── Sync & Export Modal Overlay (Notion & Google Sheets) ───────────────── -->
+<div class="compare-modal-backdrop" id="syncExportModalBackdrop" aria-hidden="true"></div>
+
+<div class="compare-modal" id="syncExportModal" role="dialog" aria-modal="true" aria-labelledby="syncExportModalTitle" aria-hidden="true">
+  <div class="compare-modal-dialog" style="max-width: 1040px;">
+    <div class="compare-modal-header">
+      <div class="compare-modal-title-group">
+        <div class="compare-modal-tag">📊 Direct Sync &amp; Application Tracker Export</div>
+        <h2 id="syncExportModalTitle" class="compare-modal-heading">Sync to Google Sheets / Notion</h2>
+        <div class="compare-modal-subheading">
+          Export shortlisted programs, deadlines, GPA/GRE/ECTS prerequisites, and visa rules in 1-click.
+        </div>
+      </div>
+      <div class="compare-modal-header-actions">
+        <button type="button" class="compare-modal-close sync-modal-close" id="closeSyncExportModalBtn" aria-label="Close export modal">✕</button>
+      </div>
+    </div>
+
+    <div class="compare-modal-body">
+      <!-- Scope Selector -->
+      <div class="sync-scope-bar">
+        <span class="sync-scope-label">Export Scope:</span>
+        <div class="sync-scope-radios">
+          <label class="sync-scope-pill active" id="lblScopeShortlist">
+            <input type="radio" name="syncScope" value="shortlist" id="scopeShortlist" checked />
+            <span>📌 Pinned Shortlist (<strong id="syncShortlistCount">0</strong>)</span>
+          </label>
+          <label class="sync-scope-pill" id="lblScopeFiltered">
+            <input type="radio" name="syncScope" value="filtered" id="scopeFiltered" />
+            <span>🌐 Active Filtered Programs (<strong id="syncFilteredCount">0</strong>)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Export Channels Grid -->
+      <div class="sync-channels-grid">
+        <!-- Channel 1: Google Sheets / Excel (.CSV & TSV) -->
+        <div class="sync-channel-card">
+          <div class="sync-channel-header">
+            <span class="sync-channel-icon">📗</span>
+            <div>
+              <div class="sync-channel-name">Google Sheets / Excel</div>
+              <div class="sync-channel-sub">Downloadable .CSV &amp; Direct Spreadsheet Paste</div>
+            </div>
+          </div>
+          <p class="sync-channel-desc">
+            Export a comprehensive applicant spreadsheet containing priority deadlines, regular cutoffs, min GPA/GRE/ECTS, tuition, and post-study visa terms.
+          </p>
+          <div class="sync-channel-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="btnDownloadCsv">
+              ⬇ Download .CSV
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnCopyTsv">
+              📋 Copy for Sheets (TSV)
+            </button>
+            <a href="https://sheets.new" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" title="Open new blank Google Sheet in new tab">
+              sheets.new ↗
+            </a>
+          </div>
+          <div class="sync-hint">
+            <strong>Pro Tip:</strong> Click <em>Copy for Sheets</em>, then press <kbd>Cmd+V</kbd> (or <kbd>Ctrl+V</kbd>) inside any blank Google Sheet or Excel workbook.
+          </div>
+        </div>
+
+        <!-- Channel 2: Notion Table / Database -->
+        <div class="sync-channel-card">
+          <div class="sync-channel-header">
+            <span class="sync-channel-icon">📑</span>
+            <div>
+              <div class="sync-channel-name">Notion Database / Table</div>
+              <div class="sync-channel-sub">Markdown Table for Native Notion Pasting</div>
+            </div>
+          </div>
+          <p class="sync-channel-desc">
+            Copy structured GitHub Flavored Markdown (GFM) formatted table. Pasting directly into any Notion page converts it immediately into an interactive Notion table or database.
+          </p>
+          <div class="sync-channel-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="btnCopyNotionTable">
+              📋 Copy Notion Table
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnDownloadNotionMd">
+              ⬇ Download .md
+            </button>
+          </div>
+          <div class="sync-hint">
+            <strong>Pro Tip:</strong> Open your Notion application page and press <kbd>Cmd+V</kbd>. Notion will automatically turn it into an editable, interactive table!
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Preview Area -->
+      <div class="sync-preview-wrapper">
+        <div class="sync-preview-header">
+          <div class="sync-preview-title">
+            👁️ Export Preview (<span id="syncPreviewCount">0</span> programs)
+          </div>
+          <div class="sync-preview-sub">
+            Columns: University, Program, Country, Tier, Scores, Deadlines, Minimum Requirements, Costs &amp; Visas
+          </div>
+        </div>
+        <div class="sync-preview-table-container">
+          <table class="sync-preview-table">
+            <thead>
+              <tr>
+                <th>University</th>
+                <th>Program</th>
+                <th>Country</th>
+                <th>Tier</th>
+                <th>Priority Deadline</th>
+                <th>Regular Deadline</th>
+                <th>Key Requirements</th>
+                <th>Tuition / yr</th>
+                <th>Living / yr</th>
+                <th>Post-Study Visa</th>
+              </tr>
+            </thead>
+            <tbody id="syncPreviewTableBody">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -718,10 +1055,15 @@
     </div>
 
     <!-- Results header -->
-    <div class="results-header">
+    <div class="results-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:0.75rem;">
       <div>
         <h2 id="resultsTitle">Program Compatibility Results</h2>
         <p class="results-count" id="resultsCount"></p>
+      </div>
+      <div>
+        <button type="button" class="btn btn-outline-gold btn-sm" id="btnResultsSync" title="Sync visible programs to Google Sheets or Notion">
+          📊 Sync to Notion / Sheets
+        </button>
       </div>
     </div>
 
@@ -1970,7 +2312,7 @@
     }
 
     // Modal close button
-    const closeCompBtn = e.target.closest('#closeCompareModalBtn, .compare-modal-close');
+    const closeCompBtn = e.target.closest('#closeCompareModalBtn');
     if (closeCompBtn) {
       e.preventDefault();
       e.stopPropagation();
@@ -1978,10 +2320,24 @@
       return;
     }
 
+    const closeSyncBtn = e.target.closest('#closeSyncExportModalBtn, .sync-modal-close');
+    if (closeSyncBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeSyncExportModal();
+      return;
+    }
+
     // Modal backdrop click
-    if (e.target.matches('#compareModalBackdrop, .compare-modal-backdrop')) {
+    if (e.target.matches('#compareModalBackdrop')) {
       e.preventDefault();
       closeCompareModal();
+      return;
+    }
+
+    if (e.target.matches('#syncExportModalBackdrop')) {
+      e.preventDefault();
+      closeSyncExportModal();
       return;
     }
 
@@ -2430,7 +2786,9 @@
   $('#sidebarOverlay').addEventListener('click', closeSidebar);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      if ($('#compareModal') && $('#compareModal').classList.contains('open')) {
+      if ($('#syncExportModal') && $('#syncExportModal').classList.contains('open')) {
+        closeSyncExportModal();
+      } else if ($('#compareModal') && $('#compareModal').classList.contains('open')) {
         closeCompareModal();
       } else {
         closeSidebar();
@@ -2443,6 +2801,7 @@
   $('#printBtn').addEventListener('click', () => {
     closeSidebar();
     closeCompareModal();
+    closeSyncExportModal();
     setTimeout(() => window.print(), 300);
   });
 
@@ -2987,6 +3346,489 @@
       renderCompareTray();
       closeCompareModal();
       showToast('Cleared', 'All programs removed from compare tray.', 'info');
+    });
+  }
+
+  // ── Sync to Notion & Google Sheets / Excel ─────────────────────────────────
+
+  function getProgramDeadlines(prog) {
+    if (prog.priorityDeadline && prog.regularDeadline) {
+      return { priority: prog.priorityDeadline, regular: prog.regularDeadline };
+    }
+    const c = (prog.country || '').toLowerCase();
+    const reg = prog.region || 'US';
+
+    if (c.includes('germany') || c.includes('deutschland')) {
+      return { priority: 'May 31 (Uni-Assist VPD / Early)', regular: 'July 15 (Winter Intake)' };
+    } else if (c.includes('switzerland') || c.includes('swiss')) {
+      return { priority: 'Dec 15 (Round 1 / International)', regular: 'March 31 (Round 2)' };
+    } else if (c.includes('uk') || c.includes('united kingdom') || c.includes('scotland') || c.includes('england')) {
+      return { priority: 'Dec 15 – Jan 10 (Funding Cutoff)', regular: 'March 31 (Rolling Basis)' };
+    } else if (c.includes('canada')) {
+      return { priority: 'Dec 15 (Departmental Aid)', regular: 'Jan 15 – Feb 1' };
+    } else if (c.includes('sweden') || c.includes('finland') || c.includes('netherlands')) {
+      return { priority: 'Jan 15 (Tuition Waiver Cutoff)', regular: 'March 1' };
+    } else if (c.includes('japan') || reg === 'JP') {
+      return { priority: 'May 15 (MEXT Embassy Track)', regular: 'Nov 30 – Dec 15 (English Track)' };
+    } else if (c.includes('singapore') || c.includes('australia')) {
+      return { priority: 'Nov 15 – Dec 15', regular: 'Jan 31 – Feb 15' };
+    }
+    // US or default
+    return { priority: 'Dec 1 – Dec 15 (Fellowship / Priority)', regular: 'Jan 5 – Jan 15' };
+  }
+
+  function getProgramRequirementsSummary(prog) {
+    const c = (prog.country || '').toLowerCase();
+    const reg = prog.region || 'US';
+
+    let gpaReq = 'Min 7.5/10 CGPA (3.2 US)';
+    let greReq = 'GRE Required (160+ Q recommended)';
+    let langReq = 'TOEFL 95+ / IELTS 7.0';
+    let ectsReq = 'Accredited CS/AI Bachelor';
+    let visaSummary = `${prog.postStudyWorkVisaMonths || 12} Months Post-Study Work`;
+    let fundingSummary = 'Departmental TA/RA available';
+
+    if (c.includes('germany') || c.includes('deutschland')) {
+      gpaReq = 'Min 7.0/10 (German 2.5 or better)';
+      greReq = 'No GRE Required';
+      langReq = 'IELTS 6.5+ / TOEFL 90+';
+      ectsReq = 'Math: 20+ ECTS, Theo CS: 15+ ECTS, APS Certificate';
+      visaSummary = '18 Months Jobseeker Visa (§20 AufenthG)';
+      fundingSummary = '€0 Tuition; HiWi / Werkstudent (~€14–19/hr)';
+    } else if (c.includes('switzerland') || c.includes('swiss')) {
+      gpaReq = 'Top 10% class rank (CGPA 8.5+)';
+      greReq = 'GRE General recommended for non-Bologna';
+      langReq = 'IELTS 7.0 / TOEFL 100+';
+      ectsReq = '180 ECTS Equivalence + Strong Math';
+      visaSummary = '6 Months Jobseeker Visa';
+      fundingSummary = 'CHF 1,600/yr tuition; Hilfsassistent ~CHF 30/hr';
+    } else if (c.includes('uk') || c.includes('united kingdom')) {
+      gpaReq = 'UK 1st Class or 2:1 Honours (CGPA 7.5–8.5+)';
+      greReq = 'No GRE Required';
+      langReq = 'IELTS 7.0–7.5 (Min 6.5 per band)';
+      ectsReq = 'Substantial CS coursework';
+      visaSummary = '2-Year Graduate Route (Post-Study Work)';
+      fundingSummary = 'Limited scholarships; campus demonstrator ~£15/hr';
+    } else if (c.includes('canada')) {
+      gpaReq = 'Mid-B+ to A- (CGPA 8.0+)';
+      greReq = 'GRE Optional / Not Required';
+      langReq = 'IELTS 7.0+ (Min 6.5) / TOEFL 93+';
+      ectsReq = '4-Year CS/SE/CE Degree';
+      visaSummary = 'Up to 3-Year PGWP';
+      fundingSummary = 'Funded Thesis-based MSc (RA stipend $20k-$25k/yr)';
+    } else if (c.includes('japan') || reg === 'JP') {
+      gpaReq = 'Min 7.0/10 (Japanese 2.3+ scale)';
+      greReq = 'No GRE Required';
+      langReq = 'TOEFL 85+ or JLPT N2 (if bilingual)';
+      ectsReq = 'Formal Research Proposal + Professor Pre-Acceptance';
+      visaSummary = '12–24 Months Job Hunting / J-Find Visa';
+      fundingSummary = 'MEXT / JASSO Scholarship or 50–100% Tuition Exemption';
+    } else if (reg === 'US' || c.includes('usa') || c.includes('united states')) {
+      gpaReq = 'Min 3.0–3.5 US GPA (7.5–8.5+ CGPA)';
+      greReq = 'GRE Required / Optional (Target: 165+ Quant)';
+      langReq = 'TOEFL 100+ / IELTS 7.5';
+      ectsReq = 'Accredited CS/Engineering Bachelor with Discrete Math';
+      visaSummary = '3-Year STEM OPT (12 Mo OPT + 24 Mo STEM Extension)';
+      fundingSummary = 'Graduate TA/RA with 50%–100% Tuition Remission';
+    }
+
+    return {
+      gpaReq,
+      greReq,
+      langReq,
+      ectsReq,
+      visaSummary,
+      fundingSummary
+    };
+  }
+
+  function getSyncExportList() {
+    const scopeRadio = $('input[name="syncScope"]:checked');
+    const scope = scopeRadio ? scopeRadio.value : 'shortlist';
+
+    if (scope === 'shortlist') {
+      if (pinnedProgramIds && pinnedProgramIds.length > 0) {
+        const pinnedList = results.filter(p => pinnedProgramIds.includes(String(p.programId)));
+        if (pinnedList.length > 0) return pinnedList;
+      }
+      return getFilteredSorted('ALL');
+    }
+    return getFilteredSorted('ALL');
+  }
+
+  function renderSyncPreview() {
+    const list = getSyncExportList();
+    const tbody = $('#syncPreviewTableBody');
+    const countBadge = $('#syncPreviewCount');
+    if (countBadge) countBadge.textContent = list.length;
+
+    if (!tbody) return;
+
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:1.5rem;color:var(--clr-text-muted)">No programs found for export. Pin programs or adjust filters.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = list.map(p => {
+      const displayScore = scoreMode === 'holistic' ? p.holisticScore : p.academicScore;
+      const tier = getTier(displayScore);
+      const deadlines = getProgramDeadlines(p);
+      const reqs = getProgramRequirementsSummary(p);
+      const tuition = p.tuitionAnnualUsd !== undefined ? `$${p.tuitionAnnualUsd.toLocaleString()}` : '$0';
+      const living = p.livingCostAnnualUsd !== undefined ? `$${p.livingCostAnnualUsd.toLocaleString()}` : '~$14,000';
+
+      return `
+        <tr>
+          <td><strong>${escapeHtml(p.universityName)}</strong></td>
+          <td>${escapeHtml(p.programName)}</td>
+          <td>${escapeHtml(p.country || p.region)}</td>
+          <td><span class="tier-badge tier-${getTierClass(tier)}" style="font-size:0.68rem;padding:0.15rem 0.5rem">${getTierEmoji(tier)} ${tier}</span></td>
+          <td style="color:var(--clr-gold);font-weight:600">${escapeHtml(deadlines.priority)}</td>
+          <td>${escapeHtml(deadlines.regular)}</td>
+          <td title="${escapeHtml(reqs.gpaReq + ' | ' + reqs.greReq + ' | ' + reqs.langReq + ' | ' + reqs.ectsReq)}">
+            ${escapeHtml(reqs.gpaReq)}, ${escapeHtml(reqs.greReq)}
+          </td>
+          <td>${tuition}</td>
+          <td>${living}</td>
+          <td>${escapeHtml(reqs.visaSummary)}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  function generateCsvContent(list) {
+    const headers = [
+      'University',
+      'Program',
+      'Country',
+      'Region',
+      'Admission Tier',
+      'Holistic Score (%)',
+      'Academic Score (%)',
+      'Priority Deadline',
+      'Regular Deadline',
+      'Min CGPA / GPA',
+      'GRE Requirement',
+      'Language Test (TOEFL/IELTS)',
+      'Prerequisites / ECTS / APS',
+      'Annual Tuition (USD)',
+      'Annual Living Cost (USD)',
+      'Post-Study Work Visa',
+      'Funding & Assistantships'
+    ];
+
+    const escapeCsv = (val) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = list.map(p => {
+      const displayScore = scoreMode === 'holistic' ? p.holisticScore : p.academicScore;
+      const tier = getTier(displayScore);
+      const deadlines = getProgramDeadlines(p);
+      const reqs = getProgramRequirementsSummary(p);
+
+      return [
+        escapeCsv(p.universityName),
+        escapeCsv(p.programName),
+        escapeCsv(p.country),
+        escapeCsv(p.region),
+        escapeCsv(tier),
+        p.holisticScore || 0,
+        p.academicScore || 0,
+        escapeCsv(deadlines.priority),
+        escapeCsv(deadlines.regular),
+        escapeCsv(reqs.gpaReq),
+        escapeCsv(reqs.greReq),
+        escapeCsv(reqs.langReq),
+        escapeCsv(reqs.ectsReq),
+        p.tuitionAnnualUsd ?? 0,
+        p.livingCostAnnualUsd ?? 0,
+        escapeCsv(reqs.visaSummary),
+        escapeCsv(reqs.fundingSummary)
+      ].join(',');
+    });
+
+    return [headers.join(','), ...rows].join('\r\n');
+  }
+
+  function generateTsvContent(list) {
+    const headers = [
+      'University',
+      'Program',
+      'Country',
+      'Region',
+      'Admission Tier',
+      'Holistic Score (%)',
+      'Academic Score (%)',
+      'Priority Deadline',
+      'Regular Deadline',
+      'Min CGPA / GPA',
+      'GRE Requirement',
+      'Language Test',
+      'Prerequisites & ECTS',
+      'Annual Tuition (USD)',
+      'Annual Living Cost (USD)',
+      'Post-Study Work Visa',
+      'Funding & Assistantships'
+    ];
+
+    const cleanTsv = (val) => {
+      if (val === null || val === undefined) return '';
+      return String(val).replace(/\t/g, ' ').replace(/\r?\n/g, ' ');
+    };
+
+    const rows = list.map(p => {
+      const displayScore = scoreMode === 'holistic' ? p.holisticScore : p.academicScore;
+      const tier = getTier(displayScore);
+      const deadlines = getProgramDeadlines(p);
+      const reqs = getProgramRequirementsSummary(p);
+
+      return [
+        cleanTsv(p.universityName),
+        cleanTsv(p.programName),
+        cleanTsv(p.country),
+        cleanTsv(p.region),
+        cleanTsv(tier),
+        p.holisticScore || 0,
+        p.academicScore || 0,
+        cleanTsv(deadlines.priority),
+        cleanTsv(deadlines.regular),
+        cleanTsv(reqs.gpaReq),
+        cleanTsv(reqs.greReq),
+        cleanTsv(reqs.langReq),
+        cleanTsv(reqs.ectsReq),
+        p.tuitionAnnualUsd ?? 0,
+        p.livingCostAnnualUsd ?? 0,
+        cleanTsv(reqs.visaSummary),
+        cleanTsv(reqs.fundingSummary)
+      ].join('\t');
+    });
+
+    return [headers.join('\t'), ...rows].join('\r\n');
+  }
+
+  function generateNotionMarkdownContent(list) {
+    const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    let md = `# 🎓 Master's Application Tracker & University Shortlist\n`;
+    md += `*Generated from MS Admissions Matrix Engine on ${dateStr}*\n\n`;
+    md += `| University | Program | Country | Tier | Score | Priority Deadline | Regular Deadline | Minimum Requirements | Tuition & Living ($/yr) | Work Visa | Funding / TA/RA |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+
+    list.forEach(p => {
+      const displayScore = scoreMode === 'holistic' ? p.holisticScore : p.academicScore;
+      const tier = getTier(displayScore);
+      const deadlines = getProgramDeadlines(p);
+      const reqs = getProgramRequirementsSummary(p);
+      const tuition = p.tuitionAnnualUsd !== undefined ? `$${p.tuitionAnnualUsd.toLocaleString()}` : '$0';
+      const living = p.livingCostAnnualUsd !== undefined ? `$${p.livingCostAnnualUsd.toLocaleString()}` : '~$14,000';
+
+      const uniCol = `**${p.universityName.replace(/\|/g, '-')}**`;
+      const progCol = p.programName.replace(/\|/g, '-');
+      const countryCol = `${p.country || p.region}`;
+      const tierCol = `\`${tier}\``;
+      const scoreCol = `${displayScore}%`;
+      const priCol = deadlines.priority.replace(/\|/g, '-');
+      const regCol = deadlines.regular.replace(/\|/g, '-');
+      const reqCol = `${reqs.gpaReq}; ${reqs.greReq}; ${reqs.langReq}; ${reqs.ectsReq}`.replace(/\|/g, '-');
+      const costCol = `${tuition} / ${living}`;
+      const visaCol = reqs.visaSummary.replace(/\|/g, '-');
+      const fundCol = reqs.fundingSummary.replace(/\|/g, '-');
+
+      md += `| ${uniCol} | ${progCol} | ${countryCol} | ${tierCol} | ${scoreCol} | ${priCol} | ${regCol} | ${reqCol} | ${costCol} | ${visaCol} | ${fundCol} |\n`;
+    });
+
+    md += `\n> 💡 **Notion Paste Tip:** Simply copy the table above and press **Cmd+V** (Ctrl+V) on any blank line in Notion. Notion will automatically convert this markdown table into a native database table!\n`;
+    return md;
+  }
+
+  function downloadTextFile(filename, content, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 200);
+  }
+
+  async function copyToClipboard(text, successTitle, successMsg) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      showToast(successTitle, successMsg, 'success');
+    } catch (err) {
+      console.error('Clipboard copy failed:', err);
+      showToast('Copy Failed', 'Please use file download or allow clipboard permissions.', 'error');
+    }
+  }
+
+  function openSyncExportModal(preferredScope) {
+    const modal = $('#syncExportModal');
+    const backdrop = $('#syncExportModalBackdrop');
+    if (!modal || !backdrop) return;
+
+    // Determine default scope
+    const hasPinned = pinnedProgramIds && pinnedProgramIds.length > 0;
+    const filteredCount = getFilteredSorted('ALL').length;
+
+    const shortlistCountEl = $('#syncShortlistCount');
+    const filteredCountEl = $('#syncFilteredCount');
+    if (shortlistCountEl) shortlistCountEl.textContent = pinnedProgramIds.length;
+    if (filteredCountEl) filteredCountEl.textContent = filteredCount;
+
+    const scopeShortlistRadio = $('#scopeShortlist');
+    const scopeFilteredRadio = $('#scopeFiltered');
+    const lblScopeShortlist = $('#lblScopeShortlist');
+    const lblScopeFiltered = $('#lblScopeFiltered');
+
+    let activeScope = preferredScope || (hasPinned ? 'shortlist' : 'filtered');
+    if (activeScope === 'shortlist' && !hasPinned) activeScope = 'filtered';
+
+    if (activeScope === 'shortlist') {
+      if (scopeShortlistRadio) scopeShortlistRadio.checked = true;
+      if (lblScopeShortlist) lblScopeShortlist.classList.add('active');
+      if (lblScopeFiltered) lblScopeFiltered.classList.remove('active');
+    } else {
+      if (scopeFilteredRadio) scopeFilteredRadio.checked = true;
+      if (lblScopeFiltered) lblScopeFiltered.classList.add('active');
+      if (lblScopeShortlist) lblScopeShortlist.classList.remove('active');
+    }
+
+    renderSyncPreview();
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    backdrop.classList.add('visible');
+    backdrop.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSyncExportModal() {
+    const modal = $('#syncExportModal');
+    const backdrop = $('#syncExportModalBackdrop');
+    if (modal) {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    if (backdrop) {
+      backdrop.classList.remove('visible');
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+    document.body.style.overflow = '';
+  }
+
+  // Radio scope toggle handlers
+  $$('input[name="syncScope"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const isShortlist = radio.value === 'shortlist';
+      const lblShort = $('#lblScopeShortlist');
+      const lblFilt = $('#lblScopeFiltered');
+      if (lblShort) lblShort.classList.toggle('active', isShortlist);
+      if (lblFilt) lblFilt.classList.toggle('active', !isShortlist);
+      renderSyncPreview();
+    });
+  });
+
+  // Export action button listeners
+  const btnHeaderSync = $('#btnHeaderSync');
+  if (btnHeaderSync) {
+    btnHeaderSync.addEventListener('click', () => openSyncExportModal());
+  }
+
+  const btnTraySync = $('#btnTraySync');
+  if (btnTraySync) {
+    btnTraySync.addEventListener('click', () => openSyncExportModal('shortlist'));
+  }
+
+  const btnResultsSync = $('#btnResultsSync');
+  if (btnResultsSync) {
+    btnResultsSync.addEventListener('click', () => openSyncExportModal('filtered'));
+  }
+
+  const btnCompareModalSync = $('#btnCompareModalSync');
+  if (btnCompareModalSync) {
+    btnCompareModalSync.addEventListener('click', () => {
+      closeCompareModal();
+      openSyncExportModal('shortlist');
+    });
+  }
+
+  const btnCloseSync = $('#closeSyncExportModalBtn');
+  if (btnCloseSync) {
+    btnCloseSync.addEventListener('click', closeSyncExportModal);
+  }
+
+  const syncBackdrop = $('#syncExportModalBackdrop');
+  if (syncBackdrop) {
+    syncBackdrop.addEventListener('click', closeSyncExportModal);
+  }
+
+  const btnDownloadCsv = $('#btnDownloadCsv');
+  if (btnDownloadCsv) {
+    btnDownloadCsv.addEventListener('click', () => {
+      const list = getSyncExportList();
+      if (!list || list.length === 0) {
+        showToast('No Programs', 'No programs available to export.', 'warn');
+        return;
+      }
+      const csv = generateCsvContent(list);
+      const timestamp = new Date().toISOString().slice(0, 10);
+      downloadTextFile(`ms_admissions_matrix_${timestamp}.csv`, csv, 'text/csv;charset=utf-8;');
+    });
+  }
+
+  const btnCopyTsv = $('#btnCopyTsv');
+  if (btnCopyTsv) {
+    btnCopyTsv.addEventListener('click', () => {
+      const list = getSyncExportList();
+      if (!list || list.length === 0) {
+        showToast('No Programs', 'No programs available to export.', 'warn');
+        return;
+      }
+      const tsv = generateTsvContent(list);
+      copyToClipboard(tsv, '✓ Copied for Google Sheets', `${list.length} programs copied as TSV. Press Cmd+V in any spreadsheet!`);
+    });
+  }
+
+  const btnCopyNotionTable = $('#btnCopyNotionTable');
+  if (btnCopyNotionTable) {
+    btnCopyNotionTable.addEventListener('click', () => {
+      const list = getSyncExportList();
+      if (!list || list.length === 0) {
+        showToast('No Programs', 'No programs available to export.', 'warn');
+        return;
+      }
+      const md = generateNotionMarkdownContent(list);
+      copyToClipboard(md, '✓ Copied Notion Table', `${list.length} programs copied in Notion GFM table format. Press Cmd+V in Notion!`);
+    });
+  }
+
+  const btnDownloadNotionMd = $('#btnDownloadNotionMd');
+  if (btnDownloadNotionMd) {
+    btnDownloadNotionMd.addEventListener('click', () => {
+      const list = getSyncExportList();
+      if (!list || list.length === 0) {
+        showToast('No Programs', 'No programs available to export.', 'warn');
+        return;
+      }
+      const md = generateNotionMarkdownContent(list);
+      const timestamp = new Date().toISOString().slice(0, 10);
+      downloadTextFile(`ms_shortlist_notion_${timestamp}.md`, md, 'text/markdown;charset=utf-8;');
     });
   }
 
