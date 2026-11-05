@@ -74,6 +74,285 @@
     }
     .sort-select:focus { border-color: var(--clr-gold); }
 
+    /* ── Quick-Filter Dropdown & Preset Pills ─────────────────── */
+    .quick-filter-dropdown-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .quick-filter-dropdown-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.85rem;
+      background: var(--clr-bg-alt);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-sm);
+      color: var(--clr-text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+
+    .quick-filter-dropdown-btn:hover {
+      border-color: var(--clr-gold);
+      background: rgba(245, 158, 11, 0.08);
+      color: var(--clr-white);
+    }
+
+    .quick-filter-dropdown-btn.has-active {
+      border-color: var(--clr-gold);
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--clr-gold-light);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+    }
+
+    .quick-filter-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.25rem;
+      height: 1.25rem;
+      padding: 0 0.35rem;
+      background: var(--clr-gold);
+      color: #09090b;
+      font-size: 0.72rem;
+      font-weight: 800;
+      border-radius: 999px;
+      line-height: 1;
+    }
+
+    .dropdown-chevron {
+      font-size: 0.75rem;
+      transition: transform 0.2s ease;
+      color: var(--clr-text-muted);
+    }
+
+    .quick-filter-dropdown-btn[aria-expanded="true"] .dropdown-chevron {
+      transform: rotate(180deg);
+    }
+
+    .quick-filter-menu {
+      position: absolute;
+      top: calc(100% + 0.45rem);
+      right: 0;
+      min-width: 330px;
+      max-width: 380px;
+      background: var(--clr-surface, #18181b);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-md, 12px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      z-index: 120;
+      padding: 0.5rem;
+      backdrop-filter: blur(16px);
+      animation: qfFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes qfFadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .quick-filter-menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.65rem 0.45rem;
+      border-bottom: 1px solid var(--clr-border);
+      margin-bottom: 0.35rem;
+    }
+
+    .qf-menu-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--clr-gold);
+    }
+
+    .btn-clear-quick-filters {
+      background: none;
+      border: none;
+      color: var(--clr-text-muted);
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.15rem 0.35rem;
+      border-radius: var(--radius-sm);
+      transition: color 0.15s ease;
+    }
+
+    .btn-clear-quick-filters:hover {
+      color: var(--clr-danger);
+      text-decoration: underline;
+    }
+
+    .quick-filter-menu-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .quick-filter-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm, 6px);
+      color: var(--clr-text);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .quick-filter-item:hover {
+      background: var(--clr-surface-2, rgba(255, 255, 255, 0.05));
+      border-color: var(--clr-border);
+    }
+
+    .quick-filter-item.active {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    .qf-item-icon {
+      font-size: 1.2rem;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .qf-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .qf-item-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--clr-white);
+      line-height: 1.3;
+    }
+
+    .quick-filter-item.active .qf-item-title {
+      color: var(--clr-gold-light);
+    }
+
+    .qf-item-subtitle {
+      font-size: 0.72rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.15rem;
+      line-height: 1.35;
+    }
+
+    .qf-item-check {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: transparent;
+      margin-left: 0.35rem;
+      line-height: 1.2;
+    }
+
+    .quick-filter-item.active .qf-item-check {
+      color: var(--clr-gold);
+    }
+
+    /* ── Quick Filter Pills Bar ── */
+    .quick-filter-pills-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: -0.25rem 0 1.25rem 0;
+      padding: 0.25rem 0;
+    }
+
+    .qf-pills-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--clr-text-muted);
+      margin-right: 0.25rem;
+    }
+
+    .qf-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.32rem 0.8rem;
+      background: var(--clr-bg-alt);
+      border: 1px solid var(--clr-border);
+      border-radius: 999px;
+      color: var(--clr-text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+
+    .qf-pill:hover {
+      border-color: var(--clr-gold);
+      background: rgba(245, 158, 11, 0.08);
+      color: var(--clr-white);
+      transform: translateY(-1px);
+    }
+
+    .qf-pill.active {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--clr-gold);
+      color: var(--clr-gold-light);
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.22);
+    }
+
+    .qf-pill-remove {
+      font-size: 0.72rem;
+      margin-left: 0.15rem;
+      opacity: 0.75;
+      transition: opacity 0.15s ease;
+    }
+
+    .qf-pill:hover .qf-pill-remove {
+      opacity: 1;
+    }
+
+    .qf-pill-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.26rem 0.65rem;
+      background: transparent;
+      border: 1px dashed var(--clr-border);
+      border-radius: 999px;
+      color: var(--clr-text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .qf-pill-reset:hover {
+      border-color: var(--clr-danger);
+      color: var(--clr-danger);
+    }
+
+    @media (max-width: 768px) {
+      .quick-filter-menu {
+        left: 0;
+        right: auto;
+        width: calc(100vw - 2.5rem);
+        max-width: none;
+      }
+    }
+
     /* Results section header */
     .results-header {
       display: flex;
@@ -351,6 +630,56 @@
         </span>
       </div>
       <div class="controls-right">
+        <!-- Quick-Filter Preset Dropdown -->
+        <div class="quick-filter-dropdown-wrapper" id="quickFilterWrapper">
+          <button type="button" class="quick-filter-dropdown-btn" id="quickFilterBtn" aria-expanded="false" aria-haspopup="true" title="One-click quick preset filters">
+            <span class="qf-btn-icon">⚡</span>
+            <span class="qf-btn-text">Quick Filters</span>
+            <span class="quick-filter-badge hidden" id="quickFilterBadge">0</span>
+            <span class="dropdown-chevron">▾</span>
+          </button>
+          <div class="quick-filter-menu hidden" id="quickFilterMenu" role="menu" aria-label="Quick preset filters">
+            <div class="quick-filter-menu-header">
+              <span class="qf-menu-title">⚡ Quick Presets</span>
+              <button type="button" class="btn-clear-quick-filters hidden" id="btnClearQuickFilters">Clear all</button>
+            </div>
+            <div class="quick-filter-menu-items">
+              <button type="button" class="quick-filter-item" data-filter="tuitionFree" role="menuitemcheckbox" aria-checked="false">
+                <span class="qf-item-icon">🎓</span>
+                <div class="qf-item-info">
+                  <div class="qf-item-title">Tuition-Free Only</div>
+                  <div class="qf-item-subtitle">e.g., TUM, RWTH, Aalto waivers (€0 or 100% waiver)</div>
+                </div>
+                <span class="qf-item-check">✓</span>
+              </button>
+              <button type="button" class="quick-filter-item" data-filter="noGre" role="menuitemcheckbox" aria-checked="false">
+                <span class="qf-item-icon">📝</span>
+                <div class="qf-item-info">
+                  <div class="qf-item-title">No GRE Required</div>
+                  <div class="qf-item-subtitle">European, UK, Canadian &amp; Australian programs</div>
+                </div>
+                <span class="qf-item-check">✓</span>
+              </button>
+              <button type="button" class="quick-filter-item" data-filter="extendedVisa" role="menuitemcheckbox" aria-checked="false">
+                <span class="qf-item-icon">🛂</span>
+                <div class="qf-item-info">
+                  <div class="qf-item-title">3-Year STEM OPT / 18+ Mo Job Search Visa</div>
+                  <div class="qf-item-subtitle">USA 36-Mo STEM OPT, Germany 18-Mo, Japan 24-Mo</div>
+                </div>
+                <span class="qf-item-check">✓</span>
+              </button>
+              <button type="button" class="quick-filter-item" data-filter="taraRemission" role="menuitemcheckbox" aria-checked="false">
+                <span class="qf-item-icon">💼</span>
+                <div class="qf-item-info">
+                  <div class="qf-item-title">TA/RA Tuition Remission Available</div>
+                  <div class="qf-item-subtitle">Graduate Teaching / Research Assistantship fee waiver</div>
+                </div>
+                <span class="qf-item-check">✓</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <select class="sort-select" id="sortSelect" aria-label="Sort programs">
           <option value="score-desc">Score: High → Low</option>
           <option value="score-asc">Score: Low → High</option>
@@ -358,6 +687,34 @@
           <option value="name-desc">University Z → A</option>
         </select>
       </div>
+    </div>
+
+    <!-- Quick-Filter Preset Pills Row -->
+    <div class="quick-filter-pills-row" id="quickFilterPillsRow">
+      <span class="qf-pills-label">Presets:</span>
+      <button type="button" class="qf-pill" data-filter="tuitionFree" id="pillTuitionFree" title="Filter programs with €0 tuition or 100% waivers (TUM, RWTH, Aalto)">
+        <span class="qf-pill-icon">🎓</span>
+        <span class="qf-pill-text">Tuition-Free Only</span>
+        <span class="qf-pill-remove hidden">✕</span>
+      </button>
+      <button type="button" class="qf-pill" data-filter="noGre" id="pillNoGre" title="Filter programs that do not require GRE exam scores">
+        <span class="qf-pill-icon">📝</span>
+        <span class="qf-pill-text">No GRE Required</span>
+        <span class="qf-pill-remove hidden">✕</span>
+      </button>
+      <button type="button" class="qf-pill" data-filter="extendedVisa" id="pillExtendedVisa" title="Filter programs with 3-Year STEM OPT or 18+ Month Job Search Visas">
+        <span class="qf-pill-icon">🛂</span>
+        <span class="qf-pill-text">3-Yr STEM / 18+ Mo Visa</span>
+        <span class="qf-pill-remove hidden">✕</span>
+      </button>
+      <button type="button" class="qf-pill" data-filter="taraRemission" id="pillTaraRemission" title="Filter programs offering Graduate TA/RA fee remission">
+        <span class="qf-pill-icon">💼</span>
+        <span class="qf-pill-text">TA/RA Remission</span>
+        <span class="qf-pill-remove hidden">✕</span>
+      </button>
+      <button type="button" class="qf-pill-reset hidden" id="qfResetBtn" title="Reset all quick filters">
+        <span>✕ Reset</span>
+      </button>
     </div>
 
     <!-- Results header -->
@@ -1262,9 +1619,80 @@
   let activeSort = 'score-desc';
   let selectedCardId = null;
 
+  let activeQuickFilters = {
+    tuitionFree: false,
+    noGre: false,
+    extendedVisa: false,
+    taraRemission: false,
+  };
+
+  // Pre-activate quick filter from URL if present (e.g. ?filter=tuitionFree or ?qf=noGre)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const qfParam = urlParams.get('filter') || urlParams.get('qf');
+    if (qfParam && activeQuickFilters[qfParam] !== undefined) {
+      activeQuickFilters[qfParam] = true;
+    }
+  } catch(e) {}
+
+  function isTuitionFreeProgram(p) {
+    if (p.tuitionAnnualUsd === 0 || p.tuitionAnnualUsd === null) return true;
+    const c = (p.country || '').toLowerCase();
+    if ((c.includes('germany') || c.includes('deutschland')) && (p.tuitionAnnualUsd || 0) <= 6500) return true;
+    const fin = (p.financialSummary || '').toLowerCase();
+    if (fin.includes('tuition-free') || fin.includes('100% tuition waiver') || fin.includes('no tuition') || fin.includes('full tuition waiver') || fin.includes('tuition waiver')) return true;
+    const schols = (p.matchedScholarships || []).join(' ').toLowerCase();
+    if (schols.includes('tuition waiver') || schols.includes('100% tuition') || schols.includes('full tuition waiver') || schols.includes('tuition-free')) return true;
+    return false;
+  }
+
+  function isNoGreProgram(p) {
+    if (p.thresholdGreQ && p.thresholdGreQ > 0) return false;
+    if (p.components && (p.components.greQ === 0 || p.components.greQ === undefined)) return true;
+    const c = (p.country || '').toLowerCase();
+    const reg = p.region;
+    if (reg === 'EU' || reg === 'UK' || c.includes('germany') || c.includes('united kingdom') || c.includes('uk') || c.includes('australia') || c.includes('finland') || c.includes('switzerland') || c.includes('ireland') || c.includes('netherlands') || c.includes('sweden') || c.includes('belgium') || c.includes('spain') || c.includes('portugal') || c.includes('france')) {
+      return true;
+    }
+    const hasGreDeficit = (p.deficits || []).some(d => (d.field || '').toLowerCase().includes('gre') || (d.gap || '').toLowerCase().includes('gre'));
+    return !hasGreDeficit;
+  }
+
+  function hasExtendedVisaProgram(p) {
+    const months = p.postStudyVisaMonths || 0;
+    if (months >= 18) return true;
+    const txt = `${p.visaProgramName || ''} ${p.visaSummary || ''}`.toLowerCase();
+    return txt.includes('stem opt') || txt.includes('36-month') || txt.includes('36 month') || txt.includes('18-month') || txt.includes('18 month') || txt.includes('24-month') || txt.includes('24 month') || txt.includes('2-year') || txt.includes('3-year');
+  }
+
+  function hasTaraRemissionProgram(p) {
+    const schols = (p.matchedScholarships || []).join(' ').toLowerCase();
+    const fin = (p.financialSummary || '').toLowerCase();
+    const combined = `${schols} ${fin}`;
+    return combined.includes('ta/ra') || 
+           combined.includes('assistantship') || 
+           combined.includes('remission') || 
+           combined.includes('gra') || 
+           combined.includes('gta') || 
+           combined.includes('gsr');
+  }
+
   function getFilteredSorted(regionFilter) {
     let list = regionFilter === 'ALL' ? results : results.filter(r => r.region === regionFilter);
     list = list.filter(r => activeFilters[getTier(r.overallScore)]);
+
+    if (activeQuickFilters.tuitionFree) {
+      list = list.filter(isTuitionFreeProgram);
+    }
+    if (activeQuickFilters.noGre) {
+      list = list.filter(isNoGreProgram);
+    }
+    if (activeQuickFilters.extendedVisa) {
+      list = list.filter(hasExtendedVisaProgram);
+    }
+    if (activeQuickFilters.taraRemission) {
+      list = list.filter(hasTaraRemissionProgram);
+    }
 
     switch (activeSort) {
       case 'score-asc':  list.sort((a, b) => a.overallScore - b.overallScore); break;
@@ -1457,10 +1885,12 @@
   function renderRegionPanel(region) {
     const list = getFilteredSorted(region);
     if (list.length === 0) {
+      const anyQuickActive = Object.values(activeQuickFilters).some(Boolean);
       return `<div class="no-results">
         <div class="icon">🔍</div>
         <h3>No programs match the current filters</h3>
-        <p>Try unchecking some tier filters above.</p>
+        <p>${anyQuickActive ? 'Some active quick filters or tier filters may be too restrictive.' : 'Try unchecking some tier filters above.'}</p>
+        ${anyQuickActive ? `<button type="button" class="btn btn-outline-gold btn-sm" id="btnResetFiltersInline" style="margin-top:1rem;cursor:pointer">✕ Reset Quick Filters</button>` : ''}
       </div>`;
     }
     return `<div class="programs-grid">${list.map((p, i) => renderProgramCard(p, i)).join('')}</div>`;
@@ -1471,7 +1901,16 @@
   function updateCount(region) {
     const list = getFilteredSorted(region);
     const total = region === 'ALL' ? results.length : results.filter(r => r.region === region).length;
-    $('#resultsCount').innerHTML = `Showing <strong>${list.length}</strong> of ${total} programs`;
+    const activeNames = [];
+    if (activeQuickFilters.tuitionFree) activeNames.push('Tuition-Free');
+    if (activeQuickFilters.noGre) activeNames.push('No GRE');
+    if (activeQuickFilters.extendedVisa) activeNames.push('18+ Mo / STEM OPT Visa');
+    if (activeQuickFilters.taraRemission) activeNames.push('TA/RA Remission');
+
+    const filterSuffix = activeNames.length > 0 
+      ? ` · <span style="color:var(--clr-gold-light);font-weight:600">Filtered by: ${activeNames.join(', ')}</span>`
+      : '';
+    $('#resultsCount').innerHTML = `Showing <strong>${list.length}</strong> of ${total} programs${filterSuffix}`;
   }
 
   // ── Main render ───────────────────────────────────────────────────────────
@@ -1514,6 +1953,7 @@
     }
 
     // Animate bars
+    syncQuickFiltersUI();
     setTimeout(() => animateBars(), 80);
   }
 
@@ -1621,6 +2061,141 @@
   $('#sortSelect').addEventListener('change', function () {
     activeSort = this.value;
     renderAll();
+  });
+
+  // ── Quick-Filter UI Synchronization & Event Handlers ──────────────────────
+
+  function syncQuickFiltersUI() {
+    const activeCount = Object.values(activeQuickFilters).filter(Boolean).length;
+    const badge = $('#quickFilterBadge');
+    const qfBtn = $('#quickFilterBtn');
+    const clearBtn = $('#btnClearQuickFilters');
+    const resetPillBtn = $('#qfResetBtn');
+
+    if (badge && qfBtn) {
+      if (activeCount > 0) {
+        badge.textContent = activeCount;
+        badge.classList.remove('hidden');
+        qfBtn.classList.add('has-active');
+      } else {
+        badge.classList.add('hidden');
+        qfBtn.classList.remove('has-active');
+      }
+    }
+
+    if (clearBtn) clearBtn.classList.toggle('hidden', activeCount === 0);
+    if (resetPillBtn) resetPillBtn.classList.toggle('hidden', activeCount === 0);
+
+    // Sync dropdown menu items
+    $$('.quick-filter-item').forEach(item => {
+      const f = item.dataset.filter;
+      const isActive = !!activeQuickFilters[f];
+      item.classList.toggle('active', isActive);
+      item.setAttribute('aria-checked', isActive ? 'true' : 'false');
+    });
+
+    // Sync pills
+    $$('.qf-pill').forEach(pill => {
+      const f = pill.dataset.filter;
+      const isActive = !!activeQuickFilters[f];
+      pill.classList.toggle('active', isActive);
+      const rem = pill.querySelector('.qf-pill-remove');
+      if (rem) rem.classList.toggle('hidden', !isActive);
+    });
+  }
+
+  function toggleQuickFilter(filterKey) {
+    if (activeQuickFilters[filterKey] === undefined) return;
+    activeQuickFilters[filterKey] = !activeQuickFilters[filterKey];
+    syncQuickFiltersUI();
+    renderAll();
+
+    const titles = {
+      tuitionFree: 'Tuition-Free Only',
+      noGre: 'No GRE Required',
+      extendedVisa: '3-Year STEM / 18+ Mo Visa',
+      taraRemission: 'TA/RA Remission Available'
+    };
+    const title = titles[filterKey] || 'Filter';
+    if (activeQuickFilters[filterKey]) {
+      showToast('Quick Filter Active', `Filtered programs by: ${title}`, 'info');
+    }
+  }
+
+  function resetQuickFilters() {
+    Object.keys(activeQuickFilters).forEach(k => activeQuickFilters[k] = false);
+    syncQuickFiltersUI();
+    renderAll();
+    showToast('Filters Cleared', 'Reset all quick preset filters.', 'info');
+  }
+
+  // Toggle quick-filter dropdown menu
+  $('#quickFilterBtn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const menu = $('#quickFilterMenu');
+    const btn = $('#quickFilterBtn');
+    const isClosed = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', !isClosed);
+    btn?.setAttribute('aria-expanded', isClosed ? 'true' : 'false');
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#quickFilterWrapper')) {
+      const menu = $('#quickFilterMenu');
+      const btn = $('#quickFilterBtn');
+      if (menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        btn?.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+
+  // Close dropdown on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const menu = $('#quickFilterMenu');
+      const btn = $('#quickFilterBtn');
+      if (menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        btn?.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+
+  // Dropdown items click
+  $$('.quick-filter-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const f = item.dataset.filter;
+      toggleQuickFilter(f);
+    });
+  });
+
+  // Clear button in dropdown
+  $('#btnClearQuickFilters')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetQuickFilters();
+  });
+
+  // Pills row clicks
+  $$('.qf-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const f = pill.dataset.filter;
+      toggleQuickFilter(f);
+    });
+  });
+
+  // Reset pill button
+  $('#qfResetBtn')?.addEventListener('click', () => {
+    resetQuickFilters();
+  });
+
+  // Inline reset button in empty state
+  $('#tabPanelsContainer')?.addEventListener('click', (e) => {
+    if (e.target.closest('#btnResetFiltersInline')) {
+      resetQuickFilters();
+    }
   });
 
   // ── Score Mode Switcher ───────────────────────────────────────────────────
