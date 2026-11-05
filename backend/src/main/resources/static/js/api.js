@@ -1,10 +1,12 @@
 /**
  * api.js
  * API client module for the MS Admissions Matrix Engine.
- * Communicates with the Java Spring Boot backend at http://localhost:8080.
+ * Communicates with the Java Spring Boot backend (proxied via /api in production).
  */
 
-const API_BASE = 'http://localhost:8080';
+const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'))
+  ? 'http://localhost:8080'
+  : '';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -27,40 +29,53 @@ async function handleApiError(response) {
 }
 
 /**
- * Shared fetch wrapper with timeout, error handling and optional callbacks.
+ * Shared fetch wrapper with timeout, cold-start retry, error handling and optional callbacks.
  * @param {string} url
  * @param {RequestInit} options
  * @param {{ onLoading?: (v: boolean) => void }} callbacks
  * @returns {Promise<any>}
  */
 async function apiFetch(url, options = {}, callbacks = {}) {
-  const controller = new AbortController();
-  const timeoutId  = setTimeout(() => controller.abort(), 15_000); // 15 s timeout
-
   callbacks.onLoading?.(true);
 
-  try {
-    const response = await fetch(url, {
-      headers: { 'Content-Type': 'application/json', ...options.headers },
-      signal: controller.signal,
-      ...options,
-    });
+  async function executeFetch(attempt = 1) {
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 25_000); // 25 s timeout for cold start resilience
 
-    if (!response.ok) await handleApiError(response);
+    try {
+      const response = await fetch(url, {
+        headers: { 'Content-Type': 'application/json', ...options.headers },
+        signal: controller.signal,
+        ...options,
+      });
 
-    // Handle 204 No Content
-    if (response.status === 204) return null;
+      if (!response.ok) await handleApiError(response);
 
-    return await response.json();
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      const timeoutErr = new Error('Request timed out after 15 seconds. Is the backend running?');
-      timeoutErr.isTimeout = true;
-      throw timeoutErr;
+      // Handle 204 No Content
+      if (response.status === 204) return null;
+
+      return await response.json();
+    } catch (err) {
+      // Auto-retry once on network failure or abort to absorb cold-start latency
+      if (attempt === 1 && (err.name === 'AbortError' || err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError'))) {
+        console.warn(`[API] Attempt 1 failed (${err.message}). Retrying in 1.2s for backend wake-up...`);
+        await new Promise(res => setTimeout(res, 1200));
+        return executeFetch(2);
+      }
+      if (err.name === 'AbortError') {
+        const timeoutErr = new Error('Request timed out after 25 seconds. The server might be waking up.');
+        timeoutErr.isTimeout = true;
+        throw timeoutErr;
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
     }
-    throw err;
+  }
+
+  try {
+    return await executeFetch(1);
   } finally {
-    clearTimeout(timeoutId);
     callbacks.onLoading?.(false);
   }
 }

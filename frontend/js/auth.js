@@ -7,7 +7,7 @@
   'use strict';
 
   const STORAGE_KEY = 'admissions_auth_user';
-  const API_AUTH_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  const API_AUTH_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'))
     ? 'http://localhost:8080/api/auth'
     : '/api/auth';
 

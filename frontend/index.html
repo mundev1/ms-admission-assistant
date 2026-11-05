@@ -1282,13 +1282,13 @@
         sessionStorage.setItem('scoringResults', JSON.stringify(results));
         sessionStorage.setItem('applicantData', JSON.stringify(applicant || profile));
       } else {
-        // Backend unavailable — store profile only; dashboard will use mock
+        // Fallback — store profile; dashboard will use demo data
         sessionStorage.setItem('scoringResults', JSON.stringify([]));
         sessionStorage.setItem('applicantData', JSON.stringify(profile));
         if (apiError) {
           showToast(
-            'Backend Unavailable',
-            'Using demo results on the dashboard. Start the Spring Boot server for live data.',
+            'Demo Mode Active',
+            'Using sample results on the dashboard. Live scoring will resume once connection stabilizes.',
             'warning'
           );
         }
