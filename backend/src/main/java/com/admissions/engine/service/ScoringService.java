@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 @Service
 public class ScoringService {
 
-    private static final int MAX_RESULTS = 20;
+    private static final int MAX_RESULTS = 100;
 
     private final MatrixCalculator            matrixCalculator;
     private final UniversityProgramRepository programRepository;

@@ -35,12 +35,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (frameworkRepo.count() > 0 && programRepo.count() >= 30) {
+        if (frameworkRepo.count() > 0 && programRepo.count() >= 55) {
             LOG.info("Database already seeded with " + programRepo.count() + " programs. Skipping initialization.");
             return;
         }
 
-        if (programRepo.count() > 0 && programRepo.count() < 30) {
+        if (programRepo.count() > 0 && programRepo.count() < 55) {
             LOG.info("Refreshing database with expanded global university programs (Spain, Portugal, Italy, France, Ireland, Australia, etc.)...");
             programRepo.deleteAll();
         }
@@ -357,7 +357,208 @@ public class DataInitializer implements CommandLineRunner {
                 .acceptanceRate(0.26).avgAcceptedGpa(3.25)
                 .tuitionAnnualUsd(3600.0).livingCostAnnualUsd(11500.0).blockedAccountRequirementUsd(14000.0)
                 .postStudyVisaMonths(24).visaProgramName("Japan J-Find / Designated Activities + HSP Points")
-                .scholarshipTypes("MEXT Japanese Government Scholarship, Tokyo Tech Tsubame Scholarship").build()
+                .scholarshipTypes("MEXT Japanese Government Scholarship, Tokyo Tech Tsubame Scholarship").build(),
+
+            // ── Newly Added Iconic World Universities ──────────────────────────────────
+            // USA Top Tech & Ivy League
+            UniversityProgram.builder().universityName("Harvard University").programName("MS Computational Science & Engineering")
+                .country("USA").frameworkId(1).region("US_CANADA").specialization("CS/AI")
+                .thresholdGpa(3.8).thresholdGreV(162).thresholdGreQ(167).thresholdGreAw(4.5)
+                .thresholdToefl(100).thresholdIelts(7.5).acceptanceRate(0.05).avgAcceptedGpa(3.90)
+                .tuitionAnnualUsd(61000.0).livingCostAnnualUsd(26000.0).blockedAccountRequirementUsd(87000.0)
+                .postStudyVisaMonths(36).visaProgramName("USA F-1 STEM OPT (36 Months)")
+                .scholarshipTypes("Fulbright, Harvard SEAS Fellowship, Graduate Research Assistantships (GRA)").build(),
+
+            UniversityProgram.builder().universityName("Princeton University").programName("MSE in Computer Science")
+                .country("USA").frameworkId(1).region("US_CANADA").specialization("CS")
+                .thresholdGpa(3.8).thresholdGreV(163).thresholdGreQ(168).thresholdGreAw(4.5)
+                .thresholdToefl(105).thresholdIelts(8.0).acceptanceRate(0.04).avgAcceptedGpa(3.92)
+                .tuitionAnnualUsd(59000.0).livingCostAnnualUsd(24000.0).blockedAccountRequirementUsd(83000.0)
+                .postStudyVisaMonths(36).visaProgramName("USA F-1 STEM OPT (36 Months)")
+                .scholarshipTypes("Princeton Graduate Fellowship, Full Tuition & Assistantship Stipend").build(),
+
+            UniversityProgram.builder().universityName("Columbia University").programName("MS Computer Science (ML Track)")
+                .country("USA").frameworkId(1).region("US_CANADA").specialization("AI/ML")
+                .thresholdGpa(3.65).thresholdGreV(158).thresholdGreQ(165).thresholdGreAw(4.0)
+                .thresholdToefl(101).thresholdIelts(7.0).acceptanceRate(0.11).avgAcceptedGpa(3.78)
+                .tuitionAnnualUsd(64000.0).livingCostAnnualUsd(28000.0).blockedAccountRequirementUsd(92000.0)
+                .postStudyVisaMonths(36).visaProgramName("USA F-1 STEM OPT (36 Months)")
+                .scholarshipTypes("Columbia SEAS Master's Fellowship, Departmental Course Assistantships").build(),
+
+            UniversityProgram.builder().universityName("University of Washington").programName("MS Computer Science & Engineering")
+                .country("USA").frameworkId(1).region("US_CANADA").specialization("CS/AI")
+                .thresholdGpa(3.7).thresholdGreV(158).thresholdGreQ(166).thresholdGreAw(4.0)
+                .thresholdToefl(100).thresholdIelts(7.0).acceptanceRate(0.07).avgAcceptedGpa(3.85)
+                .tuitionAnnualUsd(42000.0).livingCostAnnualUsd(22000.0).blockedAccountRequirementUsd(64000.0)
+                .postStudyVisaMonths(36).visaProgramName("USA F-1 STEM OPT (36 Months)")
+                .scholarshipTypes("Paul G. Allen Fellowship, Graduate Teaching/Research Assistantships").build(),
+
+            UniversityProgram.builder().universityName("UT Austin").programName("MS Computer Science")
+                .country("USA").frameworkId(1).region("US_CANADA").specialization("CS")
+                .thresholdGpa(3.5).thresholdGreV(156).thresholdGreQ(164).thresholdGreAw(4.0)
+                .thresholdToefl(95).thresholdIelts(7.0).acceptanceRate(0.09).avgAcceptedGpa(3.75)
+                .tuitionAnnualUsd(28000.0).livingCostAnnualUsd(18000.0).blockedAccountRequirementUsd(46000.0)
+                .postStudyVisaMonths(36).visaProgramName("USA F-1 STEM OPT (36 Months)")
+                .scholarshipTypes("UT Austin MCD Fellowship, Graduate TA/RA").build(),
+
+            UniversityProgram.builder().universityName("UIUC").programName("MS Computer Science")
+                .country("USA").frameworkId(1).region("US_CANADA").specialization("CS/AI")
+                .thresholdGpa(3.6).thresholdGreV(156).thresholdGreQ(165).thresholdGreAw(4.0)
+                .thresholdToefl(102).thresholdIelts(7.5).acceptanceRate(0.08).avgAcceptedGpa(3.82)
+                .tuitionAnnualUsd(38000.0).livingCostAnnualUsd(18000.0).blockedAccountRequirementUsd(56000.0)
+                .postStudyVisaMonths(36).visaProgramName("USA F-1 STEM OPT (36 Months)")
+                .scholarshipTypes("UIUC Research Assistantships (Full Tuition Waiver + $2,400/mo stipend)").build(),
+
+            UniversityProgram.builder().universityName("UCLA").programName("MS Computer Science")
+                .country("USA").frameworkId(1).region("US_CANADA").specialization("CS")
+                .thresholdGpa(3.6).thresholdGreV(155).thresholdGreQ(165).thresholdGreAw(4.0)
+                .thresholdToefl(95).thresholdIelts(7.0).acceptanceRate(0.10).avgAcceptedGpa(3.76)
+                .tuitionAnnualUsd(36000.0).livingCostAnnualUsd(24000.0).blockedAccountRequirementUsd(60000.0)
+                .postStudyVisaMonths(36).visaProgramName("USA F-1 STEM OPT (36 Months)")
+                .scholarshipTypes("UCLA Graduate Division Award, Departmental TA Fee Remissions").build(),
+
+            // United Kingdom - Oxbridge & UCL
+            UniversityProgram.builder().universityName("University of Oxford").programName("MSc in Advanced Computer Science")
+                .country("UK").frameworkId(2).region("EUROPE").specialization("CS/AI")
+                .thresholdGpa(3.75).thresholdIelts(7.5).thresholdToefl(110).thresholdEctsCs(100).thesisRequired(true)
+                .acceptanceRate(0.08).avgAcceptedGpa(3.85)
+                .tuitionAnnualUsd(49000.0).livingCostAnnualUsd(20000.0).blockedAccountRequirementUsd(18000.0)
+                .postStudyVisaMonths(24).visaProgramName("UK Graduate Route (2-Year Unsponsored Work Visa)")
+                .scholarshipTypes("Clarendon Fund Scholarship, Oxford-DeepMind Scholarship, Chevening Scholarship").build(),
+
+            UniversityProgram.builder().universityName("University of Cambridge").programName("MPhil in Advanced Computer Science")
+                .country("UK").frameworkId(2).region("EUROPE").specialization("CS/AI")
+                .thresholdGpa(3.8).thresholdIelts(7.5).thresholdToefl(110).thresholdEctsCs(100).thesisRequired(true)
+                .acceptanceRate(0.07).avgAcceptedGpa(3.88)
+                .tuitionAnnualUsd(48000.0).livingCostAnnualUsd(20000.0).blockedAccountRequirementUsd(18000.0)
+                .postStudyVisaMonths(24).visaProgramName("UK Graduate Route (2-Year Unsponsored Work Visa)")
+                .scholarshipTypes("Gates Cambridge Scholarship, Cambridge Trust Awards, Chevening Scholarship").build(),
+
+            UniversityProgram.builder().universityName("University College London").programName("MSc Computer Science")
+                .country("UK").frameworkId(2).region("EUROPE").specialization("CS")
+                .thresholdGpa(3.4).thresholdIelts(7.0).thresholdToefl(100).thresholdEctsCs(85).thesisRequired(false)
+                .acceptanceRate(0.14).avgAcceptedGpa(3.55)
+                .tuitionAnnualUsd(45000.0).livingCostAnnualUsd(22000.0).blockedAccountRequirementUsd(18000.0)
+                .postStudyVisaMonths(24).visaProgramName("UK Graduate Route (2-Year Unsponsored Work Visa)")
+                .scholarshipTypes("UCL Global Masters Scholarship (£15,000), Chevening Scholarship").build(),
+
+            // Canada
+            UniversityProgram.builder().universityName("McGill University").programName("MSc Computer Science")
+                .country("Canada").frameworkId(1).region("US_CANADA").specialization("CS/AI")
+                .thresholdGpa(3.4).thresholdGreV(152).thresholdGreQ(160).thresholdGreAw(3.5)
+                .thresholdToefl(90).thresholdIelts(6.5).acceptanceRate(0.14).avgAcceptedGpa(3.60)
+                .tuitionAnnualUsd(28000.0).livingCostAnnualUsd(16000.0).blockedAccountRequirementUsd(15500.0)
+                .postStudyVisaMonths(36).visaProgramName("Canada PGWP (36 Months Open Work Permit)")
+                .scholarshipTypes("Mila Quebec AI Institute Fellowship, McGill Graduate Excellence Award").build(),
+
+            UniversityProgram.builder().universityName("University of British Columbia").programName("MSc in Computer Science")
+                .country("Canada").frameworkId(1).region("US_CANADA").specialization("CS")
+                .thresholdGpa(3.5).thresholdGreV(153).thresholdGreQ(162).thresholdGreAw(4.0)
+                .thresholdToefl(100).thresholdIelts(7.0).acceptanceRate(0.11).avgAcceptedGpa(3.70)
+                .tuitionAnnualUsd(24000.0).livingCostAnnualUsd(18000.0).blockedAccountRequirementUsd(15500.0)
+                .postStudyVisaMonths(36).visaProgramName("Canada PGWP (36 Months Open Work Permit)")
+                .scholarshipTypes("UBC International Tuition Award, Graduate Support Initiative (GSI)").build(),
+
+            // Singapore & Asia
+            UniversityProgram.builder().universityName("National University of Singapore").programName("Master of Computing (AI/CS)")
+                .country("Singapore").frameworkId(3).region("JAPAN").specialization("CS/AI")
+                .thresholdGpa(3.5).thresholdToefl(95).thresholdIelts(7.0).thesisRequired(false)
+                .acceptanceRate(0.15).avgAcceptedGpa(3.65)
+                .tuitionAnnualUsd(38000.0).livingCostAnnualUsd(16000.0).blockedAccountRequirementUsd(20000.0)
+                .postStudyVisaMonths(12).visaProgramName("Singapore Long-Term Visit Pass (LTVP - 1 Year) / Tech.Pass")
+                .scholarshipTypes("NUS Graduate School Scholarship, Asian Development Bank (ADB-JSP)").build(),
+
+            UniversityProgram.builder().universityName("Nanyang Technological University").programName("MSc Artificial Intelligence")
+                .country("Singapore").frameworkId(3).region("JAPAN").specialization("AI/ML")
+                .thresholdGpa(3.4).thresholdToefl(92).thresholdIelts(6.5).thesisRequired(false)
+                .acceptanceRate(0.17).avgAcceptedGpa(3.55)
+                .tuitionAnnualUsd(36000.0).livingCostAnnualUsd(15000.0).blockedAccountRequirementUsd(20000.0)
+                .postStudyVisaMonths(12).visaProgramName("Singapore LTVP / Employment Pass Pathway")
+                .scholarshipTypes("NTU Research Scholarship, Singapore Digital (SG:D) Scholarship").build(),
+
+            // South Korea
+            UniversityProgram.builder().universityName("KAIST").programName("MS in School of Computing")
+                .country("South Korea").frameworkId(3).region("JAPAN").specialization("CS/AI")
+                .thresholdGpa(3.2).thresholdToefl(83).thresholdIelts(6.5).thesisRequired(true)
+                .acceptanceRate(0.22).avgAcceptedGpa(3.40)
+                .tuitionAnnualUsd(8000.0).livingCostAnnualUsd(9000.0).blockedAccountRequirementUsd(12000.0)
+                .postStudyVisaMonths(24).visaProgramName("South Korea D-10 Job Seeking Visa (24 Months) / F-2-7 Points")
+                .scholarshipTypes("KAIST International Student Scholarship (Full Tuition + 350,000 KRW/mo)").build(),
+
+            UniversityProgram.builder().universityName("Seoul National University").programName("MS in Computer Science & Engineering")
+                .country("South Korea").frameworkId(3).region("JAPAN").specialization("CS")
+                .thresholdGpa(3.3).thresholdToefl(85).thresholdIelts(6.5).thesisRequired(true)
+                .acceptanceRate(0.19).avgAcceptedGpa(3.50)
+                .tuitionAnnualUsd(6500.0).livingCostAnnualUsd(10000.0).blockedAccountRequirementUsd(12000.0)
+                .postStudyVisaMonths(24).visaProgramName("South Korea D-10 Job Seeking Visa / F-2-7 Points Residence")
+                .scholarshipTypes("Global Korea Scholarship (GKS Full Ride), SNU President Fellowship").build(),
+
+            // Hong Kong
+            UniversityProgram.builder().universityName("University of Hong Kong").programName("MSc in Computer Science (Financial AI)")
+                .country("Hong Kong").frameworkId(3).region("JAPAN").specialization("CS/AI")
+                .thresholdGpa(3.2).thresholdToefl(85).thresholdIelts(6.5).thesisRequired(false)
+                .acceptanceRate(0.21).avgAcceptedGpa(3.45)
+                .tuitionAnnualUsd(32000.0).livingCostAnnualUsd(16000.0).blockedAccountRequirementUsd(15000.0)
+                .postStudyVisaMonths(24).visaProgramName("Hong Kong IANG Visa (24 Months Unconditional Work Permit)")
+                .scholarshipTypes("HKU Foundation Postgraduate Fellowship, Targeted Taught Postgraduate Schemes").build(),
+
+            // Australia
+            UniversityProgram.builder().universityName("University of Sydney").programName("Master of Computer Science")
+                .country("Australia").frameworkId(1).region("US_CANADA").specialization("CS")
+                .thresholdGpa(3.2).thresholdToefl(85).thresholdIelts(6.5).acceptanceRate(0.26).avgAcceptedGpa(3.35)
+                .tuitionAnnualUsd(34000.0).livingCostAnnualUsd(19000.0).blockedAccountRequirementUsd(16000.0)
+                .postStudyVisaMonths(36).visaProgramName("Australia Subclass 485 Temporary Graduate Visa (3-4 Years)")
+                .scholarshipTypes("Sydney International Student Award (20% reduction), Vice-Chancellor’s Award").build(),
+
+            UniversityProgram.builder().universityName("UNSW Sydney").programName("Master of Information Technology (AI)")
+                .country("Australia").frameworkId(1).region("US_CANADA").specialization("AI/ML")
+                .thresholdGpa(3.1).thresholdToefl(85).thresholdIelts(6.5).acceptanceRate(0.28).avgAcceptedGpa(3.30)
+                .tuitionAnnualUsd(33000.0).livingCostAnnualUsd(19000.0).blockedAccountRequirementUsd(16000.0)
+                .postStudyVisaMonths(36).visaProgramName("Australia Subclass 485 Temporary Graduate Visa (3-4 Years)")
+                .scholarshipTypes("UNSW International Scientia Scholarship, Future of Change Award").build(),
+
+            // Europe - Germany (Additional Famous Tech Hubs)
+            UniversityProgram.builder().universityName("LMU Munich").programName("MSc Data Science / Informatics")
+                .country("Germany").frameworkId(2).region("EUROPE").specialization("Data Science")
+                .thresholdGpa(3.3).thresholdIelts(7.0).thresholdToefl(95).thresholdEctsCs(85).thesisRequired(true)
+                .acceptanceRate(0.16).avgAcceptedGpa(3.45)
+                .tuitionAnnualUsd(0.0).livingCostAnnualUsd(13500.0).blockedAccountRequirementUsd(13000.0)
+                .postStudyVisaMonths(18).visaProgramName("Germany 18-Month Jobseeker Visa / EU Blue Card Pathway")
+                .scholarshipTypes("DAAD Master Studies Scholarship, Deutschlandstipendium, Bavarian Elite Network").build(),
+
+            UniversityProgram.builder().universityName("Karlsruhe Institute of Technology").programName("MSc Informatics")
+                .country("Germany").frameworkId(2).region("EUROPE").specialization("CS")
+                .thresholdGpa(3.2).thresholdIelts(6.5).thresholdToefl(88).thresholdEctsCs(80).thesisRequired(true)
+                .acceptanceRate(0.20).avgAcceptedGpa(3.35)
+                .tuitionAnnualUsd(3200.0).livingCostAnnualUsd(11500.0).blockedAccountRequirementUsd(13000.0)
+                .postStudyVisaMonths(18).visaProgramName("Germany 18-Month Jobseeker Visa / EU Blue Card Pathway")
+                .scholarshipTypes("DAAD Scholarship, Baden-Württemberg Fellowship, Deutschlandstipendium").build(),
+
+            UniversityProgram.builder().universityName("University of Stuttgart").programName("MSc Computer Science")
+                .country("Germany").frameworkId(2).region("EUROPE").specialization("CS/AI")
+                .thresholdGpa(3.0).thresholdIelts(6.5).thresholdToefl(85).thresholdEctsCs(80).thesisRequired(false)
+                .acceptanceRate(0.24).avgAcceptedGpa(3.20)
+                .tuitionAnnualUsd(3200.0).livingCostAnnualUsd(11500.0).blockedAccountRequirementUsd(13000.0)
+                .postStudyVisaMonths(18).visaProgramName("Germany 18-Month Jobseeker Visa / EU Blue Card Pathway")
+                .scholarshipTypes("DAAD Master Studies Scholarship, Baden-Württemberg State Merit Award").build(),
+
+            // Europe - Belgium & Finland
+            UniversityProgram.builder().universityName("KU Leuven").programName("Master of Artificial Intelligence")
+                .country("Belgium").frameworkId(2).region("EUROPE").specialization("AI/ML")
+                .thresholdGpa(3.3).thresholdIelts(7.0).thresholdToefl(94).thresholdEctsCs(85).thesisRequired(false)
+                .acceptanceRate(0.18).avgAcceptedGpa(3.40)
+                .tuitionAnnualUsd(7500.0).livingCostAnnualUsd(12000.0).blockedAccountRequirementUsd(11000.0)
+                .postStudyVisaMonths(12).visaProgramName("Belgium 12-Month Search Year Visa / EU Blue Card")
+                .scholarshipTypes("Master Mind Scholarship (Flanders €9,600/yr), KU Leuven Benefactors Grant").build(),
+
+            UniversityProgram.builder().universityName("Aalto University").programName("MSc Computer Science (ML & Data)")
+                .country("Finland").frameworkId(2).region("EUROPE").specialization("AI/ML")
+                .thresholdGpa(3.4).thresholdIelts(6.5).thresholdToefl(92).thresholdEctsCs(90).thesisRequired(true)
+                .acceptanceRate(0.13).avgAcceptedGpa(3.55)
+                .tuitionAnnualUsd(16000.0).livingCostAnnualUsd(11000.0).blockedAccountRequirementUsd(10000.0)
+                .postStudyVisaMonths(24).visaProgramName("Finland 2-Year Post-Study Job Search Permit / Fast-Track Specialist")
+                .scholarshipTypes("Aalto University Scholarship (100% Tuition Waiver), Finland Scholarship").build()
+
         );
 
         programRepo.saveAll(programs);

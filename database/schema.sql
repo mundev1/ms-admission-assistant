@@ -277,3 +277,52 @@ VALUES
     ('Osaka University', 'Graduate School IS', 'Japan', 3, 'JAPAN', 'CS',                  2.8, 'N3', 70, TRUE, 30.0, 3.00, 3600.0, 10500.0, 14000.0, 24, 'Japan Designated Activities (Job Hunting) + HSP Points', 'MEXT Japanese Government Scholarship, JASSO Honors'),
     ('Tohoku University', 'Graduate School IS', 'Japan', 3, 'JAPAN', 'CS',                 2.8, 'N3', 70, TRUE, 32.0, 2.90, 3600.0,  9500.0, 14000.0, 24, 'Japan Designated Activities (Job Hunting) + HSP Points', 'MEXT Japanese Government Scholarship, JASSO Honors, President Fellowship'),
     ('NAIST', 'MS Information Science', 'Japan', 3, 'JAPAN', 'CS/AI',                     2.5, 'N3', 65, TRUE, 35.0, 2.80, 3600.0,  9000.0, 14000.0, 24, 'Japan Designated Activities (Job Hunting) + HSP Points', 'MEXT Japanese Government Scholarship, JASSO Honors, NAIST Foundation');
+
+-- Expanded Global Iconic University Programs
+INSERT INTO university_programs
+    (university_name, program_name, country, framework_id, region, specialization,
+     threshold_gpa, threshold_gre_v, threshold_gre_q, threshold_gre_aw,
+     threshold_toefl, threshold_ielts, acceptance_rate, avg_accepted_gpa,
+     tuition_annual_usd, living_cost_annual_usd, blocked_account_req_usd,
+     post_study_visa_months, visa_program_name, scholarship_types)
+VALUES
+    ('Harvard University', 'MS Computational Science & Engineering', 'USA', 1, 'US_CANADA', 'CS/AI', 3.8, 162, 167, 4.5, 100, 7.5, 5.0, 3.90, 61000.0, 26000.0, 87000.0, 36, 'USA F-1 STEM OPT (36 Months)', 'Fulbright, Harvard SEAS Fellowship, Graduate Research Assistantships (GRA)'),
+    ('Princeton University', 'MSE in Computer Science', 'USA', 1, 'US_CANADA', 'CS', 3.8, 163, 168, 4.5, 105, 8.0, 4.0, 3.92, 59000.0, 24000.0, 83000.0, 36, 'USA F-1 STEM OPT (36 Months)', 'Princeton Graduate Fellowship, Full Tuition & Assistantship Stipend'),
+    ('Columbia University', 'MS Computer Science (ML Track)', 'USA', 1, 'US_CANADA', 'AI/ML', 3.65, 158, 165, 4.0, 101, 7.0, 11.0, 3.78, 64000.0, 28000.0, 92000.0, 36, 'USA F-1 STEM OPT (36 Months)', 'Columbia SEAS Master''s Fellowship, Departmental Course Assistantships'),
+    ('University of Washington', 'MS Computer Science & Engineering', 'USA', 1, 'US_CANADA', 'CS/AI', 3.7, 158, 166, 4.0, 100, 7.0, 7.0, 3.85, 42000.0, 22000.0, 64000.0, 36, 'USA F-1 STEM OPT (36 Months)', 'Paul G. Allen Fellowship, Graduate Teaching/Research Assistantships'),
+    ('UT Austin', 'MS Computer Science', 'USA', 1, 'US_CANADA', 'CS', 3.5, 156, 164, 4.0, 95, 7.0, 9.0, 3.75, 28000.0, 18000.0, 46000.0, 36, 'USA F-1 STEM OPT (36 Months)', 'UT Austin MCD Fellowship, Graduate TA/RA'),
+    ('UIUC', 'MS Computer Science', 'USA', 1, 'US_CANADA', 'CS/AI', 3.6, 156, 165, 4.0, 102, 7.5, 8.0, 3.82, 38000.0, 18000.0, 56000.0, 36, 'USA F-1 STEM OPT (36 Months)', 'UIUC Research Assistantships (Full Tuition Waiver + $2,400/mo stipend)'),
+    ('UCLA', 'MS Computer Science', 'USA', 1, 'US_CANADA', 'CS', 3.6, 155, 165, 4.0, 95, 7.0, 10.0, 3.76, 36000.0, 24000.0, 60000.0, 36, 'USA F-1 STEM OPT (36 Months)', 'UCLA Graduate Division Award, Departmental TA Fee Remissions'),
+    ('McGill University', 'MSc Computer Science', 'Canada', 1, 'US_CANADA', 'CS/AI', 3.4, 152, 160, 3.5, 90, 6.5, 14.0, 3.60, 28000.0, 16000.0, 15500.0, 36, 'Canada PGWP (36 Months Open Work Permit)', 'Mila Quebec AI Institute Fellowship, McGill Graduate Excellence Award'),
+    ('University of British Columbia', 'MSc in Computer Science', 'Canada', 1, 'US_CANADA', 'CS', 3.5, 153, 162, 4.0, 100, 7.0, 11.0, 3.70, 24000.0, 18000.0, 15500.0, 36, 'Canada PGWP (36 Months Open Work Permit)', 'UBC International Tuition Award, Graduate Support Initiative (GSI)'),
+    ('University of Sydney', 'Master of Computer Science', 'Australia', 1, 'US_CANADA', 'CS', 3.2, 150, 158, 3.5, 85, 6.5, 26.0, 3.35, 34000.0, 19000.0, 16000.0, 36, 'Australia Subclass 485 Temporary Graduate Visa (3-4 Years)', 'Sydney International Student Award (20% reduction), Vice-Chancellor’s Award'),
+    ('UNSW Sydney', 'Master of Information Technology (AI)', 'Australia', 1, 'US_CANADA', 'AI/ML', 3.1, 150, 158, 3.5, 85, 6.5, 28.0, 3.30, 33000.0, 19000.0, 16000.0, 36, 'Australia Subclass 485 Temporary Graduate Visa (3-4 Years)', 'UNSW International Scientia Scholarship, Future of Change Award');
+
+-- Expanded European & UK Programs (framework_id = 2)
+INSERT INTO university_programs
+    (university_name, program_name, country, framework_id, region, specialization,
+     threshold_gpa, threshold_ielts, threshold_ects_cs, thesis_required, acceptance_rate, avg_accepted_gpa,
+     tuition_annual_usd, living_cost_annual_usd, blocked_account_req_usd,
+     post_study_visa_months, visa_program_name, scholarship_types)
+VALUES
+    ('University of Oxford', 'MSc in Advanced Computer Science', 'UK', 2, 'EUROPE', 'CS/AI', 3.75, 7.5, 100, TRUE, 8.0, 3.85, 49000.0, 20000.0, 18000.0, 24, 'UK Graduate Route (2-Year Unsponsored Work Visa)', 'Clarendon Fund Scholarship, Oxford-DeepMind Scholarship, Chevening Scholarship'),
+    ('University of Cambridge', 'MPhil in Advanced Computer Science', 'UK', 2, 'EUROPE', 'CS/AI', 3.8, 7.5, 100, TRUE, 7.0, 3.88, 48000.0, 20000.0, 18000.0, 24, 'UK Graduate Route (2-Year Unsponsored Work Visa)', 'Gates Cambridge Scholarship, Cambridge Trust Awards, Chevening Scholarship'),
+    ('University College London', 'MSc Computer Science', 'UK', 2, 'EUROPE', 'CS', 3.4, 7.0, 85, FALSE, 14.0, 3.55, 45000.0, 22000.0, 18000.0, 24, 'UK Graduate Route (2-Year Unsponsored Work Visa)', 'UCL Global Masters Scholarship (£15,000), Chevening Scholarship'),
+    ('LMU Munich', 'MSc Data Science / Informatics', 'Germany', 2, 'EUROPE', 'Data Science', 3.3, 7.0, 85, TRUE, 16.0, 3.45, 0.0, 13500.0, 13000.0, 18, 'Germany 18-Month Jobseeker Visa / EU Blue Card Pathway', 'DAAD Master Studies Scholarship, Deutschlandstipendium, Bavarian Elite Network'),
+    ('Karlsruhe Institute of Technology', 'MSc Informatics', 'Germany', 2, 'EUROPE', 'CS', 3.2, 6.5, 80, TRUE, 20.0, 3.35, 3200.0, 11500.0, 13000.0, 18, 'Germany 18-Month Jobseeker Visa / EU Blue Card Pathway', 'DAAD Scholarship, Baden-Württemberg Fellowship, Deutschlandstipendium'),
+    ('University of Stuttgart', 'MSc Computer Science', 'Germany', 2, 'EUROPE', 'CS/AI', 3.0, 6.5, 80, FALSE, 24.0, 3.20, 3200.0, 11500.0, 13000.0, 18, 'Germany 18-Month Jobseeker Visa / EU Blue Card Pathway', 'DAAD Master Studies Scholarship, Baden-Württemberg State Merit Award'),
+    ('KU Leuven', 'Master of Artificial Intelligence', 'Belgium', 2, 'EUROPE', 'AI/ML', 3.3, 7.0, 85, FALSE, 18.0, 3.40, 7500.0, 12000.0, 11000.0, 12, 'Belgium 12-Month Search Year Visa / EU Blue Card', 'Master Mind Scholarship (Flanders €9,600/yr), KU Leuven Benefactors Grant'),
+    ('Aalto University', 'MSc Computer Science (ML & Data)', 'Finland', 2, 'EUROPE', 'AI/ML', 3.4, 6.5, 90, TRUE, 13.0, 3.55, 16000.0, 11000.0, 10000.0, 24, 'Finland 2-Year Post-Study Job Search Permit / Fast-Track Specialist', 'Aalto University Scholarship (100% Tuition Waiver), Finland Scholarship');
+
+-- Expanded Asian & Global Hubs (framework_id = 3)
+INSERT INTO university_programs
+    (university_name, program_name, country, framework_id, region, specialization,
+     threshold_gpa, threshold_toefl, threshold_ielts, thesis_required, acceptance_rate, avg_accepted_gpa,
+     tuition_annual_usd, living_cost_annual_usd, blocked_account_req_usd,
+     post_study_visa_months, visa_program_name, scholarship_types)
+VALUES
+    ('National University of Singapore', 'Master of Computing (AI/CS)', 'Singapore', 3, 'JAPAN', 'CS/AI', 3.5, 95, 7.0, FALSE, 15.0, 3.65, 38000.0, 16000.0, 20000.0, 12, 'Singapore Long-Term Visit Pass (LTVP - 1 Year) / Tech.Pass', 'NUS Graduate School Scholarship, Asian Development Bank (ADB-JSP)'),
+    ('Nanyang Technological University', 'MSc Artificial Intelligence', 'Singapore', 3, 'JAPAN', 'AI/ML', 3.4, 92, 6.5, FALSE, 17.0, 3.55, 36000.0, 15000.0, 20000.0, 12, 'Singapore LTVP / Employment Pass Pathway', 'NTU Research Scholarship, Singapore Digital (SG:D) Scholarship'),
+    ('KAIST', 'MS in School of Computing', 'South Korea', 3, 'JAPAN', 'CS/AI', 3.2, 83, 6.5, TRUE, 22.0, 3.40, 8000.0, 9000.0, 12000.0, 24, 'South Korea D-10 Job Seeking Visa (24 Months) / F-2-7 Points', 'KAIST International Student Scholarship (Full Tuition + 350,000 KRW/mo)'),
+    ('Seoul National University', 'MS in Computer Science & Engineering', 'South Korea', 3, 'JAPAN', 'CS', 3.3, 85, 6.5, TRUE, 19.0, 3.50, 6500.0, 10000.0, 12000.0, 24, 'South Korea D-10 Job Seeking Visa / F-2-7 Points Residence', 'Global Korea Scholarship (GKS Full Ride), SNU President Fellowship'),
+    ('University of Hong Kong', 'MSc in Computer Science (Financial AI)', 'Hong Kong', 3, 'JAPAN', 'CS/AI', 3.2, 85, 6.5, FALSE, 21.0, 3.45, 32000.0, 16000.0, 15000.0, 24, 'Hong Kong IANG Visa (24 Months Unconditional Work Permit)', 'HKU Foundation Postgraduate Fellowship, Targeted Taught Postgraduate Schemes');
