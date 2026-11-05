@@ -660,6 +660,105 @@
       background: rgba(255, 255, 255, 0.03);
     }
 
+    /* ── Sync to Notion & Sheets Buttons (Theme Reactive) ──────── */
+    .btn-outline-gold,
+    .btn-sync-action,
+    #btnHeaderSync,
+    #btnTraySync,
+    #btnResultsSync,
+    #btnCompareModalSync {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    /* Dark Mode (Matte black / charcoal with soft gold text) */
+    [data-theme="dark"] .btn-outline-gold,
+    [data-theme="dark"] .btn-sync-action,
+    [data-theme="dark"] #btnHeaderSync,
+    [data-theme="dark"] #btnTraySync,
+    [data-theme="dark"] #btnResultsSync,
+    [data-theme="dark"] #btnCompareModalSync,
+    :root:not([data-theme="light"]) .btn-outline-gold,
+    :root:not([data-theme="light"]) .btn-sync-action,
+    :root:not([data-theme="light"]) #btnHeaderSync,
+    :root:not([data-theme="light"]) #btnTraySync,
+    :root:not([data-theme="light"]) #btnResultsSync,
+    :root:not([data-theme="light"]) #btnCompareModalSync {
+      background: #18181b !important;
+      color: #fde68a !important;
+      border: 1.5px solid rgba(245, 158, 11, 0.45) !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 12px rgba(245, 158, 11, 0.1) !important;
+    }
+
+    [data-theme="dark"] .btn-outline-gold:hover,
+    [data-theme="dark"] .btn-sync-action:hover,
+    [data-theme="dark"] #btnHeaderSync:hover,
+    [data-theme="dark"] #btnTraySync:hover,
+    [data-theme="dark"] #btnResultsSync:hover,
+    [data-theme="dark"] #btnCompareModalSync:hover,
+    :root:not([data-theme="light"]) .btn-outline-gold:hover,
+    :root:not([data-theme="light"]) .btn-sync-action:hover,
+    :root:not([data-theme="light"]) #btnHeaderSync:hover,
+    :root:not([data-theme="light"]) #btnTraySync:hover,
+    :root:not([data-theme="light"]) #btnResultsSync:hover,
+    :root:not([data-theme="light"]) #btnCompareModalSync:hover {
+      background: #f59e0b !important;
+      color: #09090b !important;
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.45) !important;
+      transform: translateY(-1px);
+    }
+
+    /* Light Mode (Clean white background with rich amber border & text) */
+    [data-theme="light"] .btn-outline-gold,
+    [data-theme="light"] .btn-sync-action,
+    [data-theme="light"] #btnHeaderSync,
+    [data-theme="light"] #btnTraySync,
+    [data-theme="light"] #btnResultsSync,
+    [data-theme="light"] #btnCompareModalSync {
+      background: #ffffff !important;
+      color: #b45309 !important;
+      border: 1.5px solid rgba(217, 119, 6, 0.45) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    [data-theme="light"] .btn-outline-gold:hover,
+    [data-theme="light"] .btn-sync-action:hover,
+    [data-theme="light"] #btnHeaderSync:hover,
+    [data-theme="light"] #btnTraySync:hover,
+    [data-theme="light"] #btnResultsSync:hover,
+    [data-theme="light"] #btnCompareModalSync:hover {
+      background: #d97706 !important;
+      color: #ffffff !important;
+      border-color: #d97706 !important;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.28) !important;
+      transform: translateY(-1px);
+    }
+
+    /* Light Theme Adjustments for Sync Modal Elements */
+    [data-theme="light"] .sync-scope-pill.active {
+      background: rgba(217, 119, 6, 0.12);
+      color: #b45309;
+      border-color: #d97706;
+    }
+    [data-theme="light"] .sync-hint {
+      background: rgba(0, 0, 0, 0.03);
+    }
+    [data-theme="light"] .sync-hint kbd {
+      background: rgba(0, 0, 0, 0.07);
+      color: var(--clr-text);
+      border-color: var(--clr-border);
+    }
+    [data-theme="light"] .sync-preview-table tr:hover td {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
     @media (max-width: 768px) {
       .controls-bar { flex-direction: column; align-items: flex-start; }
       .controls-right { width: 100%; }
@@ -701,7 +800,7 @@
       <button class="btn btn-ghost btn-sm" id="printBtn" title="Export to PDF">
         🖨 PDF
       </button>
-      <button type="button" class="btn btn-outline-gold btn-sm" id="btnHeaderSync" title="Sync Shortlist to Notion or Google Sheets">
+      <button type="button" class="btn btn-outline-gold btn-sync-action btn-sm" id="btnHeaderSync" title="Sync Shortlist to Notion or Google Sheets">
         📊 Sync to Sheets/Notion
       </button>
       <a href="index.html" class="btn btn-secondary btn-sm">✏️ Edit Profile</a>
@@ -745,7 +844,7 @@
       <button type="button" class="btn btn-ghost btn-sm" id="clearCompareBtn" title="Unpin all programs">
         Clear All
       </button>
-      <button type="button" class="btn btn-outline-gold btn-sm" id="btnTraySync" title="Sync pinned programs to Google Sheets or Notion">
+      <button type="button" class="btn btn-outline-gold btn-sync-action btn-sm" id="btnTraySync" title="Sync pinned programs to Google Sheets or Notion">
         📊 Sync / Export
       </button>
       <button type="button" class="btn btn-primary btn-sm btn-compare-now" id="openCompareModalBtn" disabled>
@@ -770,7 +869,7 @@
         </div>
       </div>
       <div class="compare-modal-header-actions">
-        <button type="button" class="btn btn-outline-gold btn-sm" id="btnCompareModalSync" title="Export shortlisted programs to Notion or Google Sheets">📊 Sync / Export</button>
+        <button type="button" class="btn btn-outline-gold btn-sync-action btn-sm" id="btnCompareModalSync" title="Export shortlisted programs to Notion or Google Sheets">📊 Sync / Export</button>
         <button type="button" class="btn btn-ghost btn-sm" id="printCompareBtn" title="Export / Print Comparison">🖨 Print View</button>
         <button type="button" class="compare-modal-close" id="closeCompareModalBtn" aria-label="Close comparison view">✕</button>
       </div>
@@ -1061,7 +1160,7 @@
         <p class="results-count" id="resultsCount"></p>
       </div>
       <div>
-        <button type="button" class="btn btn-outline-gold btn-sm" id="btnResultsSync" title="Sync visible programs to Google Sheets or Notion">
+        <button type="button" class="btn btn-outline-gold btn-sync-action btn-sm" id="btnResultsSync" title="Sync visible programs to Google Sheets or Notion">
           📊 Sync to Notion / Sheets
         </button>
       </div>

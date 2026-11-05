@@ -1188,6 +1188,64 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 .btn-ghost:hover { color: var(--clr-gold-light); background: rgba(244, 197, 66, 0.08); }
 
+/* ---------- Outline Gold / Sync Action Button (Dark & Light Theme) ---------- */
+.btn-outline-gold,
+.btn-sync-action {
+  background: var(--clr-surface);
+  color: var(--clr-gold);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition);
+}
+.btn-outline-gold:hover,
+.btn-sync-action:hover {
+  background: var(--clr-gold);
+  color: #09090b;
+  border-color: var(--clr-gold);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+.btn-outline-gold:active,
+.btn-sync-action:active {
+  transform: translateY(0);
+}
+
+/* Dark Mode explicit enforcement: deep matte charcoal button with soft gold */
+[data-theme="dark"] .btn-outline-gold,
+[data-theme="dark"] .btn-sync-action,
+:root:not([data-theme="light"]) .btn-outline-gold,
+:root:not([data-theme="light"]) .btn-sync-action {
+  background: #18181b;
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.45);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(245, 158, 11, 0.08);
+}
+[data-theme="dark"] .btn-outline-gold:hover,
+[data-theme="dark"] .btn-sync-action:hover,
+:root:not([data-theme="light"]) .btn-outline-gold:hover,
+:root:not([data-theme="light"]) .btn-sync-action:hover {
+  background: #f59e0b;
+  color: #09090b;
+  border-color: #f59e0b;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.45);
+}
+
+/* Light Mode explicit enforcement: clean white button with rich warm amber */
+[data-theme="light"] .btn-outline-gold,
+[data-theme="light"] .btn-sync-action {
+  background: #ffffff;
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.45);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .btn-outline-gold:hover,
+[data-theme="light"] .btn-sync-action:hover {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #d97706;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.28);
+}
+
 .btn-lg { padding: 0.85rem 2rem; font-size: 1.05rem; border-radius: var(--radius-md); }
 .btn-sm { padding: 0.4rem 0.9rem; font-size: 0.82rem; }
 
