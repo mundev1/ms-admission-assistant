@@ -1637,6 +1637,148 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .check-pill.pill-reach input:checked + label  { color: var(--tier-reach); background: var(--clr-reach-subtle); }
 .check-pill.pill-unlikely input:checked + label { color: var(--tier-unlikely); background: var(--clr-danger-subtle); }
 
+/* ---------- Unified Merged Filter Dropdown & Active Chips ---------- */
+.tier-filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.tier-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.48rem 0.6rem;
+  background: var(--clr-bg-alt);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--clr-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  outline: none;
+  text-align: left;
+}
+
+.tier-filter-item:hover,
+.tier-filter-item:focus-visible {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: var(--clr-surface-2, rgba(255, 255, 255, 0.06));
+  transform: translateY(-1px);
+}
+
+.tier-filter-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--clr-gold);
+}
+
+.tier-filter-item.pill-safe.active {
+  border-color: rgba(94, 219, 151, 0.6);
+  background: rgba(94, 219, 151, 0.12);
+  color: #5edb97;
+}
+
+.tier-filter-item.pill-match.active {
+  border-color: rgba(245, 158, 11, 0.6);
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--clr-gold-light);
+}
+
+.tier-filter-item.pill-reach.active {
+  border-color: rgba(249, 115, 22, 0.6);
+  background: rgba(249, 115, 22, 0.12);
+  color: #fb923c;
+}
+
+.tier-filter-item.pill-unlikely.active {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.tier-filter-item:not(.active) {
+  opacity: 0.45;
+  text-decoration: line-through;
+  border-style: dashed;
+}
+
+.active-filters-chips-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin: -0.25rem 0 1.25rem 0;
+  padding: 0.35rem 0.65rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--clr-border);
+  border-radius: var(--radius-md, 8px);
+}
+
+.active-chips-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--clr-gold);
+  margin-right: 0.2rem;
+}
+
+.active-chips-list {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.6rem;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 999px;
+  color: var(--clr-gold-light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.active-chip:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.active-chip-remove {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  font-weight: 800;
+}
+
+.btn-clear-all-chips {
+  background: none;
+  border: none;
+  color: var(--clr-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  margin-left: auto;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.btn-clear-all-chips:hover {
+  color: var(--clr-danger);
+  text-decoration: underline;
+}
+
 /* ---------- Program Card ---------- */
 .program-card {
   background: var(--clr-surface);

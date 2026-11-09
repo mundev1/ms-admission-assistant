@@ -190,7 +190,7 @@
       top: calc(100% + 0.45rem);
       right: 0;
       min-width: 320px;
-      max-width: min(380px, calc(100vw - 1.5rem));
+      max-width: min(400px, calc(100vw - 1.5rem));
       background: var(--clr-surface, #18181b);
       border: 1.5px solid var(--clr-border);
       border-radius: var(--radius-md, 12px);
@@ -252,6 +252,266 @@
     .btn-clear-quick-filters:hover {
       color: var(--clr-danger);
       text-decoration: underline;
+    }
+
+    /* ── Filter Sections in Merged Dropdown ── */
+    .filter-section {
+      padding: 0.25rem 0.25rem;
+    }
+    .filter-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.45rem;
+      padding: 0 0.2rem;
+    }
+    .filter-section-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--clr-gold);
+    }
+    .filter-section-hint {
+      font-size: 0.68rem;
+      color: var(--clr-text-muted);
+    }
+
+    /* ── Compatibility Tiers Grid inside Dropdown ── */
+    .tier-filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      margin-bottom: 0.35rem;
+    }
+    .tier-filter-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.48rem 0.6rem;
+      background: var(--clr-bg-alt);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-sm, 6px);
+      color: var(--clr-text);
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      outline: none;
+      text-align: left;
+    }
+    .tier-filter-item:hover,
+    .tier-filter-item:focus-visible {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: var(--clr-surface-2, rgba(255, 255, 255, 0.06));
+      transform: translateY(-1px);
+    }
+    .tier-filter-item:focus-visible {
+      box-shadow: 0 0 0 2px var(--clr-gold);
+    }
+    .tier-filter-item.pill-safe.active {
+      border-color: rgba(94, 219, 151, 0.6);
+      background: rgba(94, 219, 151, 0.12);
+      color: #5edb97;
+    }
+    .tier-filter-item.pill-match.active {
+      border-color: rgba(245, 158, 11, 0.6);
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--clr-gold-light);
+    }
+    .tier-filter-item.pill-reach.active {
+      border-color: rgba(249, 115, 22, 0.6);
+      background: rgba(249, 115, 22, 0.12);
+      color: #fb923c;
+    }
+    .tier-filter-item.pill-unlikely.active {
+      border-color: rgba(239, 68, 68, 0.6);
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+    }
+    .tier-filter-item:not(.active) {
+      opacity: 0.45;
+      text-decoration: line-through;
+      border-style: dashed;
+    }
+    .tier-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-safe { background: #5edb97; box-shadow: 0 0 6px rgba(94, 219, 151, 0.5); }
+    .dot-match { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
+    .dot-reach { background: #f97316; box-shadow: 0 0 6px rgba(249, 115, 22, 0.5); }
+    .dot-unlikely { background: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
+    .tier-filter-label {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tier-filter-check {
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-left: auto;
+      opacity: 0;
+      transform: scale(0.65);
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .tier-filter-item.active .tier-filter-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .filter-dropdown-divider {
+      height: 1px;
+      background: var(--clr-border);
+      margin: 0.45rem 0.2rem;
+    }
+
+    .filter-dropdown-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.4rem 0.15rem;
+      border-top: 1px solid var(--clr-border);
+      margin-top: 0.45rem;
+    }
+    .filter-footer-count {
+      font-size: 0.74rem;
+      color: var(--clr-text-muted);
+      font-weight: 600;
+    }
+    .btn-filter-done {
+      padding: 0.28rem 0.75rem;
+      background: var(--clr-gold);
+      color: #09090b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm, 6px);
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .btn-filter-done:hover {
+      background: var(--clr-gold-light);
+      transform: translateY(-1px);
+    }
+
+    /* ── Dynamic Active Filters Chips Bar (Shown only when non-default) ── */
+    .active-filters-chips-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      margin: -0.25rem 0 1.25rem 0;
+      padding: 0.35rem 0.65rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--clr-border);
+      border-radius: var(--radius-md, 8px);
+    }
+    .active-chips-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--clr-gold);
+      margin-right: 0.2rem;
+    }
+    .active-chips-list {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .active-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.22rem 0.6rem;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 999px;
+      color: var(--clr-gold-light);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .active-chip:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .active-chip-remove {
+      font-size: 0.72rem;
+      opacity: 0.8;
+      font-weight: 800;
+    }
+    .btn-clear-all-chips {
+      background: none;
+      border: none;
+      color: var(--clr-text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      margin-left: auto;
+      transition: color 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-clear-all-chips:hover {
+      color: var(--clr-danger);
+      text-decoration: underline;
+    }
+
+    /* Light mode styling for merged filters */
+    [data-theme="light"] .tier-filter-item {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      color: #334155;
+    }
+    [data-theme="light"] .tier-filter-item:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    [data-theme="light"] .tier-filter-item.pill-safe.active {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #047857;
+    }
+    [data-theme="light"] .tier-filter-item.pill-match.active {
+      background: rgba(217, 119, 6, 0.1);
+      border-color: rgba(217, 119, 6, 0.4);
+      color: #b45309;
+    }
+    [data-theme="light"] .tier-filter-item.pill-reach.active {
+      background: rgba(234, 88, 12, 0.1);
+      border-color: rgba(234, 88, 12, 0.4);
+      color: #c2410c;
+    }
+    [data-theme="light"] .tier-filter-item.pill-unlikely.active {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #b91c1c;
+    }
+    [data-theme="light"] .active-filters-chips-bar {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+    [data-theme="light"] .active-chip {
+      background: rgba(217, 119, 6, 0.1);
+      border-color: rgba(217, 119, 6, 0.35);
+      color: #b45309;
+    }
+    [data-theme="light"] .active-chip:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #b91c1c;
     }
 
     .quick-filter-menu-items {
@@ -1140,7 +1400,7 @@
       <div class="tab-bar" id="regionTabBar" role="tablist"></div>
     </div>
 
-    <!-- Controls bar -->
+    <!-- Controls bar (Streamlined & Decluttered) -->
     <div class="controls-bar">
       <div class="controls-left">
         <!-- Dual Score Mode Switcher -->
@@ -1148,74 +1408,100 @@
           <button type="button" class="score-mode-btn active" id="btnModeHolistic" data-mode="holistic">✨ Holistic Index</button>
           <button type="button" class="score-mode-btn" id="btnModeAcademic" data-mode="academic">🎓 Academic Fit</button>
         </div>
-
-        <span class="filter-bar">
-          <span class="filter-label">Filter:</span>
-          <label class="check-pill pill-safe">
-            <input type="checkbox" id="filterSafe" checked />
-            <label for="filterSafe">🟢 Safe</label>
-          </label>
-          <label class="check-pill pill-match">
-            <input type="checkbox" id="filterMatch" checked />
-            <label for="filterMatch">🟡 Match</label>
-          </label>
-          <label class="check-pill pill-reach">
-            <input type="checkbox" id="filterReach" checked />
-            <label for="filterReach">🟠 Reach</label>
-          </label>
-          <label class="check-pill pill-unlikely">
-            <input type="checkbox" id="filterUnlikely" checked />
-            <label for="filterUnlikely">🔴 Unlikely</label>
-          </label>
-        </span>
       </div>
       <div class="controls-right">
-        <!-- Quick-Filter Preset Dropdown -->
+        <!-- Merged Unified Filter & Preset Dropdown -->
         <div class="quick-filter-dropdown-wrapper" id="quickFilterWrapper">
-          <button type="button" class="quick-filter-dropdown-btn" id="quickFilterBtn" aria-expanded="false" aria-haspopup="true" title="One-click quick preset filters">
+          <button type="button" class="quick-filter-dropdown-btn" id="quickFilterBtn" aria-expanded="false" aria-haspopup="true" title="Filter by compatibility tiers and presets">
             <span class="qf-btn-icon">⚡</span>
-            <span class="qf-btn-text">Quick Filters</span>
+            <span class="qf-btn-text">Filters</span>
             <span class="quick-filter-badge hidden" id="quickFilterBadge">0</span>
             <span class="dropdown-chevron">▾</span>
           </button>
-          <div class="quick-filter-menu hidden" id="quickFilterMenu" role="menu" aria-label="Quick preset filters" aria-hidden="true">
+          <div class="quick-filter-menu hidden" id="quickFilterMenu" role="menu" aria-label="Filters and presets" aria-hidden="true">
             <div class="quick-filter-menu-header">
-              <span class="qf-menu-title">⚡ Quick Presets</span>
-              <button type="button" class="btn-clear-quick-filters hidden" id="btnClearQuickFilters">Clear all</button>
+              <span class="qf-menu-title">⚡ Filters &amp; Presets</span>
+              <button type="button" class="btn-clear-quick-filters hidden" id="btnClearQuickFilters">Reset all</button>
             </div>
-            <div class="quick-filter-menu-items">
-              <button type="button" class="quick-filter-item" data-filter="tuitionFree" role="menuitemcheckbox" aria-checked="false">
-                <span class="qf-item-icon">🎓</span>
-                <div class="qf-item-info">
-                  <div class="qf-item-title">Tuition-Free Only</div>
-                  <div class="qf-item-subtitle">e.g., TUM, RWTH, Aalto waivers (€0 or 100% waiver)</div>
-                </div>
-                <span class="qf-item-check">✓</span>
-              </button>
-              <button type="button" class="quick-filter-item" data-filter="noGre" role="menuitemcheckbox" aria-checked="false">
-                <span class="qf-item-icon">📝</span>
-                <div class="qf-item-info">
-                  <div class="qf-item-title">No GRE Required</div>
-                  <div class="qf-item-subtitle">European, UK, Canadian &amp; Australian programs</div>
-                </div>
-                <span class="qf-item-check">✓</span>
-              </button>
-              <button type="button" class="quick-filter-item" data-filter="extendedVisa" role="menuitemcheckbox" aria-checked="false">
-                <span class="qf-item-icon">🛂</span>
-                <div class="qf-item-info">
-                  <div class="qf-item-title">3-Year STEM OPT / 18+ Mo Job Search Visa</div>
-                  <div class="qf-item-subtitle">USA 36-Mo STEM OPT, Germany 18-Mo, Japan 24-Mo</div>
-                </div>
-                <span class="qf-item-check">✓</span>
-              </button>
-              <button type="button" class="quick-filter-item" data-filter="taraRemission" role="menuitemcheckbox" aria-checked="false">
-                <span class="qf-item-icon">💼</span>
-                <div class="qf-item-info">
-                  <div class="qf-item-title">TA/RA Tuition Remission Available</div>
-                  <div class="qf-item-subtitle">Graduate Teaching / Research Assistantship fee waiver</div>
-                </div>
-                <span class="qf-item-check">✓</span>
-              </button>
+
+            <!-- Section 1: Compatibility Tiers -->
+            <div class="filter-section">
+              <div class="filter-section-header">
+                <span class="filter-section-title">🎯 Compatibility Tiers</span>
+                <span class="filter-section-hint">Toggle tiers to display</span>
+              </div>
+              <div class="tier-filter-grid">
+                <button type="button" class="tier-filter-item pill-safe active" data-tier="SAFE" role="menuitemcheckbox" aria-checked="true" title="Toggle Safe tier (80%+ score)">
+                  <span class="tier-dot dot-safe"></span>
+                  <span class="tier-filter-label">Safe (80%+)</span>
+                  <span class="tier-filter-check">✓</span>
+                </button>
+                <button type="button" class="tier-filter-item pill-match active" data-tier="MATCH" role="menuitemcheckbox" aria-checked="true" title="Toggle Match tier (65-79% score)">
+                  <span class="tier-dot dot-match"></span>
+                  <span class="tier-filter-label">Match (65-79%)</span>
+                  <span class="tier-filter-check">✓</span>
+                </button>
+                <button type="button" class="tier-filter-item pill-reach active" data-tier="REACH" role="menuitemcheckbox" aria-checked="true" title="Toggle Reach tier (50-64% score)">
+                  <span class="tier-dot dot-reach"></span>
+                  <span class="tier-filter-label">Reach (50-64%)</span>
+                  <span class="tier-filter-check">✓</span>
+                </button>
+                <button type="button" class="tier-filter-item pill-unlikely active" data-tier="UNLIKELY" role="menuitemcheckbox" aria-checked="true" title="Toggle Unlikely tier (<50% score)">
+                  <span class="tier-dot dot-unlikely"></span>
+                  <span class="tier-filter-label">Unlikely (&lt;50%)</span>
+                  <span class="tier-filter-check">✓</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="filter-dropdown-divider"></div>
+
+            <!-- Section 2: Quick Presets -->
+            <div class="filter-section">
+              <div class="filter-section-header">
+                <span class="filter-section-title">⚡ Quick Presets</span>
+                <span class="filter-section-hint">Funding &amp; visa rules</span>
+              </div>
+              <div class="quick-filter-menu-items">
+                <button type="button" class="quick-filter-item" data-filter="tuitionFree" role="menuitemcheckbox" aria-checked="false">
+                  <span class="qf-item-icon">🎓</span>
+                  <div class="qf-item-info">
+                    <div class="qf-item-title">Tuition-Free Only</div>
+                    <div class="qf-item-subtitle">e.g., TUM, RWTH, Aalto waivers (€0 or 100% waiver)</div>
+                  </div>
+                  <span class="qf-item-check">✓</span>
+                </button>
+                <button type="button" class="quick-filter-item" data-filter="noGre" role="menuitemcheckbox" aria-checked="false">
+                  <span class="qf-item-icon">📝</span>
+                  <div class="qf-item-info">
+                    <div class="qf-item-title">No GRE Required</div>
+                    <div class="qf-item-subtitle">European, UK, Canadian &amp; Australian programs</div>
+                  </div>
+                  <span class="qf-item-check">✓</span>
+                </button>
+                <button type="button" class="quick-filter-item" data-filter="extendedVisa" role="menuitemcheckbox" aria-checked="false">
+                  <span class="qf-item-icon">🛂</span>
+                  <div class="qf-item-info">
+                    <div class="qf-item-title">3-Year STEM OPT / 18+ Mo Job Search Visa</div>
+                    <div class="qf-item-subtitle">USA 36-Mo STEM OPT, Germany 18-Mo, Japan 24-Mo</div>
+                  </div>
+                  <span class="qf-item-check">✓</span>
+                </button>
+                <button type="button" class="quick-filter-item" data-filter="taraRemission" role="menuitemcheckbox" aria-checked="false">
+                  <span class="qf-item-icon">💼</span>
+                  <div class="qf-item-info">
+                    <div class="qf-item-title">TA/RA Tuition Remission Available</div>
+                    <div class="qf-item-subtitle">Graduate Teaching / Research Assistantship fee waiver</div>
+                  </div>
+                  <span class="qf-item-check">✓</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dropdown Footer -->
+            <div class="filter-dropdown-footer">
+              <span class="filter-footer-count" id="filterDropdownCount">Showing all programs</span>
+              <button type="button" class="btn-filter-done" id="btnFilterDone">Done</button>
             </div>
           </div>
         </div>
@@ -1229,32 +1515,11 @@
       </div>
     </div>
 
-    <!-- Quick-Filter Preset Pills Row -->
-    <div class="quick-filter-pills-row" id="quickFilterPillsRow">
-      <span class="qf-pills-label">Presets:</span>
-      <button type="button" class="qf-pill" data-filter="tuitionFree" id="pillTuitionFree" title="Filter programs with €0 tuition or 100% waivers (TUM, RWTH, Aalto)">
-        <span class="qf-pill-icon">🎓</span>
-        <span class="qf-pill-text">Tuition-Free Only</span>
-        <span class="qf-pill-remove hidden">✕</span>
-      </button>
-      <button type="button" class="qf-pill" data-filter="noGre" id="pillNoGre" title="Filter programs that do not require GRE exam scores">
-        <span class="qf-pill-icon">📝</span>
-        <span class="qf-pill-text">No GRE Required</span>
-        <span class="qf-pill-remove hidden">✕</span>
-      </button>
-      <button type="button" class="qf-pill" data-filter="extendedVisa" id="pillExtendedVisa" title="Filter programs with 3-Year STEM OPT or 18+ Month Job Search Visas">
-        <span class="qf-pill-icon">🛂</span>
-        <span class="qf-pill-text">3-Yr STEM / 18+ Mo Visa</span>
-        <span class="qf-pill-remove hidden">✕</span>
-      </button>
-      <button type="button" class="qf-pill" data-filter="taraRemission" id="pillTaraRemission" title="Filter programs offering Graduate TA/RA fee remission">
-        <span class="qf-pill-icon">💼</span>
-        <span class="qf-pill-text">TA/RA Remission</span>
-        <span class="qf-pill-remove hidden">✕</span>
-      </button>
-      <button type="button" class="qf-pill-reset hidden" id="qfResetBtn" title="Reset all quick filters">
-        <span>✕ Reset</span>
-      </button>
+    <!-- Dynamic Active Filters Chips Bar (Hidden when no filters are active; zero clutter!) -->
+    <div class="active-filters-chips-bar hidden" id="activeFiltersChipsBar">
+      <span class="active-chips-label">Active:</span>
+      <div class="active-chips-list" id="activeChipsList"></div>
+      <button type="button" class="btn-clear-all-chips" id="btnClearAllChips">✕ Clear all</button>
     </div>
 
     <!-- Results header -->
@@ -2452,11 +2717,13 @@
     const list = getFilteredSorted(region);
     if (list.length === 0) {
       const anyQuickActive = Object.values(activeQuickFilters).some(Boolean);
+      const anyTierOff = Object.values(activeFilters).some(v => !v);
+      const anyFiltered = anyQuickActive || anyTierOff;
       return `<div class="no-results">
         <div class="icon">🔍</div>
         <h3>No programs match the current filters</h3>
-        <p>${anyQuickActive ? 'Some active quick filters or tier filters may be too restrictive.' : 'Try unchecking some tier filters above.'}</p>
-        ${anyQuickActive ? `<button type="button" class="btn btn-outline-gold btn-sm" id="btnResetFiltersInline" style="margin-top:1rem;cursor:pointer">✕ Reset Quick Filters</button>` : ''}
+        <p>${anyFiltered ? 'Some active filters or tier selections may be too restrictive.' : 'Try adjusting your filter options in the Filters menu.'}</p>
+        ${anyFiltered ? `<button type="button" class="btn btn-outline-gold btn-sm" id="btnResetFiltersInline" style="margin-top:1rem;cursor:pointer">✕ Reset All Filters</button>` : ''}
       </div>`;
     }
     return `<div class="programs-grid">${list.map((p, i) => renderProgramCard(p, i)).join('')}</div>`;
@@ -2468,13 +2735,19 @@
     const list = getFilteredSorted(region);
     const total = region === 'ALL' ? results.length : results.filter(r => r.region === region).length;
     const activeNames = [];
+    const inactiveTiers = Object.keys(activeFilters).filter(k => !activeFilters[k]);
+    const tierLabels = { SAFE: 'Safe', MATCH: 'Match', REACH: 'Reach', UNLIKELY: 'Unlikely' };
+    if (inactiveTiers.length > 0 && inactiveTiers.length < 4) {
+      const activeTiers = Object.keys(activeFilters).filter(k => activeFilters[k]).map(k => tierLabels[k]);
+      activeNames.push(`Tiers: ${activeTiers.join(', ')}`);
+    }
     if (activeQuickFilters.tuitionFree) activeNames.push('Tuition-Free');
     if (activeQuickFilters.noGre) activeNames.push('No GRE');
-    if (activeQuickFilters.extendedVisa) activeNames.push('18+ Mo / STEM OPT Visa');
+    if (activeQuickFilters.extendedVisa) activeNames.push('18+ Mo / STEM OPT');
     if (activeQuickFilters.taraRemission) activeNames.push('TA/RA Remission');
 
     const filterSuffix = activeNames.length > 0 
-      ? ` · <span style="color:var(--clr-gold-light);font-weight:600">Filtered by: ${activeNames.join(', ')}</span>`
+      ? ` · <span style="color:var(--clr-gold-light);font-weight:600">Filtered by: ${activeNames.join(' · ')}</span>`
       : '';
     $('#resultsCount').innerHTML = `Showing <strong>${list.length}</strong> of ${total} programs${filterSuffix}`;
   }
@@ -2628,33 +2901,38 @@
     setTimeout(() => animateBars(), 80);
   });
 
-  // ── Filters & Sort ────────────────────────────────────────────────────────
+  // ── Unified Filters & Presets Logic ────────────────────────────────────────
 
-  ['filterSafe', 'filterMatch', 'filterReach', 'filterUnlikely'].forEach(id => {
-    $(`#${id}`).addEventListener('change', function () {
-      const key = id.replace('filter', '').toUpperCase();
-      activeFilters[key] = this.checked;
-      renderAll();
+  function syncAllFiltersUI() {
+    // 1. Sync Tier buttons in dropdown
+    $$('.tier-filter-item').forEach(item => {
+      const tier = item.dataset.tier;
+      const isActive = !!activeFilters[tier];
+      item.classList.toggle('active', isActive);
+      item.setAttribute('aria-checked', isActive ? 'true' : 'false');
     });
-  });
 
-  $('#sortSelect').addEventListener('change', function () {
-    activeSort = this.value;
-    renderAll();
-  });
+    // 2. Sync Quick Preset items in dropdown
+    $$('.quick-filter-item').forEach(item => {
+      const f = item.dataset.filter;
+      const isActive = !!activeQuickFilters[f];
+      item.classList.toggle('active', isActive);
+      item.setAttribute('aria-checked', isActive ? 'true' : 'false');
+    });
 
-  // ── Quick-Filter UI Synchronization & Event Handlers ──────────────────────
+    // 3. Count non-default restrictions
+    // Tiers turned off count as 1 filter restriction each
+    const inactiveTiers = Object.keys(activeFilters).filter(k => !activeFilters[k]);
+    const activePresets = Object.keys(activeQuickFilters).filter(k => !!activeQuickFilters[k]);
+    const totalActiveCount = inactiveTiers.length + activePresets.length;
 
-  function syncQuickFiltersUI() {
-    const activeCount = Object.values(activeQuickFilters).filter(Boolean).length;
     const badge = $('#quickFilterBadge');
     const qfBtn = $('#quickFilterBtn');
     const clearBtn = $('#btnClearQuickFilters');
-    const resetPillBtn = $('#qfResetBtn');
 
     if (badge && qfBtn) {
-      if (activeCount > 0) {
-        badge.textContent = activeCount;
+      if (totalActiveCount > 0) {
+        badge.textContent = totalActiveCount;
         badge.classList.remove('hidden');
         qfBtn.classList.add('has-active');
       } else {
@@ -2663,31 +2941,77 @@
       }
     }
 
-    if (clearBtn) clearBtn.classList.toggle('hidden', activeCount === 0);
-    if (resetPillBtn) resetPillBtn.classList.toggle('hidden', activeCount === 0);
+    if (clearBtn) clearBtn.classList.toggle('hidden', totalActiveCount === 0);
 
-    // Sync dropdown menu items
-    $$('.quick-filter-item').forEach(item => {
-      const f = item.dataset.filter;
-      const isActive = !!activeQuickFilters[f];
-      item.classList.toggle('active', isActive);
-      item.setAttribute('aria-checked', isActive ? 'true' : 'false');
-    });
+    // 4. Update dropdown footer count
+    const list = getFilteredSorted(activeRegion);
+    const total = activeRegion === 'ALL' ? results.length : results.filter(r => r.region === activeRegion).length;
+    const footerCount = $('#filterDropdownCount');
+    if (footerCount) {
+      footerCount.textContent = totalActiveCount > 0
+        ? `Showing ${list.length} of ${total} programs`
+        : `Showing all ${total} programs`;
+    }
 
-    // Sync pills
-    $$('.qf-pill').forEach(pill => {
-      const f = pill.dataset.filter;
-      const isActive = !!activeQuickFilters[f];
-      pill.classList.toggle('active', isActive);
-      const rem = pill.querySelector('.qf-pill-remove');
-      if (rem) rem.classList.toggle('hidden', !isActive);
-    });
+    // 5. Update dynamic Active Filters Chips bar
+    const chipsBar = $('#activeFiltersChipsBar');
+    const chipsList = $('#activeChipsList');
+    if (chipsBar && chipsList) {
+      if (totalActiveCount === 0) {
+        chipsBar.classList.add('hidden');
+        chipsList.innerHTML = '';
+      } else {
+        chipsBar.classList.remove('hidden');
+        const chipsHtml = [];
+
+        // Inactive tiers chips
+        const tierNames = { SAFE: 'Safe', MATCH: 'Match', REACH: 'Reach', UNLIKELY: 'Unlikely' };
+        inactiveTiers.forEach(t => {
+          chipsHtml.push(`
+            <button type="button" class="active-chip" data-action="enable-tier" data-tier="${t}" title="Click to show ${tierNames[t]} programs">
+              <span>Exclude: ${tierNames[t]}</span>
+              <span class="active-chip-remove">✕</span>
+            </button>
+          `);
+        });
+
+        // Active presets chips
+        const presetTitles = {
+          tuitionFree: 'Tuition-Free',
+          noGre: 'No GRE Required',
+          extendedVisa: '3-Yr STEM / 18+ Mo Visa',
+          taraRemission: 'TA/RA Remission'
+        };
+        activePresets.forEach(p => {
+          chipsHtml.push(`
+            <button type="button" class="active-chip" data-action="disable-preset" data-preset="${p}" title="Click to remove ${presetTitles[p]} filter">
+              <span>${presetTitles[p]}</span>
+              <span class="active-chip-remove">✕</span>
+            </button>
+          `);
+        });
+
+        chipsList.innerHTML = chipsHtml.join('');
+      }
+    }
+  }
+
+  // Alias for backward compatibility
+  function syncQuickFiltersUI() {
+    syncAllFiltersUI();
+  }
+
+  function toggleTierFilter(tier) {
+    if (!tier || activeFilters[tier] === undefined) return;
+    activeFilters[tier] = !activeFilters[tier];
+    syncAllFiltersUI();
+    renderAll();
   }
 
   function toggleQuickFilter(filterKey) {
     if (activeQuickFilters[filterKey] === undefined) return;
     activeQuickFilters[filterKey] = !activeQuickFilters[filterKey];
-    syncQuickFiltersUI();
+    syncAllFiltersUI();
     renderAll();
 
     const titles = {
@@ -2698,16 +3022,90 @@
     };
     const title = titles[filterKey] || 'Filter';
     if (activeQuickFilters[filterKey]) {
-      showToast('Quick Filter Active', `Filtered programs by: ${title}`, 'info');
+      showToast('Filter Applied', `Filtered by: ${title}`, 'info');
     }
   }
 
-  function resetQuickFilters() {
+  function resetAllFilters() {
+    activeFilters.SAFE = true;
+    activeFilters.MATCH = true;
+    activeFilters.REACH = true;
+    activeFilters.UNLIKELY = true;
     Object.keys(activeQuickFilters).forEach(k => activeQuickFilters[k] = false);
-    syncQuickFiltersUI();
+    syncAllFiltersUI();
     renderAll();
-    showToast('Filters Cleared', 'Reset all quick preset filters.', 'info');
+    showToast('Filters Cleared', 'Reset all filters and presets to default.', 'info');
   }
+
+  // Alias for backward compatibility
+  function resetQuickFilters() {
+    resetAllFilters();
+  }
+
+  // Tier buttons click inside dropdown
+  $$('.tier-filter-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tier = item.dataset.tier;
+      toggleTierFilter(tier);
+    });
+  });
+
+  // Dropdown preset items click
+  $$('.quick-filter-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const f = item.dataset.filter;
+      toggleQuickFilter(f);
+    });
+  });
+
+  // Clear button in dropdown header
+  $('#btnClearQuickFilters')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetAllFilters();
+  });
+
+  // Done button in dropdown footer
+  $('#btnFilterDone')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeQuickFilterMenu();
+  });
+
+  // Active chips delegation click
+  $('#activeChipsList')?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.active-chip');
+    if (!chip) return;
+    const action = chip.dataset.action;
+    if (action === 'enable-tier') {
+      const tier = chip.dataset.tier;
+      activeFilters[tier] = true;
+      syncAllFiltersUI();
+      renderAll();
+    } else if (action === 'disable-preset') {
+      const preset = chip.dataset.preset;
+      activeQuickFilters[preset] = false;
+      syncAllFiltersUI();
+      renderAll();
+    }
+  });
+
+  // Clear all button in active chips bar
+  $('#btnClearAllChips')?.addEventListener('click', () => {
+    resetAllFilters();
+  });
+
+  // Inline reset button in empty state
+  $('#tabPanelsContainer')?.addEventListener('click', (e) => {
+    if (e.target.closest('#btnResetFiltersInline')) {
+      resetAllFilters();
+    }
+  });
+
+  $('#sortSelect')?.addEventListener('change', function () {
+    activeSort = this.value;
+    renderAll();
+  });
 
   // ── Quick-Filter Dropdown Menu Handlers (Smooth & Keyboard Accessible) ───
   function openQuickFilterMenu() {
@@ -2764,7 +3162,7 @@
     qfWrapper.addEventListener('keydown', (e) => {
       const menu = $('#quickFilterMenu');
       const isOpen = menu && menu.classList.contains('open');
-      const items = Array.from(menu ? menu.querySelectorAll('.quick-filter-item, #btnClearQuickFilters') : []).filter(el => !el.classList.contains('hidden'));
+      const items = Array.from(menu ? menu.querySelectorAll('.tier-filter-item, .quick-filter-item, #btnClearQuickFilters, #btnFilterDone') : []).filter(el => !el.classList.contains('hidden'));
 
       if (e.key === 'Escape') {
         if (isOpen) {
@@ -2809,41 +3207,6 @@
       }
     });
   }
-
-  // Dropdown items click
-  $$('.quick-filter-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const f = item.dataset.filter;
-      toggleQuickFilter(f);
-    });
-  });
-
-  // Clear button in dropdown
-  $('#btnClearQuickFilters')?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    resetQuickFilters();
-  });
-
-  // Pills row clicks
-  $$('.qf-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      const f = pill.dataset.filter;
-      toggleQuickFilter(f);
-    });
-  });
-
-  // Reset pill button
-  $('#qfResetBtn')?.addEventListener('click', () => {
-    resetQuickFilters();
-  });
-
-  // Inline reset button in empty state
-  $('#tabPanelsContainer')?.addEventListener('click', (e) => {
-    if (e.target.closest('#btnResetFiltersInline')) {
-      resetQuickFilters();
-    }
-  });
 
   // ── Score Mode Switcher ───────────────────────────────────────────────────
 
