@@ -241,49 +241,27 @@
 
       container.innerHTML = `
         <div class="user-profile-menu-wrapper" id="userMenuWrapper">
-          <button type="button" class="user-pill-btn" id="userMenuBtn" aria-label="Account menu" aria-expanded="false">
+          <button type="button" class="user-pill-btn" id="userMenuBtn" aria-label="Account menu" aria-expanded="false" aria-haspopup="true">
             <img src="${avatarSrc}" alt="${currentUser.name}" class="user-pill-avatar" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=user'"/>
             <span class="user-pill-name">${firstName}</span>
             <span class="user-pill-arrow">▾</span>
           </button>
-          <div class="user-dropdown-menu" id="userDropdownMenu" aria-hidden="true">
+          <div class="user-dropdown-menu" id="userDropdownMenu" role="menu" aria-label="User account actions" aria-hidden="true">
             <div class="user-dropdown-header">
               <div class="user-dropdown-name">${currentUser.name}</div>
               <div class="user-dropdown-email">${currentUser.email || 'Verified Account'}</div>
               <span class="user-dropdown-provider-tag">${providerBadge}</span>
             </div>
             <div class="user-dropdown-divider"></div>
-            <a href="dashboard.html" class="user-dropdown-item">📊 My Dashboard &amp; Shortlist</a>
-            <a href="ects-screener.html" class="user-dropdown-item">📐 ECTS Credit Mapping</a>
+            <a href="dashboard.html" class="user-dropdown-item" role="menuitem">📊 My Dashboard &amp; Shortlist</a>
+            <a href="ects-screener.html" class="user-dropdown-item" role="menuitem">📐 ECTS Credit Mapping</a>
             <div class="user-dropdown-divider"></div>
-            <button type="button" class="user-dropdown-item btn-signout" id="userSignOutBtn">
+            <button type="button" class="user-dropdown-item btn-signout" id="userSignOutBtn" role="menuitem">
               <span>🚪 Sign Out</span>
             </button>
           </div>
         </div>
       `;
-
-      const menuBtn = document.getElementById('userMenuBtn');
-      const dropdown = document.getElementById('userDropdownMenu');
-      menuBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = dropdown.classList.toggle('open');
-        dropdown.setAttribute('aria-hidden', !isOpen);
-        menuBtn.setAttribute('aria-expanded', isOpen);
-      });
-
-      document.getElementById('userSignOutBtn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        logout();
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('#userMenuWrapper')) {
-          dropdown?.classList.remove('open');
-          dropdown?.setAttribute('aria-hidden', 'true');
-          menuBtn?.setAttribute('aria-expanded', 'false');
-        }
-      });
     } else {
       container.innerHTML = `
         <button type="button" class="btn btn-ghost btn-sm btn-header-signin" id="headerSignInBtn" title="Sign In with Google or GitHub">
@@ -292,6 +270,89 @@
       `;
       document.getElementById('headerSignInBtn')?.addEventListener('click', openLoginModal);
     }
+  }
+
+  function openUserDropdown() {
+    const dropdown = document.getElementById('userDropdownMenu');
+    const menuBtn = document.getElementById('userMenuBtn');
+    if (!dropdown || !menuBtn) return;
+    dropdown.classList.add('open');
+    dropdown.setAttribute('aria-hidden', 'false');
+    menuBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeUserDropdown() {
+    const dropdown = document.getElementById('userDropdownMenu');
+    const menuBtn = document.getElementById('userMenuBtn');
+    if (dropdown && dropdown.classList.contains('open')) {
+      dropdown.classList.remove('open');
+      dropdown.setAttribute('aria-hidden', 'true');
+      menuBtn?.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdownMenu');
+    if (!dropdown) return;
+    if (dropdown.classList.contains('open')) {
+      closeUserDropdown();
+    } else {
+      openUserDropdown();
+    }
+  }
+
+  let authListenersInitialized = false;
+  function setupGlobalAuthListeners() {
+    if (authListenersInitialized) return;
+    authListenersInitialized = true;
+
+    // Delegated click for user menu toggle & outside click
+    document.addEventListener('click', (e) => {
+      const menuBtn = e.target.closest('#userMenuBtn');
+      if (menuBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleUserDropdown();
+        return;
+      }
+
+      const signoutBtn = e.target.closest('#userSignOutBtn');
+      if (signoutBtn) {
+        e.preventDefault();
+        closeUserDropdown();
+        logout();
+        return;
+      }
+
+      if (!e.target.closest('#userMenuWrapper')) {
+        closeUserDropdown();
+      }
+    });
+
+    // Keyboard support: Escape closes user dropdown, Arrow keys cycle
+    document.addEventListener('keydown', (e) => {
+      const dropdown = document.getElementById('userDropdownMenu');
+      const isOpen = dropdown && dropdown.classList.contains('open');
+
+      if (e.key === 'Escape' && isOpen) {
+        e.preventDefault();
+        closeUserDropdown();
+        document.getElementById('userMenuBtn')?.focus();
+        return;
+      }
+
+      if (isOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        const items = Array.from(dropdown.querySelectorAll('.user-dropdown-item'));
+        if (items.length > 0) {
+          e.preventDefault();
+          const activeIdx = items.indexOf(document.activeElement);
+          const nextIdx = e.key === 'ArrowDown'
+            ? (activeIdx + 1) % items.length
+            : (activeIdx - 1 + items.length) % items.length;
+          items[nextIdx]?.focus();
+        }
+      }
+    });
   }
 
   // ── Initialize on Page Load ───────────────────────────────────────────────
@@ -314,6 +375,7 @@
     }
 
     renderAuthWidget();
+    setupGlobalAuthListeners();
     ensureModal();
 
     // Export globally

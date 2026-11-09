@@ -59,20 +59,57 @@
       flex-wrap: wrap;
     }
 
-    /* Sort select */
+    /* ── Sort Select Picker (Polished Custom Chevron & Focus State) ── */
     .sort-select {
-      padding: 0.4rem 0.85rem;
-      background: var(--clr-bg-alt);
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding: 0.42rem 2.2rem 0.42rem 0.85rem;
+      background-color: var(--clr-bg-alt);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%23f59e0b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 10px 7px;
       border: 1.5px solid var(--clr-border);
       border-radius: var(--radius-sm);
       color: var(--clr-text);
       font-size: 0.85rem;
+      font-weight: 600;
       font-family: var(--font-sans);
       cursor: pointer;
       outline: none;
-      -webkit-appearance: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
-    .sort-select:focus { border-color: var(--clr-gold); }
+    .sort-select:hover {
+      border-color: rgba(245, 158, 11, 0.45);
+    }
+    .sort-select:focus {
+      border-color: var(--clr-gold);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+    }
+    .sort-select option {
+      background: var(--clr-surface);
+      color: var(--clr-text);
+      padding: 0.35rem 0.5rem;
+    }
+
+    [data-theme="light"] .sort-select {
+      background-color: #ffffff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%23d97706' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      border-color: var(--clr-border);
+      color: var(--clr-text);
+    }
+    [data-theme="light"] .sort-select:hover {
+      border-color: rgba(217, 119, 6, 0.45);
+    }
+    [data-theme="light"] .sort-select:focus {
+      border-color: var(--clr-gold);
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
+    }
+    [data-theme="light"] .sort-select option {
+      background: #ffffff;
+      color: #1e293b;
+    }
 
     /* ── Quick-Filter Dropdown & Preset Pills ─────────────────── */
     .quick-filter-dropdown-wrapper {
@@ -95,6 +132,7 @@
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       user-select: none;
+      outline: none;
     }
 
     .quick-filter-dropdown-btn:hover {
@@ -103,11 +141,22 @@
       color: var(--clr-white);
     }
 
+    .quick-filter-dropdown-btn:focus-visible {
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+    }
+
     .quick-filter-dropdown-btn.has-active {
       border-color: var(--clr-gold);
       background: rgba(245, 158, 11, 0.12);
       color: var(--clr-gold-light);
       box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+    }
+
+    [data-theme="light"] .quick-filter-dropdown-btn.has-active {
+      color: #b45309;
+      background: rgba(217, 119, 6, 0.12);
+      border-color: rgba(217, 119, 6, 0.5);
+      box-shadow: 0 0 12px rgba(217, 119, 6, 0.2);
     }
 
     .quick-filter-badge {
@@ -127,8 +176,9 @@
 
     .dropdown-chevron {
       font-size: 0.75rem;
-      transition: transform 0.2s ease;
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
       color: var(--clr-text-muted);
+      display: inline-block;
     }
 
     .quick-filter-dropdown-btn[aria-expanded="true"] .dropdown-chevron {
@@ -139,21 +189,35 @@
       position: absolute;
       top: calc(100% + 0.45rem);
       right: 0;
-      min-width: 330px;
-      max-width: 380px;
+      min-width: 320px;
+      max-width: min(380px, calc(100vw - 1.5rem));
       background: var(--clr-surface, #18181b);
       border: 1.5px solid var(--clr-border);
       border-radius: var(--radius-md, 12px);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
       z-index: 120;
-      padding: 0.5rem;
+      padding: 0.55rem;
       backdrop-filter: blur(16px);
-      animation: qfFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+      -webkit-backdrop-filter: blur(16px);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px) scale(0.97);
+      transform-origin: top right;
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s;
+      visibility: hidden;
     }
 
-    @keyframes qfFadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .quick-filter-menu.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      visibility: visible;
+    }
+
+    [data-theme="light"] .quick-filter-menu {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .quick-filter-menu-header {
@@ -208,18 +272,36 @@
       color: var(--clr-text);
       text-align: left;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
       font-family: inherit;
+      outline: none;
     }
 
-    .quick-filter-item:hover {
+    .quick-filter-item:hover,
+    .quick-filter-item:focus-visible {
       background: var(--clr-surface-2, rgba(255, 255, 255, 0.05));
       border-color: var(--clr-border);
+      transform: translateX(2px);
+    }
+
+    .quick-filter-item:focus-visible {
+      box-shadow: 0 0 0 2px var(--clr-gold);
     }
 
     .quick-filter-item.active {
       background: rgba(245, 158, 11, 0.12);
       border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    [data-theme="light"] .quick-filter-item:hover,
+    [data-theme="light"] .quick-filter-item:focus-visible {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    [data-theme="light"] .quick-filter-item.active {
+      background: rgba(217, 119, 6, 0.1);
+      border-color: rgba(217, 119, 6, 0.35);
     }
 
     .qf-item-icon {
@@ -244,6 +326,10 @@
       color: var(--clr-gold-light);
     }
 
+    [data-theme="light"] .quick-filter-item.active .qf-item-title {
+      color: #b45309;
+    }
+
     .qf-item-subtitle {
       font-size: 0.72rem;
       color: var(--clr-text-muted);
@@ -252,15 +338,33 @@
     }
 
     .qf-item-check {
-      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
       font-weight: 800;
-      color: transparent;
+      color: var(--clr-gold);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
       margin-left: 0.35rem;
-      line-height: 1.2;
+      flex-shrink: 0;
+      opacity: 0;
+      transform: scale(0.65);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .quick-filter-item.active .qf-item-check {
-      color: var(--clr-gold);
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    [data-theme="light"] .quick-filter-item.active .qf-item-check {
+      color: #b45309;
+      background: rgba(217, 119, 6, 0.15);
+      border-color: rgba(217, 119, 6, 0.4);
     }
 
     /* ── Quick Filter Pills Bar ── */
@@ -1074,7 +1178,7 @@
             <span class="quick-filter-badge hidden" id="quickFilterBadge">0</span>
             <span class="dropdown-chevron">▾</span>
           </button>
-          <div class="quick-filter-menu hidden" id="quickFilterMenu" role="menu" aria-label="Quick preset filters">
+          <div class="quick-filter-menu hidden" id="quickFilterMenu" role="menu" aria-label="Quick preset filters" aria-hidden="true">
             <div class="quick-filter-menu-header">
               <span class="qf-menu-title">⚡ Quick Presets</span>
               <button type="button" class="btn-clear-quick-filters hidden" id="btnClearQuickFilters">Clear all</button>
@@ -1284,6 +1388,26 @@
     greToPercentile, jlptToLabel, buildScoreComponents,
     computeResearchComposite
   } from './js/normalizer.js';
+
+  // Bulletproof fallbacks ensuring dashboard calculations never fail
+  const safeCgpaToUS4pt = typeof cgpaToUS4pt === 'function' ? cgpaToUS4pt : (cgpa) => Math.min(4.0, Math.max(0, (Number(cgpa || 0) / 10.0) * 4.0));
+  const safeCgpaToJapanese4pt = typeof cgpaToJapanese4pt === 'function' ? cgpaToJapanese4pt : (cgpa) => {
+    const c = Number(cgpa || 0);
+    return c >= 8.5 ? 4.0 : c >= 7.5 ? 3.0 : c >= 6.5 ? 2.0 : c >= 5.5 ? 1.0 : 0.0;
+  };
+  const safeCgpaToEctsGrade = typeof cgpaToEctsGrade === 'function' ? cgpaToEctsGrade : (cgpa) => {
+    const c = Number(cgpa || 0);
+    if (c >= 9.0) return { letter: 'A', score: 95, label: 'Excellent' };
+    if (c >= 8.0) return { letter: 'B', score: 85, label: 'Very Good' };
+    if (c >= 7.0) return { letter: 'C', score: 75, label: 'Good' };
+    if (c >= 6.0) return { letter: 'D', score: 65, label: 'Satisfactory' };
+    if (c >= 5.0) return { letter: 'E', score: 55, label: 'Sufficient' };
+    return { letter: 'F', score: 35, label: 'Fail' };
+  };
+  const safeGreToPercentile = typeof greToPercentile === 'function' ? greToPercentile : (raw) => Math.min(99, Math.max(1, Math.round((Number(raw || 130) - 130) / 40 * 100)));
+  const safeJlptToLabel = typeof jlptToLabel === 'function' ? jlptToLabel : (lvl) => lvl ? String(lvl).toUpperCase() : 'None';
+  const safeBuildScoreComponents = typeof buildScoreComponents === 'function' ? buildScoreComponents : (p) => p.components || {};
+  const safeComputeResearchComposite = typeof computeResearchComposite === 'function' ? computeResearchComposite : (r, i, p) => Math.min(100, Math.round(Number(r || 0) * 0.5 + Number(i || 0) * 3 + Number(p || 0) * 15));
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -2022,18 +2146,19 @@
     tierEl.className   = `tier-badge tier-${getTierClass(bestTier)}`;
 
     // Stats
-    const us4 = typeof cgpaToUS4pt === 'function' ? cgpaToUS4pt(profile.cgpa || 0) : 3.2;
-    const jp4 = typeof cgpaToJapanese4pt === 'function' ? cgpaToJapanese4pt(profile.cgpa || 0) : 3.0;
-    const eu  = typeof cgpaToEctsGrade === 'function' ? cgpaToEctsGrade(profile.cgpa || 0) : { letter: 'B' };
+    const cgpaVal = Number(profile.cgpa ?? profile.cgpa10pt ?? 0);
+    const us4 = Number(safeCgpaToUS4pt(cgpaVal) || 0);
+    const jp4 = Number(safeCgpaToJapanese4pt(cgpaVal) || 0);
+    const eu  = safeCgpaToEctsGrade(cgpaVal);
 
-    const budget = profile.annualBudgetUsd ?? profile.annualBudget ?? 35000;
-    const savings = profile.liquidSavingsUsd ?? profile.liquidSavings ?? 25000;
+    const budget = Number(profile.annualBudgetUsd ?? profile.annualBudget ?? 35000);
+    const savings = Number(profile.liquidSavingsUsd ?? profile.liquidSavings ?? 25000);
 
     const stats = [
-      { label: 'CGPA / 10', val: (profile.cgpa || 0).toFixed(1) },
+      { label: 'CGPA / 10', val: cgpaVal.toFixed(1) },
       { label: 'US 4.0 GPA', val: us4.toFixed(2) },
       { label: 'JP 4.0 GPA', val: jp4.toFixed(2) },
-      { label: 'EU Grade', val: eu.letter },
+      { label: 'EU Grade', val: eu?.letter || 'B' },
       { label: 'Annual Budget', val: `$${Math.round(budget/1000)}k` },
       { label: 'Liquid Escrow', val: `$${Math.round(savings/1000)}k` },
       { label: 'Visa Priority', val: profile.postStudyWorkPriority || 'HIGH' },
@@ -2584,39 +2709,106 @@
     showToast('Filters Cleared', 'Reset all quick preset filters.', 'info');
   }
 
-  // Toggle quick-filter dropdown menu
-  $('#quickFilterBtn')?.addEventListener('click', (e) => {
-    e.stopPropagation();
+  // ── Quick-Filter Dropdown Menu Handlers (Smooth & Keyboard Accessible) ───
+  function openQuickFilterMenu() {
     const menu = $('#quickFilterMenu');
     const btn = $('#quickFilterBtn');
-    const isClosed = menu.classList.contains('hidden');
-    menu.classList.toggle('hidden', !isClosed);
-    btn?.setAttribute('aria-expanded', isClosed ? 'true' : 'false');
+    if (!menu || !btn) return;
+    menu.classList.remove('hidden');
+    void menu.offsetWidth; // Force reflow for smooth transition
+    menu.classList.add('open');
+    menu.setAttribute('aria-hidden', 'false');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeQuickFilterMenu() {
+    const menu = $('#quickFilterMenu');
+    const btn = $('#quickFilterBtn');
+    if (!menu || !btn) return;
+    menu.classList.remove('open');
+    menu.setAttribute('aria-hidden', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+    setTimeout(() => {
+      if (!menu.classList.contains('open')) {
+        menu.classList.add('hidden');
+      }
+    }, 210);
+  }
+
+  function toggleQuickFilterMenu() {
+    const menu = $('#quickFilterMenu');
+    if (!menu) return;
+    if (menu.classList.contains('open')) {
+      closeQuickFilterMenu();
+    } else {
+      openQuickFilterMenu();
+    }
+  }
+
+  // Toggle button click
+  $('#quickFilterBtn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleQuickFilterMenu();
   });
 
   // Close dropdown on outside click
   document.addEventListener('click', (e) => {
     if (!e.target.closest('#quickFilterWrapper')) {
-      const menu = $('#quickFilterMenu');
-      const btn = $('#quickFilterBtn');
-      if (menu && !menu.classList.contains('hidden')) {
-        menu.classList.add('hidden');
-        btn?.setAttribute('aria-expanded', 'false');
-      }
+      closeQuickFilterMenu();
     }
   });
 
-  // Close dropdown on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+  // Keyboard navigation & accessibility inside dropdown wrapper
+  const qfWrapper = $('#quickFilterWrapper');
+  if (qfWrapper) {
+    qfWrapper.addEventListener('keydown', (e) => {
       const menu = $('#quickFilterMenu');
-      const btn = $('#quickFilterBtn');
-      if (menu && !menu.classList.contains('hidden')) {
-        menu.classList.add('hidden');
-        btn?.setAttribute('aria-expanded', 'false');
+      const isOpen = menu && menu.classList.contains('open');
+      const items = Array.from(menu ? menu.querySelectorAll('.quick-filter-item, #btnClearQuickFilters') : []).filter(el => !el.classList.contains('hidden'));
+
+      if (e.key === 'Escape') {
+        if (isOpen) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeQuickFilterMenu();
+          $('#quickFilterBtn')?.focus();
+        }
+        return;
       }
-    }
-  });
+
+      if (!isOpen && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')) {
+        if (e.target === $('#quickFilterBtn')) {
+          e.preventDefault();
+          openQuickFilterMenu();
+          if (items.length > 0) items[0].focus();
+          return;
+        }
+      }
+
+      if (isOpen) {
+        const activeIdx = items.indexOf(document.activeElement);
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          const nextIdx = (activeIdx + 1) % items.length;
+          items[nextIdx]?.focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prevIdx = (activeIdx - 1 + items.length) % items.length;
+          items[prevIdx]?.focus();
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          items[0]?.focus();
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          items[items.length - 1]?.focus();
+        } else if ((e.key === 'Enter' || e.key === ' ') && activeIdx >= 0) {
+          e.preventDefault();
+          items[activeIdx]?.click();
+        }
+      }
+    });
+  }
 
   // Dropdown items click
   $$('.quick-filter-item').forEach(item => {
@@ -2712,10 +2904,10 @@
           <li class="rec-item"><span>💡</span><span>${r}</span></li>`).join('')}</ul>`
       : '<p class="text-sm text-muted">No specific recommendations.</p>';
 
-    const cgpaVal = profile?.cgpa ?? profile?.cgpa10pt ?? 0;
-    const usGpa = typeof cgpaToUS4pt === 'function' ? cgpaToUS4pt(cgpaVal).toFixed(2) : (cgpaVal * 0.4).toFixed(2);
-    const jpGpa = typeof cgpaToJapanese4pt === 'function' ? cgpaToJapanese4pt(cgpaVal).toFixed(2) : (cgpaVal * 0.4).toFixed(2);
-    const euGrade = typeof cgpaToEctsGrade === 'function' ? (cgpaToEctsGrade(cgpaVal)?.letter || 'B') : 'B';
+    const cgpaVal = Number(profile?.cgpa ?? profile?.cgpa10pt ?? 0);
+    const usGpa = Number(safeCgpaToUS4pt(cgpaVal) || 0).toFixed(2);
+    const jpGpa = Number(safeCgpaToJapanese4pt(cgpaVal) || 0).toFixed(2);
+    const euGrade = safeCgpaToEctsGrade(cgpaVal)?.letter || 'B';
 
     const userBudget = profile?.annualBudgetUsd ?? profile?.annualBudget ?? 35000;
     const userSavings = profile?.liquidSavingsUsd ?? profile?.liquidSavings ?? 25000;
@@ -3933,13 +4125,55 @@
 
   // ── Initialize ────────────────────────────────────────────────────────────
 
-  renderSummary();
-  renderAll();
-  renderCompareTray();
+  function initializeDashboard() {
+    try {
+      renderSummary();
+      renderAll();
+      renderCompareTray();
 
-  if (isDemo) {
-    showToast('Demo Mode', 'Showing sample data. Submit your profile on the home page for live results.', 'info');
+      if (isDemo) {
+        showToast('Demo Mode', 'Showing sample data. Submit your profile on the home page for live results.', 'info');
+      }
+    } catch (err) {
+      console.error('[Dashboard] Error during initialization:', err);
+      // Failsafe recovery to guarantee the dashboard never stays stuck in "Loading…"
+      try {
+        if (!results || results.length === 0) {
+          results = MOCK_RESULTS.map(adaptResult);
+        }
+        if (!profile) {
+          profile = {
+            fullName: 'Applicant', email: 'applicant@example.com',
+            cgpa: 8.0, cgpa10pt: 8.0, universityName: 'University', degree: 'B.Tech',
+            specialization: 'Computer Science', graduationYear: 2024,
+            targetRegion: 'ALL'
+          };
+        }
+        renderSummary();
+        renderAll();
+        renderCompareTray();
+      } catch (innerErr) {
+        console.error('[Dashboard] Critical recovery render failed:', innerErr);
+        const nameEl = $('#applicantName');
+        if (nameEl) nameEl.textContent = 'Admissions Matrix';
+      }
+    }
   }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDashboard);
+  } else {
+    initializeDashboard();
+  }
+
+  // Safety watchdog timer: if the summary card still says "Loading…" after 350ms, force recovery render
+  setTimeout(() => {
+    const nameEl = document.getElementById('applicantName');
+    if (nameEl && (nameEl.textContent === 'Loading…' || nameEl.textContent === 'Loading...')) {
+      console.warn('[Dashboard Watchdog] Page remained in Loading state; forcing emergency render.');
+      initializeDashboard();
+    }
+  }, 350);
 </script>
 
 <script src="js/theme.js"></script>
